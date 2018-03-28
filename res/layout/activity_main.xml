@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/constraintLayout"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <!-- TODO: ne pas hardcoder la hauteur de la statusbar et de la navbar. -->
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/message_list_main"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:paddingTop="32dp"
+        android:paddingBottom="56dp"
+        android:paddingStart="8dp"
+        android:paddingEnd="8dp"
+        android:clipToPadding="false"
+        android:scrollbars="vertical"
+        android:scrollbarStyle="outsideOverlay"/>
+
+</android.support.constraint.ConstraintLayout>
