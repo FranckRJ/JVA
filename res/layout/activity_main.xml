@@ -5,7 +5,6 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <!-- TODO: ne pas hardcoder la hauteur de la statusbar et de la navbar. -->
     <android.support.v7.widget.RecyclerView
         android:id="@+id/message_list_main"
         android:layout_width="match_parent"
