@@ -8,6 +8,7 @@ import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
+import android.widget.Toast
 
 class MainActivity : AppCompatActivity() {
     private var topicViewModel: TopicViewModel? = null
@@ -44,5 +45,16 @@ class MainActivity : AppCompatActivity() {
             messageListAdapter.listOfMessagesShowable = listOfMessagesShowable ?: ArrayList()
             messageListAdapter.notifyDataSetChanged()
         })
+
+        messageListAdapter.authorClickedListener = object : TopicAdapter.OnItemClickedListener {
+            override fun onItemClicked(position: Int) {
+                Toast.makeText(this@MainActivity, "Position d'auteur cliqué : " + position.toString(), Toast.LENGTH_SHORT).show()
+            }
+        }
+        messageListAdapter.dateClickedListener = object : TopicAdapter.OnItemClickedListener {
+            override fun onItemClicked(position: Int) {
+                Toast.makeText(this@MainActivity, "Position de date cliquée : " + position.toString(), Toast.LENGTH_SHORT).show()
+            }
+        }
     }
 }
