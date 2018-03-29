@@ -1,25 +1,25 @@
 package com.franckrj.jva
 
-fun StringBuilder.replaceInside(base: String, replacement: String) {
-    var index = this.indexOf(base)
-    while (index != -1) {
-        this.replace(index, index + base.length, replacement)
-        index += replacement.length
-        index = this.indexOf(base, index)
-    }
-}
-
-fun StringBuilder.trimInside() {
-    while (this.isNotEmpty() && this[0] == ' ') {
-        this.deleteCharAt(0)
+abstract class AbsParser {
+    protected fun StringBuilder.replaceInside(base: String, replacement: String) {
+        var index = this.indexOf(base)
+        while (index != -1) {
+            this.replace(index, index + base.length, replacement)
+            index += replacement.length
+            index = this.indexOf(base, index)
+        }
     }
 
-    while (this.isNotEmpty() && this[this.length - 1] == ' ') {
-        this.deleteCharAt(this.length - 1)
-    }
-}
+    protected fun StringBuilder.trimInside() {
+        while (this.isNotEmpty() && this[0] == ' ') {
+            this.deleteCharAt(0)
+        }
 
-object ParserUtils {
+        while (this.isNotEmpty() && this[this.length - 1] == ' ') {
+            this.deleteCharAt(this.length - 1)
+        }
+    }
+
     fun parseMessageWithRegex(messageToParse: StringBuilder, regexToUse: Regex, groupToUse: Int, stringBefore: String = "",
                               stringAfter: String = "", secondGroupToUse: Int = -1, stringAfterAfter: String = "") {
         var matcherToUse: MatchResult? = regexToUse.find(messageToParse)

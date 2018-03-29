@@ -1,6 +1,6 @@
 package com.franckrj.jva
 
-class TopicParser private constructor() {
+class TopicParser private constructor() : AbsParser() {
     companion object {
         val instance: TopicParser by lazy { TopicParser() }
     }
@@ -51,29 +51,29 @@ class TopicParser private constructor() {
         val messageInBuilder = StringBuilder(message)
         val makeLinkDependingOnSettingsAndForceMake = MakeShortenedLinkIfPossible(50, true)
 
-        ParserUtils.parseMessageWithRegexAndModif(messageInBuilder, codeBlockPattern, 1, "<p><font face=\"monospace\">", "</font></p>", MakeCodeTagGreatAgain(true))
-        ParserUtils.parseMessageWithRegexAndModif(messageInBuilder, codeLinePattern, 1, " <font face=\"monospace\">", "</font> ", MakeCodeTagGreatAgain(false))
+        parseMessageWithRegexAndModif(messageInBuilder, codeBlockPattern, 1, "<p><font face=\"monospace\">", "</font></p>", MakeCodeTagGreatAgain(true))
+        parseMessageWithRegexAndModif(messageInBuilder, codeLinePattern, 1, " <font face=\"monospace\">", "</font> ", MakeCodeTagGreatAgain(false))
         messageInBuilder.replaceInside("\n", "")
 
         /* TODO: Réger les différents noms de stickers identiques. */
-        ParserUtils.parseMessageWithRegexAndModif(messageInBuilder, stickerPattern, 1, "<img src=\"sticker_", ".png\"/>", ConvertUrlToStickerId(), ConvertStringToString("-", "_"))
-        ParserUtils.parseMessageWithRegex(messageInBuilder, smileyPattern, 2, "<img src=\"smiley_", "\"/>")
+        parseMessageWithRegexAndModif(messageInBuilder, stickerPattern, 1, "<img src=\"sticker_", ".png\"/>", ConvertUrlToStickerId(), ConvertStringToString("-", "_"))
+        parseMessageWithRegex(messageInBuilder, smileyPattern, 2, "<img src=\"smiley_", "\"/>")
 
-        ParserUtils.parseMessageWithRegex(messageInBuilder, youtubeVideoPattern, 2, "<a href=\"http://youtu.be/", "\">http://youtu.be/", 2, "</a>")
-        ParserUtils.parseMessageWithRegex(messageInBuilder, jvcVideoPattern, -1, "[[Vidéo non supportée par l'application]]")
-        ParserUtils.parseMessageWithRegexAndModif(messageInBuilder, jvcLinkPattern, 1, "", "", makeLinkDependingOnSettingsAndForceMake)
-        ParserUtils.parseMessageWithRegexAndModif(messageInBuilder, shortLinkPattern, 1, "", "", makeLinkDependingOnSettingsAndForceMake)
-        ParserUtils.parseMessageWithRegexAndModif(messageInBuilder, longLinkPattern, 1, "", "", makeLinkDependingOnSettingsAndForceMake)
+        parseMessageWithRegex(messageInBuilder, youtubeVideoPattern, 2, "<a href=\"http://youtu.be/", "\">http://youtu.be/", 2, "</a>")
+        parseMessageWithRegex(messageInBuilder, jvcVideoPattern, -1, "[[Vidéo non supportée par l'application]]")
+        parseMessageWithRegexAndModif(messageInBuilder, jvcLinkPattern, 1, "", "", makeLinkDependingOnSettingsAndForceMake)
+        parseMessageWithRegexAndModif(messageInBuilder, shortLinkPattern, 1, "", "", makeLinkDependingOnSettingsAndForceMake)
+        parseMessageWithRegexAndModif(messageInBuilder, longLinkPattern, 1, "", "", makeLinkDependingOnSettingsAndForceMake)
 
-        ParserUtils.parseMessageWithRegex(messageInBuilder, noelshackImagePattern, 3, "<a href=\"", "\"><img src=\"http://", 2, "\"/></a>")
+        parseMessageWithRegex(messageInBuilder, noelshackImagePattern, 3, "<a href=\"", "\"><img src=\"http://", 2, "\"/></a>")
 
-        ParserUtils.parseMessageWithRegexAndModif(messageInBuilder, spoilLinePattern, 1, "", "", RemoveFirstsAndLastsPAndBr())
-        ParserUtils.parseMessageWithRegexAndModif(messageInBuilder, spoilBlockPattern, 1, "<p>", "</p>", RemoveFirstsAndLastsPAndBr())
+        parseMessageWithRegexAndModif(messageInBuilder, spoilLinePattern, 1, "", "", RemoveFirstsAndLastsPAndBr())
+        parseMessageWithRegexAndModif(messageInBuilder, spoilBlockPattern, 1, "<p>", "</p>", RemoveFirstsAndLastsPAndBr())
 
         removeDivAndAdaptParagraphInMessage(messageInBuilder)
-        ParserUtils.parseMessageWithRegex(messageInBuilder, surroundedBlockquotePattern, 2)
+        parseMessageWithRegex(messageInBuilder, surroundedBlockquotePattern, 2)
 
-        ParserUtils.parseMessageWithRegexAndModif(messageInBuilder, jvCarePattern, 1, "", "", MakeShortenedLinkIfPossible(50, false))
+        parseMessageWithRegexAndModif(messageInBuilder, jvCarePattern, 1, "", "", MakeShortenedLinkIfPossible(50, false))
 
         removeFirstAndLastBrInMessage(messageInBuilder)
 
@@ -109,7 +109,7 @@ class TopicParser private constructor() {
     private fun makeBasicFormatOfMessage(message: String): String {
         val messageInBuilder = StringBuilder(message)
 
-        ParserUtils.parseMessageWithRegex(messageInBuilder, adPattern, -1)
+        parseMessageWithRegex(messageInBuilder, adPattern, -1)
         messageInBuilder.replaceInside("\r", "")
         /* TODO: Parser les listes (remplacer par • ) ou utiliser le tag des listes (p-e pas bugé sur Lollipop ou supérieur) ?. */
         messageInBuilder.replaceInside("""<blockquote class="blockquote-jv">""", "<blockquote>")
@@ -149,13 +149,13 @@ class TopicParser private constructor() {
     }
 
     private fun removeDivAndAdaptParagraphInMessage(message: StringBuilder) {
-        ParserUtils.parseMessageWithRegex(message, divOpenTagPattern, -1)
+        parseMessageWithRegex(message, divOpenTagPattern, -1)
         message.replaceInside("</div>", "")
-        ParserUtils.parseMessageWithRegex(message, largeParagraphePattern, -1, "<br /><br />")
-        ParserUtils.parseMessageWithRegex(message, surroundedParagraphePattern, -1, "<br /><br />")
-        ParserUtils.parseMessageWithRegex(message, leftParagraphePattern, -1, "<br /><br />")
-        ParserUtils.parseMessageWithRegex(message, rightParagraphePattern, -1, "<br /><br />")
-        ParserUtils.parseMessageWithRegex(message, smallParagraphePattern, -1, "<br /><br />")
+        parseMessageWithRegex(message, largeParagraphePattern, -1, "<br /><br />")
+        parseMessageWithRegex(message, surroundedParagraphePattern, -1, "<br /><br />")
+        parseMessageWithRegex(message, leftParagraphePattern, -1, "<br /><br />")
+        parseMessageWithRegex(message, rightParagraphePattern, -1, "<br /><br />")
+        parseMessageWithRegex(message, smallParagraphePattern, -1, "<br /><br />")
     }
 
     private fun removeFirstAndLastBrInMessage(message: StringBuilder) {
@@ -172,13 +172,13 @@ class TopicParser private constructor() {
         }
     }
 
-    private class ConvertStringToString(private val stringToRemplace: String, private val stringNew: String) : ParserUtils.StringModifier {
+    private class ConvertStringToString(private val stringToRemplace: String, private val stringNew: String) : AbsParser.StringModifier {
         override fun changeString(baseString: String): String {
             return baseString.replace(stringToRemplace, stringNew)
         }
     }
 
-    private class RemoveFirstsAndLastsPAndBr : ParserUtils.StringModifier {
+    private class RemoveFirstsAndLastsPAndBr : AbsParser.StringModifier {
         override fun changeString(baseString: String): String {
             var newString: String = baseString
 
@@ -194,7 +194,7 @@ class TopicParser private constructor() {
         }
     }
 
-    private class ConvertUrlToStickerId : ParserUtils.StringModifier {
+    private class ConvertUrlToStickerId : AbsParser.StringModifier {
         override fun changeString(baseString: String): String {
             var newString: String = baseString
 
@@ -208,7 +208,7 @@ class TopicParser private constructor() {
         }
     }
 
-    private class MakeCodeTagGreatAgain(private val isCodeBlock: Boolean) : ParserUtils.StringModifier {
+    private class MakeCodeTagGreatAgain(private val isCodeBlock: Boolean) : AbsParser.StringModifier {
         override fun changeString(baseString: String): String {
             var newString: String = baseString
 
@@ -236,7 +236,7 @@ class TopicParser private constructor() {
         }
     }
 
-    private class MakeShortenedLinkIfPossible(private val maxStringSize: Int, private val forceLinkCreation: Boolean) : ParserUtils.StringModifier {
+    private class MakeShortenedLinkIfPossible(private val maxStringSize: Int, private val forceLinkCreation: Boolean) : AbsParser.StringModifier {
         override fun changeString(baseString: String): String {
             var newString: String = baseString
 
