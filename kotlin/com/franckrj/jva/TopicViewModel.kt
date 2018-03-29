@@ -7,12 +7,15 @@ import android.arch.lifecycle.ViewModel
 
 class TopicViewModel : ViewModel() {
     private val topicRepo: TopicRepository = TopicRepository.instance
+    private val topicParser: TopicParser = TopicParser.instance
     private val listOfMessages: MutableLiveData<ArrayList<MessageInfos>> by lazy { topicRepo.getListOfMessages() }
     private val listOfMessagesShowable: MediatorLiveData<ArrayList<MessageInfosShowable>> by lazy {
         val tmp: MediatorLiveData<ArrayList<MessageInfosShowable>> = MediatorLiveData()
         tmp.addSource(listOfMessages, { messagesList ->
             if (messagesList != null) {
-                tmp.value = ArrayList(messagesList.map { messageInfos -> MessageInfosShowable(messageInfos.author, messageInfos.date, messageInfos.content) })
+                tmp.value = ArrayList(messagesList.map { messageInfos ->
+                    MessageInfosShowable(messageInfos.author, messageInfos.date, UndeprecatorUtils.fromHtml(topicParser.formatMessageToPrettyMessage(messageInfos.content)))
+                })
             } else {
                 tmp.value = ArrayList()
             }
