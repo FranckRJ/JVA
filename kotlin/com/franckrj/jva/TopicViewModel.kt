@@ -6,7 +6,7 @@ import android.arch.lifecycle.MutableLiveData
 import android.arch.lifecycle.ViewModel
 
 class TopicViewModel : ViewModel() {
-    private val topicRepo: TopicRepository = TopicRepository()
+    private val topicRepo: TopicRepository = TopicRepository.instance
     private val listOfMessages: MutableLiveData<ArrayList<MessageInfos>> by lazy { topicRepo.getListOfMessages() }
     private val listOfMessagesShowable: MediatorLiveData<ArrayList<MessageInfosShowable>> by lazy {
         val tmp: MediatorLiveData<ArrayList<MessageInfosShowable>> = MediatorLiveData()

@@ -1,29 +1,43 @@
 package com.franckrj.jva
 
 import android.arch.lifecycle.MutableLiveData
+import android.os.AsyncTask
 
-class TopicRepository {
+class TopicRepository private constructor() {
+    companion object {
+        val instance: TopicRepository by lazy { TopicRepository() }
+    }
+
+    private val serviceForWeb: WebService = WebService.instance
+    private val parserForTopic: TopicParser = TopicParser.instance
+
     fun getListOfMessages(): MutableLiveData<ArrayList<MessageInfos>> {
-        val listOfMessagesReturned: MutableLiveData<ArrayList<MessageInfos>> = MutableLiveData()
-        val listOfMessages: ArrayList<MessageInfos> = ArrayList()
+        val listOfMessages: MutableLiveData<ArrayList<MessageInfos>> = MutableLiveData()
 
-        listOfMessages.add(MessageInfos("auteur-1", "date-1", "message-1"))
-        listOfMessages.add(MessageInfos("auteur-1651651", "date-1651651", "message-1651651"))
-        listOfMessages.add(MessageInfos("auteur-4125", "date-4125", "message-4125"))
-        listOfMessages.add(MessageInfos("auteur-0000000000000000000000000000000000000000000000000", "date-000000000000000000000000000000000000000000000000000000000000000", "message-0"))
-        listOfMessages.add(MessageInfos("auteur-888888", "date-888888", "message-888888"))
-        listOfMessages.add(MessageInfos("auteur-235", "date-235", "message-235"))
-        listOfMessages.add(MessageInfos("auteur-6", "date-6", "message-6"))
-        listOfMessages.add(MessageInfos("auteur-1", "date-1111111111111111111111111111111111111111111111111111111111111111111111111111111", "message-1"))
-        listOfMessages.add(MessageInfos("auteur-1651651", "date-1651651", "message-1651651"))
-        listOfMessages.add(MessageInfos("auteur-4125", "date-4125", "message-4125"))
-        listOfMessages.add(MessageInfos("auteur-000000000000000000000000000000000000000000000000000", "date-0", "message-0"))
-        listOfMessages.add(MessageInfos("auteur-888888", "date-888888", "message-888888"))
-        listOfMessages.add(MessageInfos("auteur-235", "date-235", "message-235"))
-        listOfMessages.add(MessageInfos("auteur-6", "date-6", "message-6"))
+        TopicGetter(serviceForWeb, parserForTopic, listOfMessages).execute()
 
-        listOfMessagesReturned.value = listOfMessages
+        return listOfMessages
+    }
+}
 
-        return listOfMessagesReturned
+private class TopicGetter(private val webServiceToUse: WebService, private val topicParserToUse: TopicParser,
+                          private val listOfMessagesLiveData: MutableLiveData<ArrayList<MessageInfos>>) : AsyncTask<Void, Void, ArrayList<MessageInfos>>() {
+    override fun doInBackground(vararg voids: Void): ArrayList<MessageInfos> {
+        val sourceOfWebPage: String?
+        val webInfos: WebService.WebInfos = WebService.WebInfos()
+        webInfos.followRedirects = false
+
+        sourceOfWebPage = webServiceToUse.sendRequest("http://www.jeuxvideo.com/forums/42-1000021-50996951-1-0-1-0-actu-un-blabla-est-ne.htm",
+                                                      "GET", "", "", webInfos)
+
+        return if (sourceOfWebPage == null) {
+            ArrayList()
+        } else {
+            topicParserToUse.getListOfMessagesFromPageSource(sourceOfWebPage)
+        }
+    }
+
+    override fun onPostExecute(listOfMessages: ArrayList<MessageInfos>) {
+        listOfMessagesLiveData.value = listOfMessages
     }
 }
