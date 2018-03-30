@@ -7,7 +7,7 @@ import android.view.ViewGroup
 import android.widget.TextView
 
 class TopicAdapter : RecyclerView.Adapter<TopicAdapter.MessageViewHolder>() {
-    var listOfMessagesShowable: ArrayList<MessageInfosShowable> = ArrayList()
+    var listOfMessagesShowable: List<MessageInfosShowable> = ArrayList()
     var authorClickedListener: OnItemClickedListener? = null
     var dateClickedListener: OnItemClickedListener? = null
 

@@ -5,13 +5,15 @@ import android.arch.lifecycle.ViewModelProviders
 import android.content.res.Configuration
 import android.os.Build
 import android.os.Bundle
+import android.support.v7.app.AlertDialog
 import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
 import android.widget.Toast
+import android.widget.EditText
 
 class MainActivity : AppCompatActivity() {
-    private var topicViewModel: TopicViewModel? = null
+    private lateinit var topicViewModel: TopicViewModel
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -41,7 +43,7 @@ class MainActivity : AppCompatActivity() {
         messageListView.adapter = messageListAdapter
         topicViewModel = ViewModelProviders.of(this).get(TopicViewModel::class.java)
 
-        topicViewModel?.getListOfMessagesShowable()?.observe(this, Observer { listOfMessagesShowable ->
+        topicViewModel.listOfMessagesShowable.observe(this, Observer { listOfMessagesShowable ->
             messageListAdapter.listOfMessagesShowable = listOfMessagesShowable ?: ArrayList()
             messageListAdapter.notifyDataSetChanged()
         })
@@ -55,6 +57,20 @@ class MainActivity : AppCompatActivity() {
             override fun onItemClicked(position: Int) {
                 Toast.makeText(this@MainActivity, "Position de date cliquée : " + position.toString(), Toast.LENGTH_SHORT).show()
             }
+        }
+
+        if (savedInstanceState == null) {
+            val alertDialog = AlertDialog.Builder(this)
+            val editText = EditText(this)
+            alertDialog.setTitle("Lien du topic")
+
+            alertDialog.setView(editText)
+
+            alertDialog.setPositiveButton("Valider", { _, _ ->
+                topicViewModel.updateListOfMessages(editText.text.toString())
+            })
+
+            alertDialog.show()
         }
     }
 }

@@ -66,6 +66,24 @@ abstract class AbsParser {
         }
     }
 
+    fun formatThisUrlToClassicJvcUrl(urlToChange: String): String {
+        var newUrl = urlToChange
+
+        if (newUrl.startsWith("https://")) {
+            newUrl = "http://" + newUrl.substring("https://".length)
+        } else if (!newUrl.startsWith("http://")) {
+            newUrl = "http://$newUrl"
+        }
+
+        if (newUrl.startsWith("http://m.jeuxvideo.com/")) {
+            newUrl = "http://www.jeuxvideo.com/" + newUrl.substring("http://m.jeuxvideo.com/".length)
+        } else if (newUrl.startsWith("http://jeuxvideo.com/")) {
+            newUrl = "http://www.jeuxvideo.com/" + newUrl.substring("http://jeuxvideo.com/".length)
+        }
+
+        return newUrl
+    }
+
     interface StringModifier {
         fun changeString(baseString: String): String
     }
