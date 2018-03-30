@@ -83,7 +83,7 @@ class TopicParser private constructor() : AbsParser() {
     }
 
     private fun createMessageInfosFromWholeMessage(wholeMessage: String): MessageInfos {
-        val infosForMessage = MessageInfos()
+        val infosForMessage = MutableMessageInfos()
 
         val messageContentMatcher: MatchResult? = messageContentPattern.find(wholeMessage)
         val messageAuthorInfosMatcher: MatchResult? = messageAuthorInfosPattern.find(wholeMessage)
