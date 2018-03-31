@@ -24,6 +24,7 @@ class MainActivity : AppCompatActivity() {
         val idOfStatusBarHeight: Int = resources.getIdentifier("status_bar_height", "dimen", "android")
         val statusBarHeight: Int = if (idOfStatusBarHeight > 0) resources.getDimensionPixelSize(idOfStatusBarHeight) else 0
         val defaultMessageListPadding = resources.getDimensionPixelSize(R.dimen.messageListPadding)
+        val messageCardBottomMargin = resources.getDimensionPixelSize(R.dimen.messageCardBottomMargin)
         val messageListView: RecyclerView = findViewById(R.id.message_list_main)
         val messageListAdapter = TopicAdapter()
         var navBarIsInApp = resources.configuration.orientation == Configuration.ORIENTATION_PORTRAIT
@@ -37,7 +38,7 @@ class MainActivity : AppCompatActivity() {
         messageListView.setPaddingRelative(defaultMessageListPadding,
                                            defaultMessageListPadding + statusBarHeight,
                                            defaultMessageListPadding,
-                                           defaultMessageListPadding + if (navBarIsInApp) navBarHeight else 0)
+                                           defaultMessageListPadding - messageCardBottomMargin + if (navBarIsInApp) navBarHeight else 0)
 
         messageListView.layoutManager = LinearLayoutManager(this)
         messageListView.adapter = messageListAdapter
