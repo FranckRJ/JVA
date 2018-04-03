@@ -68,7 +68,11 @@ class MainActivity : AppCompatActivity() {
             alertDialog.setView(editText)
 
             alertDialog.setPositiveButton("Valider", { _, _ ->
-                topicViewModel.updateListOfMessages(editText.text.toString())
+                if (editText.text.toString().isNotEmpty()) {
+                    topicViewModel.updateListOfMessages(editText.text.toString())
+                } else {
+                    topicViewModel.updateListOfMessages("http://www.jeuxvideo.com/forums/42-1000021-55655934-1-0-1-0-un-topic-nique-les-arabes-present-depuis-plus-de-20-minutes.htm")
+                }
             })
 
             alertDialog.show()
