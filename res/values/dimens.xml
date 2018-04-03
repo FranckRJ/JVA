@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <dimen name="messageListPadding">7dp</dimen>
-    <dimen name="messageCardBottomMargin">3dp</dimen>
+    <dimen name="messageListPadding">4dp</dimen>
+    <dimen name="messageCardBottomMargin">7dp</dimen>
     <dimen name="messageContentSize">14.5sp</dimen>
 </resources>
