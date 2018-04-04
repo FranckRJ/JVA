@@ -26,6 +26,7 @@ class TopicParser private constructor() : AbsParser() {
     private val jvCarePattern = Regex("""<span class="JvCare [^"]*">([^<]*)</span>""")
 
     private val adPattern = Regex("""<ins[^>]*></ins>""")
+    private val uolistOpenTagPattern = Regex("""<(ul|ol)[^>]*>""")
     private val overlySpoilPattern = Regex("""(<div class="bloc-spoil-jv[^"]*">.*?<div class="contenu-spoil">|</div></div>)""", RegexOption.DOT_MATCHES_ALL)
 
     private val divOpenTagPattern = Regex("""<div[^>]*>""")
@@ -112,13 +113,27 @@ class TopicParser private constructor() : AbsParser() {
 
         parseMessageWithRegex(messageInBuilder, adPattern, -1)
         messageInBuilder.replaceInside("\r", "")
-        /* TODO: Parser les listes (remplacer par • ) ou utiliser le tag des listes (p-e pas bugé sur Lollipop ou supérieur) ?. */
+        parseListInMessageIfNeeded(messageInBuilder)
         messageInBuilder.replaceInside("""<blockquote class="blockquote-jv">""", "<blockquote>")
 
         /* TODO: Check s'il y a des spoils avant d'exécuter (comme sur RespawnIRC) pour économiser les perfs ? */
         removeOverlySpoils(messageInBuilder)
 
         return messageInBuilder.toString()
+    }
+
+    private fun parseListInMessageIfNeeded(message: StringBuilder) {
+        if (message.indexOf("<li>") != -1) {
+            parseMessageWithRegex(message, uolistOpenTagPattern, -1, "<p>")
+            message.replaceInside("</ul>", "</p>")
+            message.replaceInside("</ol>", "</p>")
+            message.replaceInside("<li><p><li>", "<li><li>")
+            message.replaceInside("<li><p><li>", "<li><li>")
+            message.replaceInside("<li>", " • ")
+            message.replaceInside("</li></p></li>", "</li>")
+            message.replaceInside("</li></p></li>", "</li>")
+            message.replaceInside("</li>", "<br />")
+        }
     }
 
     private fun removeOverlySpoils(message: StringBuilder) {
