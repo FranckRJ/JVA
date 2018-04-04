@@ -20,7 +20,7 @@ abstract class AbsParser {
         }
     }
 
-    fun parseMessageWithRegex(messageToParse: StringBuilder, regexToUse: Regex, groupToUse: Int, stringBefore: String = "",
+    protected fun parseMessageWithRegex(messageToParse: StringBuilder, regexToUse: Regex, groupToUse: Int, stringBefore: String = "",
                               stringAfter: String = "", secondGroupToUse: Int = -1, stringAfterAfter: String = "") {
         var matcherToUse: MatchResult? = regexToUse.find(messageToParse)
 
@@ -44,7 +44,7 @@ abstract class AbsParser {
         }
     }
 
-    fun parseMessageWithRegexAndModif(messageToParse: StringBuilder, regexToUse: Regex, groupToUse: Int, stringBefore: String = "",
+    protected fun parseMessageWithRegexAndModif(messageToParse: StringBuilder, regexToUse: Regex, groupToUse: Int, stringBefore: String = "",
                                       stringAfter: String = "", firstModifier: StringModifier? = null, secondModifier: StringModifier? = null) {
         var matcherToUse: MatchResult? = regexToUse.find(messageToParse)
 
@@ -64,6 +64,14 @@ abstract class AbsParser {
             messageToParse.replace(matcherToUse.range.start, matcherToUse.range.endInclusive + 1, newMessage.toString())
             matcherToUse = regexToUse.find(messageToParse, matcherToUse.range.start + newMessage.length)
         }
+    }
+
+    protected fun specialCharToNormalChar(baseMessage: String): String {
+        return baseMessage.replace("&amp;", "&")
+                          .replace("&quot;", "\"")
+                          .replace("&#039;", "\'")
+                          .replace("&lt;", "<")
+                          .replace("&gt;", ">")
     }
 
     fun formatThisUrlToClassicJvcUrl(urlToChange: String): String {

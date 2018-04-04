@@ -12,14 +12,14 @@ class TopicRepository private constructor() {
     private val serviceForWeb: WebService = WebService.instance
     private val parserForTopic: TopicParser = TopicParser.instance
 
-    fun updateListOfMessages(linkOfTopicPage: String, listOfMessagesLiveData: MutableLiveData<ArrayList<MessageInfos>>) {
-        TopicGetter(serviceForWeb, parserForTopic, linkOfTopicPage, listOfMessagesLiveData).execute()
+    fun updateAllTopicInfos(linkOfTopicPage: String, topicInfosLiveData: MutableLiveData<TopicInfos>) {
+        TopicGetter(serviceForWeb, parserForTopic, linkOfTopicPage, topicInfosLiveData).execute()
     }
 }
 
 private class TopicGetter(private val webServiceToUse: WebService, private val topicParserToUse: TopicParser, private val linkOfTopicPage: String,
-                          private val listOfMessagesLiveData: MutableLiveData<ArrayList<MessageInfos>>) : AsyncTask<Void, Void, ArrayList<MessageInfos>>() {
-    override fun doInBackground(vararg voids: Void): ArrayList<MessageInfos> {
+                          private val topicInfosLiveData: MutableLiveData<TopicInfos>) : AsyncTask<Void, Void, TopicInfos>() {
+    override fun doInBackground(vararg voids: Void): TopicInfos {
         val sourceOfWebPage: String?
         val webInfos: WebService.WebInfos = WebService.WebInfos()
         webInfos.followRedirects = false
@@ -27,13 +27,16 @@ private class TopicGetter(private val webServiceToUse: WebService, private val t
         sourceOfWebPage = webServiceToUse.sendRequest(linkOfTopicPage, "GET", "", "", webInfos)
 
         return if (sourceOfWebPage == null) {
-            ArrayList()
+            MutableTopicInfos()
         } else {
-            topicParserToUse.getListOfMessagesFromPageSource(sourceOfWebPage)
+            val tmpTopicInfos = MutableTopicInfos()
+            tmpTopicInfos.topicName = topicParserToUse.getTopicNameFromPageSource(sourceOfWebPage)
+            tmpTopicInfos.listOfMessages = topicParserToUse.getListOfMessagesFromPageSource(sourceOfWebPage)
+            tmpTopicInfos
         }
     }
 
-    override fun onPostExecute(listOfMessages: ArrayList<MessageInfos>) {
-        listOfMessagesLiveData.value = listOfMessages
+    override fun onPostExecute(infosForTopic: TopicInfos) {
+        topicInfosLiveData.value = infosForTopic
     }
 }

@@ -44,9 +44,16 @@ class MainActivity : AppCompatActivity() {
         messageListView.adapter = messageListAdapter
         topicViewModel = ViewModelProviders.of(this).get(TopicViewModel::class.java)
 
-        topicViewModel.listOfMessagesShowable.observe(this, Observer { listOfMessagesShowable ->
+        topicViewModel.getListOfMessagesShowable().observe(this, Observer { listOfMessagesShowable ->
             messageListAdapter.listOfMessagesShowable = listOfMessagesShowable ?: ArrayList()
             messageListAdapter.notifyDataSetChanged()
+        })
+
+        topicViewModel.getTopicName().observe(this, Observer { topicName ->
+            if (topicName != null) {
+                messageListAdapter.listOfHeaders = listOf(topicName)
+                messageListAdapter.notifyDataSetChanged()
+            }
         })
 
         messageListAdapter.authorClickedListener = object : TopicAdapter.OnItemClickedListener {
@@ -69,9 +76,9 @@ class MainActivity : AppCompatActivity() {
 
             alertDialog.setPositiveButton("Valider", { _, _ ->
                 if (editText.text.toString().isNotEmpty()) {
-                    topicViewModel.updateListOfMessages(editText.text.toString())
+                    topicViewModel.updateAllTopicInfos(editText.text.toString())
                 } else {
-                    topicViewModel.updateListOfMessages("http://www.jeuxvideo.com/forums/42-1000021-55655934-1-0-1-0-un-topic-nique-les-arabes-present-depuis-plus-de-20-minutes.htm")
+                    topicViewModel.updateAllTopicInfos("http://www.jeuxvideo.com/forums/42-1000021-55655934-1-0-1-0-un-topic-nique-les-arabes-present-depuis-plus-de-20-minutes.htm")
                 }
             })
 

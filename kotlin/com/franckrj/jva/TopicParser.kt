@@ -5,11 +5,18 @@ class TopicParser private constructor() : AbsParser() {
         val instance: TopicParser by lazy { TopicParser() }
     }
 
+    /* Regex pour récupérer les infos d'une page d'un topic. */
+    private val allArianeStringPattern = Regex("""<div class="fil-ariane-crumb">.*?</h1>""", RegexOption.DOT_MATCHES_ALL)
+    private val topicNameInArianeStringPattern = Regex("""<span><a href="/forums/(42|1)-[^"]*">([^<]*)</a></span>""")
+    private val highlightInArianeStringPattern = Regex("""<h1 class="highlight">([^<]*)</h1>""")
+
+    /* Regex pour récupérer les infos des messages. */
     private val wholeMessagePattern = Regex("""(<div class="bloc-message-forum[^"]*".*?)(<span id="post_[^"]*" class="bloc-message-forum-anchor">|<div class="bloc-outils-plus-modo bloc-outils-bottom">|<div class="bloc-pagi-default">)""", RegexOption.DOT_MATCHES_ALL)
     private val messageContentPattern = Regex("""<div class="bloc-contenu">[^<]*<div class="txt-msg +text-[^-]*-forum ">((.*?)(?=<div class="info-edition-msg">)|(.*?)(?=<div class="signature-msg)|(.*))""", RegexOption.DOT_MATCHES_ALL)
     private val messageAuthorInfosPattern = Regex("""<span class="JvCare [^ ]* bloc-pseudo-msg text-([^"]*)" target="_blank">[^a-zA-Z0-9_\[\]-]*([a-zA-Z0-9_\[\]-]*)[^<]*</span>""")
     private val messageDatePattern = Regex("""<div class="bloc-date-msg">([^<]*<span class="JvCare [^ ]* lien-jv" target="_blank">)?[^a-zA-Z0-9]*(([^ ]* [^ ]* [^ ]*) [^ ]* ([0-9:]*))""")
 
+    /* Regex pour parser le contenu des messages. */
     private val codeBlockPattern = Regex("""<pre class="pre-jv"><code class="code-jv">([^<]*)</code></pre>""")
     private val codeLinePattern = Regex("""<code class="code-jv">(.*?)</code>""", RegexOption.DOT_MATCHES_ALL)
     private val stickerPattern = Regex("""<img class="img-stickers" src="([^"]*)".*?/>""")
@@ -25,16 +32,40 @@ class TopicParser private constructor() : AbsParser() {
     private val surroundedBlockquotePattern = Regex("""(<br /> *)*(<(/)?blockquote>)( *<br />)*""")
     private val jvCarePattern = Regex("""<span class="JvCare [^"]*">([^<]*)</span>""")
 
+    /* Regex de pré-parsage du contenu des messages. */
     private val adPattern = Regex("""<ins[^>]*></ins>""")
     private val uolistOpenTagPattern = Regex("""<(ul|ol)[^>]*>""")
     private val overlySpoilPattern = Regex("""(<div class="bloc-spoil-jv[^"]*">.*?<div class="contenu-spoil">|</div></div>)""", RegexOption.DOT_MATCHES_ALL)
 
+    /* Regex pour formater les paragraphes des messages (et supprimer les divs). */
     private val divOpenTagPattern = Regex("""<div[^>]*>""")
     private val largeParagraphePattern = Regex("""(<br /> *){0,2}</p> *<p>( *<br />){0,2}""")
     private val surroundedParagraphePattern = Regex("""<br /> *<(/)?p> *<br />""")
     private val leftParagraphePattern = Regex("""(<br /> *){1,2}<(/)?p>""")
     private val rightParagraphePattern = Regex("""<(/)?p>(<br /> *){1,2}""")
     private val smallParagraphePattern = Regex("""<(/)?p>""")
+
+    fun getTopicNameFromPageSource(pageSource: String): String {
+        var currentTopicName = ""
+        val allArianeStringMatcher: MatchResult? = allArianeStringPattern.find(pageSource)
+
+        if (allArianeStringMatcher != null) {
+            val allArianeString = allArianeStringMatcher.value
+            val topicNameMatcher: MatchResult? = topicNameInArianeStringPattern.find(allArianeString)
+            val highlightMatcher: MatchResult? = highlightInArianeStringPattern.find(allArianeString)
+
+            if (topicNameMatcher != null) {
+                currentTopicName = topicNameMatcher.groupValues[2]
+            } else if (highlightMatcher != null) {
+                currentTopicName = highlightMatcher.groupValues[1]
+            }
+
+            currentTopicName = currentTopicName.removePrefix("Topic")
+            currentTopicName = specialCharToNormalChar(currentTopicName.trim())
+        }
+
+        return currentTopicName
+    }
 
     fun getListOfMessagesFromPageSource(pageSource: String): ArrayList<MessageInfos> {
         val listOfMessages: ArrayList<MessageInfos> = ArrayList()
