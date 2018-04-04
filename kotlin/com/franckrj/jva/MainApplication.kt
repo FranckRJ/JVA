@@ -7,6 +7,5 @@ class MainApplication : Application() {
         super.onCreate()
 
         System.setProperty("http.keepAlive", "true")
-        WebService.init()
     }
 }

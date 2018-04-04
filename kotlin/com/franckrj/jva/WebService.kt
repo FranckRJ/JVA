@@ -7,13 +7,9 @@ import java.io.InputStreamReader
 import java.net.HttpURLConnection
 import java.net.URL
 
-class WebService private constructor(private val userAgentToUse: String){
+class WebService private constructor(private val userAgentToUse: String) {
     companion object {
-        lateinit var instance: WebService
-
-        fun init() {
-            instance = WebService("JVA")
-        }
+        val instance: WebService by lazy { WebService("JVA") }
     }
 
     fun sendRequest(newLinkToPage: String, requestMethod: String, requestParameters: String, cookiesInAString: String, currentInfos: WebInfos): String? {
