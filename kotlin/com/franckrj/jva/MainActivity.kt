@@ -51,7 +51,8 @@ class MainActivity : AppCompatActivity() {
 
         topicViewModel.getForumAndTopicName().observe(this, Observer { forumAndTopicName ->
             if (forumAndTopicName != null) {
-                messageListAdapter.listOfHeaders = listOf(forumAndTopicName.forumName, forumAndTopicName.topicName)
+                messageListAdapter.listOfHeaders = listOf(TopicAdapter.HeaderInfos(forumAndTopicName.forumName, true),
+                                                          TopicAdapter.HeaderInfos(forumAndTopicName.topicName, false))
                 messageListAdapter.notifyDataSetChanged()
             }
         })

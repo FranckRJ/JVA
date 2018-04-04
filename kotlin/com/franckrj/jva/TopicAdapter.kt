@@ -12,7 +12,7 @@ class TopicAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
         private const val TYPE_ITEM: Int = 1
     }
 
-    var listOfHeaders: List<String> = ArrayList()
+    var listOfHeaders: List<HeaderInfos> = ArrayList()
     var listOfMessagesShowable: List<MessageInfosShowable> = ArrayList()
     var authorClickedListener: OnItemClickedListener? = null
     var dateClickedListener: OnItemClickedListener? = null
@@ -53,7 +53,7 @@ class TopicAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
         }
     }
 
-    class MessageViewHolder(mainView: View, authorTextViewClickedListener: View.OnClickListener, dateTextViewClickedListener: View.OnClickListener) : RecyclerView.ViewHolder(mainView) {
+    private class MessageViewHolder(mainView: View, authorTextViewClickedListener: View.OnClickListener, dateTextViewClickedListener: View.OnClickListener) : RecyclerView.ViewHolder(mainView) {
         private val authorTextView: TextView = mainView.findViewById(R.id.author_text_message_row)
         private val dateTextView: TextView = mainView.findViewById(R.id.date_text_message_row)
         private val contentTextView: TextView = mainView.findViewById(R.id.content_text_message_row)
@@ -73,13 +73,16 @@ class TopicAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
         }
     }
 
-    class HeaderViewHolder(mainView: View) : RecyclerView.ViewHolder(mainView) {
+    private class HeaderViewHolder(mainView: View) : RecyclerView.ViewHolder(mainView) {
         private val headerTextView: TextView = mainView as TextView
 
-        fun bindView(headerContent: String) {
-            headerTextView.text = headerContent
+        fun bindView(infosForHeader: HeaderInfos) {
+            headerTextView.text = infosForHeader.content
+            headerTextView.setCompoundDrawablesRelativeWithIntrinsicBounds((if (infosForHeader.hasAnArrow) R.drawable.ic_arrow_back else 0), 0, 0, 0)
         }
     }
+
+    class HeaderInfos(val content: String, val hasAnArrow: Boolean)
 
     interface OnItemClickedListener {
         fun onItemClicked(position: Int)
