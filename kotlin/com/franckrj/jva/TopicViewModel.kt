@@ -7,6 +7,7 @@ import android.arch.lifecycle.Transformations
 import android.arch.lifecycle.ViewModel
 
 class TopicViewModel : ViewModel() {
+    private val tagHandler: TagHandlerService = TagHandlerService.instance
     private val topicRepo: TopicRepository = TopicRepository.instance
     private val topicParser: TopicParser = TopicParser.instance
     private val mutableListOfMessages: MutableLiveData<ArrayList<MessageInfos>> = MutableLiveData()
@@ -15,7 +16,7 @@ class TopicViewModel : ViewModel() {
         tmp.addSource(mutableListOfMessages, { messagesList ->
             if (messagesList != null) {
                 tmp.value = ArrayList(messagesList.map { messageInfos ->
-                    MessageInfosShowable(messageInfos.author, messageInfos.date, UndeprecatorUtils.fromHtml(topicParser.formatMessageToPrettyMessage(messageInfos.content)))
+                    MessageInfosShowable(messageInfos.author, messageInfos.date, UndeprecatorUtils.fromHtml(topicParser.formatMessageToPrettyMessage(messageInfos.content), null, tagHandler))
                 })
             } else {
                 tmp.value = ArrayList()

@@ -55,7 +55,7 @@ class TopicParser private constructor() : AbsParser() {
         parseMessageWithRegexAndModif(messageInBuilder, codeLinePattern, 1, " <font face=\"monospace\">", "</font> ", MakeCodeTagGreatAgain(false))
         messageInBuilder.replaceInside("\n", "")
 
-        /* TODO: Réger les différents noms de stickers identiques. */
+        /* TODO: Gérer les différents noms de stickers identiques. */
         parseMessageWithRegexAndModif(messageInBuilder, stickerPattern, 1, "<img src=\"sticker_", ".png\"/>", ConvertUrlToStickerId(), ConvertStringToString("-", "_"))
         parseMessageWithRegex(messageInBuilder, smileyPattern, 2, "<img src=\"smiley_", "\"/>")
 
@@ -67,8 +67,9 @@ class TopicParser private constructor() : AbsParser() {
 
         parseMessageWithRegex(messageInBuilder, noelshackImagePattern, 3, "<a href=\"", "\"><img src=\"http://", 2, "\"/></a>")
 
-        parseMessageWithRegexAndModif(messageInBuilder, spoilLinePattern, 1, "", "", RemoveFirstsAndLastsPAndBr())
-        parseMessageWithRegexAndModif(messageInBuilder, spoilBlockPattern, 1, "<p>", "</p>", RemoveFirstsAndLastsPAndBr())
+        /* TODO: Check s'il y a des spoils avant d'exécuter (comme sur RespawnIRC) pour économiser les perfs ? */
+        parseMessageWithRegex(messageInBuilder, spoilLinePattern, -1, "<bg_spoil_button><font color=\"#FFFFFF\">&nbsp;SPOIL&nbsp;</font></bg_spoil_button>")
+        parseMessageWithRegex(messageInBuilder, spoilBlockPattern, -1, "<p><bg_spoil_button><font color=\"#FFFFFF\">&nbsp;SPOIL&nbsp;</font></bg_spoil_button></p>")
 
         removeDivAndAdaptParagraphInMessage(messageInBuilder)
         parseMessageWithRegex(messageInBuilder, surroundedBlockquotePattern, 2)
@@ -175,22 +176,6 @@ class TopicParser private constructor() : AbsParser() {
     private class ConvertStringToString(private val stringToRemplace: String, private val stringNew: String) : AbsParser.StringModifier {
         override fun changeString(baseString: String): String {
             return baseString.replace(stringToRemplace, stringNew)
-        }
-    }
-
-    private class RemoveFirstsAndLastsPAndBr : AbsParser.StringModifier {
-        override fun changeString(baseString: String): String {
-            var newString: String = baseString
-
-            while (newString.startsWith("<p>") || newString.startsWith("<br />")) {
-                newString = newString.substring(newString.indexOf(">") + 1)
-            }
-
-            while (newString.endsWith("</p>") || newString.endsWith("<br />")) {
-                newString = newString.substring(0, newString.lastIndexOf("<"))
-            }
-
-            return newString
         }
     }
 
