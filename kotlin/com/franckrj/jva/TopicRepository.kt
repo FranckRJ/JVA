@@ -12,14 +12,14 @@ class TopicRepository private constructor() {
     private val serviceForWeb: WebService = WebService.instance
     private val parserForTopic: TopicParser = TopicParser.instance
 
-    fun updateAllTopicInfos(linkOfTopicPage: String, topicInfosLiveData: MutableLiveData<TopicInfos>) {
+    fun updateAllTopicInfos(linkOfTopicPage: String, topicInfosLiveData: MutableLiveData<TopicInfos?>) {
         TopicGetter(serviceForWeb, parserForTopic, linkOfTopicPage, topicInfosLiveData).execute()
     }
 }
 
 private class TopicGetter(private val webServiceToUse: WebService, private val topicParserToUse: TopicParser, private val linkOfTopicPage: String,
-                          private val topicInfosLiveData: MutableLiveData<TopicInfos>) : AsyncTask<Void, Void, TopicInfos>() {
-    override fun doInBackground(vararg voids: Void): TopicInfos {
+                          private val topicInfosLiveData: MutableLiveData<TopicInfos?>) : AsyncTask<Void, Void, TopicInfos?>() {
+    override fun doInBackground(vararg voids: Void): TopicInfos? {
         val sourceOfWebPage: String?
         val webInfos: WebService.WebInfos = WebService.WebInfos()
         webInfos.followRedirects = false
@@ -27,16 +27,16 @@ private class TopicGetter(private val webServiceToUse: WebService, private val t
         sourceOfWebPage = webServiceToUse.sendRequest(linkOfTopicPage, "GET", "", "", webInfos)
 
         return if (sourceOfWebPage == null) {
-            MutableTopicInfos()
+            null
         } else {
             val tmpTopicInfos = MutableTopicInfos()
-            tmpTopicInfos.topicName = topicParserToUse.getTopicNameFromPageSource(sourceOfWebPage)
+            tmpTopicInfos.namesForForumAndTopic = topicParserToUse.getForumAndTopicNameFromPageSource(sourceOfWebPage)
             tmpTopicInfos.listOfMessages = topicParserToUse.getListOfMessagesFromPageSource(sourceOfWebPage)
             tmpTopicInfos
         }
     }
 
-    override fun onPostExecute(infosForTopic: TopicInfos) {
+    override fun onPostExecute(infosForTopic: TopicInfos?) {
         topicInfosLiveData.value = infosForTopic
     }
 }

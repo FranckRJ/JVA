@@ -10,30 +10,29 @@ class TopicViewModel : ViewModel() {
     private val topicRepo: TopicRepository = TopicRepository.instance
     private val topicParser: TopicParser = TopicParser.instance
 
-    private val infosForTopic: MutableLiveData<TopicInfos> = MutableLiveData()
-    private val topicName: MediatorLiveData<String> = MediatorLiveData()
+    private val infosForTopic: MutableLiveData<TopicInfos?> = MutableLiveData()
+    private val forumAndTopicName: MediatorLiveData<ForumAndTopicName> = MediatorLiveData()
     private val listOfMessagesShowable: MediatorLiveData<List<MessageInfosShowable>> = MediatorLiveData()
 
     init {
-        topicName.addSource(infosForTopic, { newInfosForTopic ->
-            /* Pas de .isNullOrEmpty() pour activer le smartcast. */
-            if (newInfosForTopic?.topicName != null && newInfosForTopic.topicName.isNotEmpty() && topicName.value != newInfosForTopic.topicName) {
-                topicName.value = newInfosForTopic.topicName
+        forumAndTopicName.addSource(infosForTopic, { newInfosForTopic ->
+            if (newInfosForTopic != null && forumAndTopicName.value != newInfosForTopic.namesForForumAndTopic) {
+                forumAndTopicName.value = newInfosForTopic.namesForForumAndTopic
             }
         })
 
         listOfMessagesShowable.addSource(infosForTopic, { newInfosForTopic ->
-            if (newInfosForTopic?.listOfMessages != null) {
-                listOfMessagesShowable.value = ArrayList(newInfosForTopic.listOfMessages.map { messageInfos ->
+            if (newInfosForTopic != null) {
+                listOfMessagesShowable.value = newInfosForTopic.listOfMessages.map { messageInfos ->
                     MessageInfosShowable(messageInfos.author, messageInfos.date, UndeprecatorUtils.fromHtml(topicParser.formatMessageToPrettyMessage(messageInfos.content), null, tagHandler))
-                })
+                }
             } else {
                 listOfMessagesShowable.value = ArrayList()
             }
         })
     }
 
-    fun getTopicName(): LiveData<String> = topicName
+    fun getForumAndTopicName(): LiveData<ForumAndTopicName> = forumAndTopicName
 
     fun getListOfMessagesShowable(): LiveData<List<MessageInfosShowable>> = listOfMessagesShowable
 

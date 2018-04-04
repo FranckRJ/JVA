@@ -7,6 +7,7 @@ class TopicParser private constructor() : AbsParser() {
 
     /* Regex pour récupérer les infos d'une page d'un topic. */
     private val allArianeStringPattern = Regex("""<div class="fil-ariane-crumb">.*?</h1>""", RegexOption.DOT_MATCHES_ALL)
+    private val forumNameInArianeStringPattern = Regex("""<span><a href="/forums/0-[^"]*">([^<]*)</a></span>""")
     private val topicNameInArianeStringPattern = Regex("""<span><a href="/forums/(42|1)-[^"]*">([^<]*)</a></span>""")
     private val highlightInArianeStringPattern = Regex("""<h1 class="highlight">([^<]*)</h1>""")
 
@@ -45,26 +46,32 @@ class TopicParser private constructor() : AbsParser() {
     private val rightParagraphePattern = Regex("""<(/)?p>(<br /> *){1,2}""")
     private val smallParagraphePattern = Regex("""<(/)?p>""")
 
-    fun getTopicNameFromPageSource(pageSource: String): String {
+    fun getForumAndTopicNameFromPageSource(pageSource: String): ForumAndTopicName {
+        var currentForumName = ""
         var currentTopicName = ""
         val allArianeStringMatcher: MatchResult? = allArianeStringPattern.find(pageSource)
 
         if (allArianeStringMatcher != null) {
             val allArianeString = allArianeStringMatcher.value
+            var forumNameMatcher: MatchResult? = forumNameInArianeStringPattern.find(allArianeString)
             val topicNameMatcher: MatchResult? = topicNameInArianeStringPattern.find(allArianeString)
             val highlightMatcher: MatchResult? = highlightInArianeStringPattern.find(allArianeString)
 
+            while (forumNameMatcher != null) {
+                currentForumName = forumNameMatcher.groupValues[1]
+                forumNameMatcher = forumNameInArianeStringPattern.find(allArianeString, forumNameMatcher.range.endInclusive + 1)
+            }
             if (topicNameMatcher != null) {
                 currentTopicName = topicNameMatcher.groupValues[2]
             } else if (highlightMatcher != null) {
                 currentTopicName = highlightMatcher.groupValues[1]
             }
 
-            currentTopicName = currentTopicName.removePrefix("Topic")
-            currentTopicName = specialCharToNormalChar(currentTopicName.trim())
+            currentForumName = specialCharToNormalChar(currentForumName.removePrefix("Forum").trim())
+            currentTopicName = specialCharToNormalChar(currentTopicName.removePrefix("Topic").trim())
         }
 
-        return currentTopicName
+        return ForumAndTopicName(currentForumName, currentTopicName)
     }
 
     fun getListOfMessagesFromPageSource(pageSource: String): ArrayList<MessageInfos> {
