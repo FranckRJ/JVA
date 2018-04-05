@@ -9,6 +9,7 @@ import android.support.v7.app.AlertDialog
 import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
+import android.text.SpannableString
 import android.widget.Toast
 import android.widget.EditText
 
@@ -51,8 +52,8 @@ class MainActivity : AppCompatActivity() {
 
         topicViewModel.getForumAndTopicName().observe(this, Observer { forumAndTopicName ->
             if (forumAndTopicName != null) {
-                messageListAdapter.listOfHeaders = listOf(TopicAdapter.HeaderInfos(forumAndTopicName.forumName, true),
-                                                          TopicAdapter.HeaderInfos(forumAndTopicName.topicName, false))
+                messageListAdapter.listOfHeaders = listOf(TopicAdapter.HeaderInfos(SpannableString(forumAndTopicName.forumName), true),
+                                                          TopicAdapter.HeaderInfos(SpannableString(forumAndTopicName.topicName), false))
                 messageListAdapter.notifyDataSetChanged()
             }
         })

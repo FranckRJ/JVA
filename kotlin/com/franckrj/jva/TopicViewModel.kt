@@ -4,6 +4,7 @@ import android.arch.lifecycle.LiveData
 import android.arch.lifecycle.MediatorLiveData
 import android.arch.lifecycle.MutableLiveData
 import android.arch.lifecycle.ViewModel
+import android.text.SpannableString
 
 class TopicViewModel : ViewModel() {
     private val tagHandler: TagHandlerService = TagHandlerService.instance
@@ -24,7 +25,9 @@ class TopicViewModel : ViewModel() {
         listOfMessagesShowable.addSource(infosForTopic, { newInfosForTopic ->
             if (newInfosForTopic != null) {
                 listOfMessagesShowable.value = newInfosForTopic.listOfMessages.map { messageInfos ->
-                    MessageInfosShowable(messageInfos.author, messageInfos.date, UndeprecatorUtils.fromHtml(topicParser.formatMessageToPrettyMessage(messageInfos.content), null, tagHandler))
+                    MessageInfosShowable(SpannableString(messageInfos.author),
+                                         SpannableString(messageInfos.date),
+                                         SpannableString(UndeprecatorUtils.fromHtml(topicParser.formatMessageToPrettyMessage(messageInfos.content), null, tagHandler)))
                 }
             } else {
                 listOfMessagesShowable.value = ArrayList()
