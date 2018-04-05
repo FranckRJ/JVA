@@ -7,6 +7,7 @@ import android.arch.lifecycle.ViewModel
 import android.text.SpannableString
 
 class TopicViewModel : ViewModel() {
+    private val imageGetter: ImageGetterService = ImageGetterService.instance
     private val tagHandler: TagHandlerService = TagHandlerService.instance
     private val topicRepo: TopicRepository = TopicRepository.instance
     private val topicParser: TopicParser = TopicParser.instance
@@ -27,7 +28,7 @@ class TopicViewModel : ViewModel() {
                 listOfMessagesShowable.value = newInfosForTopic.listOfMessages.map { messageInfos ->
                     MessageInfosShowable(SpannableString(messageInfos.author),
                                          SpannableString(messageInfos.date),
-                                         SpannableString(UndeprecatorUtils.fromHtml(topicParser.formatMessageToPrettyMessage(messageInfos.content), null, tagHandler)))
+                                         SpannableString(UndeprecatorUtils.fromHtml(topicParser.formatMessageToPrettyMessage(messageInfos.content), imageGetter, tagHandler)))
                 }
             } else {
                 listOfMessagesShowable.value = ArrayList()

@@ -7,5 +7,6 @@ class MainApplication : Application() {
         super.onCreate()
 
         System.setProperty("http.keepAlive", "true")
+        ImageGetterService.init(this, R.drawable.ic_image_deleted)
     }
 }
