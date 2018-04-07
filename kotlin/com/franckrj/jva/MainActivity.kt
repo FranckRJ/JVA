@@ -27,7 +27,7 @@ class MainActivity : AppCompatActivity() {
         val defaultMessageListPadding = resources.getDimensionPixelSize(R.dimen.messageListPadding)
         val messageCardBottomMargin = resources.getDimensionPixelSize(R.dimen.messageCardBottomMargin)
         val messageListView: RecyclerView = findViewById(R.id.message_list_main)
-        val messageListAdapter = TopicAdapter()
+        val messageListAdapter = TopicAdapter(this)
         var navBarIsInApp = resources.configuration.orientation == Configuration.ORIENTATION_PORTRAIT
 
         if (Build.VERSION.SDK_INT >= 24) {

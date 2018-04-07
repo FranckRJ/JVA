@@ -13,9 +13,10 @@ class TopicParser private constructor() : AbsParser() {
 
     /* Regex pour récupérer les infos des messages. */
     private val wholeMessagePattern = Regex("""(<div class="bloc-message-forum[^"]*".*?)(<span id="post_[^"]*" class="bloc-message-forum-anchor">|<div class="bloc-outils-plus-modo bloc-outils-bottom">|<div class="bloc-pagi-default">)""", RegexOption.DOT_MATCHES_ALL)
-    private val messageContentPattern = Regex("""<div class="bloc-contenu">[^<]*<div class="txt-msg +text-[^-]*-forum ">((.*?)(?=<div class="info-edition-msg">)|(.*?)(?=<div class="signature-msg)|(.*))""", RegexOption.DOT_MATCHES_ALL)
+    private val messageAvatarPattern = Regex("""<img src="[^"]*" data-srcset="(http:)?//([^"]*)" class="user-avatar-msg"""", RegexOption.DOT_MATCHES_ALL)
     private val messageAuthorInfosPattern = Regex("""<span class="JvCare [^ ]* bloc-pseudo-msg text-([^"]*)" target="_blank">[^a-zA-Z0-9_\[\]-]*([a-zA-Z0-9_\[\]-]*)[^<]*</span>""")
     private val messageDatePattern = Regex("""<div class="bloc-date-msg">([^<]*<span class="JvCare [^ ]* lien-jv" target="_blank">)?[^a-zA-Z0-9]*(([^ ]* [^ ]* [^ ]*) [^ ]* ([0-9:]*))""")
+    private val messageContentPattern = Regex("""<div class="bloc-contenu">[^<]*<div class="txt-msg +text-[^-]*-forum ">((.*?)(?=<div class="info-edition-msg">)|(.*?)(?=<div class="signature-msg)|(.*))""", RegexOption.DOT_MATCHES_ALL)
 
     /* Regex pour parser le contenu des messages. */
     private val codeBlockPattern = Regex("""<pre class="pre-jv"><code class="code-jv">([^<]*)</code></pre>""")
@@ -125,12 +126,13 @@ class TopicParser private constructor() : AbsParser() {
     private fun createMessageInfosFromWholeMessage(wholeMessage: String): MessageInfos {
         val infosForMessage = MutableMessageInfos()
 
-        val messageContentMatcher: MatchResult? = messageContentPattern.find(wholeMessage)
+        val messageAvatarMatcher: MatchResult? = messageAvatarPattern.find(wholeMessage)
         val messageAuthorInfosMatcher: MatchResult? = messageAuthorInfosPattern.find(wholeMessage)
         val messageDateMatcher: MatchResult? = messageDatePattern.find(wholeMessage)
+        val messageContentMatcher: MatchResult? = messageContentPattern.find(wholeMessage)
 
-        if (messageContentMatcher != null) {
-            infosForMessage.content = makeBasicFormatOfMessage(messageContentMatcher.groupValues[1])
+        if (messageAvatarMatcher != null) {
+            infosForMessage.avatarLink = "http://" + messageAvatarMatcher.groupValues[2]
         }
 
         if (messageAuthorInfosMatcher != null) {
@@ -141,6 +143,10 @@ class TopicParser private constructor() : AbsParser() {
 
         if (messageDateMatcher != null) {
             infosForMessage.date = messageDateMatcher.groupValues[3]
+        }
+
+        if (messageContentMatcher != null) {
+            infosForMessage.content = makeBasicFormatOfMessage(messageContentMatcher.groupValues[1])
         }
 
         return infosForMessage

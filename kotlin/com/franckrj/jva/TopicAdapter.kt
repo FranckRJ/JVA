@@ -1,19 +1,21 @@
 package com.franckrj.jva
 
+import android.content.Context
 import android.support.v7.widget.RecyclerView
 import android.text.Spannable
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ImageView
 import android.widget.TextView
 
-class TopicAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
+class TopicAdapter(private val context: Context) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
     companion object {
         private const val TYPE_HEADER: Int = 0
         private const val TYPE_ITEM: Int = 1
     }
 
-    val spannableFactoryToUse: CopylessSpannableFactory = CopylessSpannableFactory.instance
+    private val spannableFactory: CopylessSpannableFactory = CopylessSpannableFactory.instance
     var listOfHeaders: List<HeaderInfos> = ArrayList()
     var listOfMessagesShowable: List<MessageInfosShowable> = ArrayList()
     var authorClickedListener: OnItemClickedListener? = null
@@ -30,10 +32,11 @@ class TopicAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
         return when (viewType) {
             TYPE_HEADER -> {
-                HeaderViewHolder(LayoutInflater.from(parent.context).inflate(R.layout.row_topic_header, parent, false), spannableFactoryToUse)
+                HeaderViewHolder(LayoutInflater.from(parent.context).inflate(R.layout.row_topic_header, parent, false), spannableFactory)
             }
             TYPE_ITEM -> {
-                MessageViewHolder(LayoutInflater.from(parent.context).inflate(R.layout.row_message, parent, false), internalAuthorClickedListener, internalDateClickedListener, spannableFactoryToUse)
+                MessageViewHolder(LayoutInflater.from(parent.context).inflate(R.layout.row_message, parent, false),
+                                  internalAuthorClickedListener, internalDateClickedListener, spannableFactory, context)
             }
             else -> {
                 throw RuntimeException("Type non supporté.")
@@ -58,7 +61,9 @@ class TopicAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
     private class MessageViewHolder(mainView: View,
                                     authorTextViewClickedListener: View.OnClickListener,
                                     dateTextViewClickedListener: View.OnClickListener,
-                                    spannableFactoryToUse: Spannable.Factory) : RecyclerView.ViewHolder(mainView) {
+                                    spannableFactoryToUse: Spannable.Factory,
+                                    private val contextToUse: Context) : RecyclerView.ViewHolder(mainView) {
+        private val avatarImageView: ImageView = mainView.findViewById(R.id.avatar_image_message_row)
         private val authorTextView: TextView = mainView.findViewById(R.id.author_text_message_row)
         private val dateTextView: TextView = mainView.findViewById(R.id.date_text_message_row)
         private val contentTextView: TextView = mainView.findViewById(R.id.content_text_message_row)
@@ -73,6 +78,10 @@ class TopicAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
         }
 
         fun bindView(message: MessageInfosShowable, position: Int) {
+            GlideApp.with(contextToUse)
+                    .load(message.avatarLink)
+                    .into(avatarImageView)
+
             authorTextView.setText(message.author, TextView.BufferType.SPANNABLE)
             dateTextView.setText(message.date, TextView.BufferType.SPANNABLE)
             contentTextView.setText(message.formatedContent, TextView.BufferType.SPANNABLE)

@@ -26,7 +26,8 @@ class TopicViewModel : ViewModel() {
         listOfMessagesShowable.addSource(infosForTopic, { newInfosForTopic ->
             if (newInfosForTopic != null) {
                 listOfMessagesShowable.value = newInfosForTopic.listOfMessages.map { messageInfos ->
-                    MessageInfosShowable(SpannableString(messageInfos.author),
+                    MessageInfosShowable(messageInfos.avatarLink,
+                                         SpannableString(messageInfos.author),
                                          SpannableString(messageInfos.date),
                                          SpannableString(UndeprecatorUtils.fromHtml(topicParser.formatMessageToPrettyMessage(messageInfos.content), imageGetter, tagHandler)))
                 }
