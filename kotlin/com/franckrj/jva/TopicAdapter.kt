@@ -35,7 +35,7 @@ class TopicAdapter(private val context: Context) : RecyclerView.Adapter<Recycler
                 HeaderViewHolder(LayoutInflater.from(parent.context).inflate(R.layout.row_topic_header, parent, false), spannableFactory)
             }
             TYPE_ITEM -> {
-                MessageViewHolder(LayoutInflater.from(parent.context).inflate(R.layout.row_message, parent, false),
+                MessageViewHolder(LayoutInflater.from(parent.context).inflate(R.layout.row_message_rl, parent, false),
                                   internalAuthorClickedListener, internalDateClickedListener, spannableFactory, context)
             }
             else -> {

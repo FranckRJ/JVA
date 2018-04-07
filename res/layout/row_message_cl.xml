@@ -10,7 +10,7 @@
 
     <android.support.constraint.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="wrap_content">
 
         <ImageView
             android:id="@+id/avatar_image_message_row"
@@ -19,6 +19,7 @@
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toStartOf="@+id/author_text_message_row"
+            android:scaleType="center"
             android:contentDescription="@string/avatar"/>
 
         <TextView
@@ -51,13 +52,6 @@
             android:gravity="end"
             android:textColor="@color/dateColor"/>
 
-        <android.support.constraint.Barrier
-            android:id="@+id/barrier"
-            android:layout_width="0dp"
-            android:layout_height="0dp"
-            app:barrierDirection="bottom"
-            app:constraint_referenced_ids="avatar_image_message_row, author_text_message_row, date_text_message_row"/>
-
         <TextView
             android:id="@+id/content_text_message_row"
             android:layout_width="0dp"
@@ -66,7 +60,7 @@
             android:paddingBottom="@dimen/messageContentBottomPadding"
             android:paddingStart="@dimen/messageContentXPadding"
             android:paddingEnd="@dimen/messageContentXPadding"
-            app:layout_constraintTop_toBottomOf="@+id/barrier"
+            app:layout_constraintTop_toBottomOf="@+id/avatar_image_message_row"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             android:textSize="@dimen/messageContentFontSize"/>

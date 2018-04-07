@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.v7.widget.CardView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginBottom="@dimen/messageCardBottomMargin"
+    app:cardElevation="@dimen/defaultCardElevation"
+    app:cardCornerRadius="@dimen/defaultCardCornerRadius">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <LinearLayout
+            android:id="@+id/infos_layout_message_row"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentTop="true">
+            <ImageView
+                android:id="@+id/avatar_image_message_row"
+                android:layout_width="@dimen/avatarSize"
+                android:layout_height="@dimen/avatarSize"
+                android:scaleType="center"
+                android:contentDescription="@string/avatar"/>
+
+            <TextView
+                android:id="@+id/author_text_message_row"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/messageAuthorStartMargin"
+                android:layout_weight="50"
+                android:layout_gravity="center_vertical"
+                android:maxLines="1"
+                android:ellipsize="end"
+                android:textStyle="bold"
+                android:textColor="@color/authorColor"/>
+
+            <TextView
+                android:id="@+id/date_text_message_row"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="@dimen/messageDateEndMargin"
+                android:layout_weight="50"
+                android:layout_gravity="center_vertical"
+                android:maxLines="1"
+                android:ellipsize="end"
+                android:gravity="end"
+                android:textColor="@color/dateColor"/>
+        </LinearLayout>
+
+        <TextView
+            android:id="@+id/content_text_message_row"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingTop="@dimen/messageContentTopPadding"
+            android:paddingBottom="@dimen/messageContentBottomPadding"
+            android:paddingStart="@dimen/messageContentXPadding"
+            android:paddingEnd="@dimen/messageContentXPadding"
+            android:layout_below="@+id/infos_layout_message_row"
+            android:textSize="@dimen/messageContentFontSize"/>
+
+    </RelativeLayout>
+
+</android.support.v7.widget.CardView>
