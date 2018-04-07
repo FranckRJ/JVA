@@ -1,6 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <dimen name="defaultCardElevation">2dp</dimen>
+    <dimen name="defaultCardCornerRadius">2dp</dimen>
     <dimen name="messageListPadding">4dp</dimen>
     <dimen name="messageCardBottomMargin">7dp</dimen>
-    <dimen name="messageContentSize">14.5sp</dimen>
+    <dimen name="avatarSize">30dp</dimen>
+    <dimen name="messageAuthorStartMargin">8dp</dimen>
+    <dimen name="messageDateEndMargin">8dp</dimen>
+    <dimen name="messageContentXPadding">5dp</dimen>
+    <dimen name="messageContentTopPadding">5dp</dimen>
+    <dimen name="messageContentBottomPadding">5dp</dimen>
+    <dimen name="messageContentFontSize">14.5sp</dimen>
 </resources>

@@ -5,8 +5,8 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_marginBottom="@dimen/messageCardBottomMargin"
-    app:cardElevation="2dp"
-    app:cardCornerRadius="2dp">
+    app:cardElevation="@dimen/defaultCardElevation"
+    app:cardCornerRadius="@dimen/defaultCardCornerRadius">
 
     <android.support.constraint.ConstraintLayout
         android:layout_width="match_parent"
@@ -14,8 +14,8 @@
 
         <ImageView
             android:id="@+id/avatar_image_message_row"
-            android:layout_width="30dp"
-            android:layout_height="30dp"
+            android:layout_width="@dimen/avatarSize"
+            android:layout_height="@dimen/avatarSize"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toStartOf="@+id/author_text_message_row"
@@ -26,10 +26,9 @@
             android:id="@+id/author_text_message_row"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginEnd="8dp"
-            android:layout_marginStart="8dp"
-            app:layout_constraintBottom_toBottomOf="@+id/avatar_image_message_row"
+            android:layout_marginStart="@dimen/messageAuthorStartMargin"
             app:layout_constraintTop_toTopOf="@+id/avatar_image_message_row"
+            app:layout_constraintBottom_toBottomOf="@+id/avatar_image_message_row"
             app:layout_constraintStart_toEndOf="@+id/avatar_image_message_row"
             app:layout_constraintEnd_toStartOf="@+id/date_text_message_row"
             app:layout_constraintHorizontal_weight="50"
@@ -42,10 +41,9 @@
             android:id="@+id/date_text_message_row"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginEnd="8dp"
-            android:layout_marginStart="8dp"
-            app:layout_constraintBottom_toBottomOf="@+id/avatar_image_message_row"
+            android:layout_marginEnd="@dimen/messageDateEndMargin"
             app:layout_constraintTop_toTopOf="@+id/avatar_image_message_row"
+            app:layout_constraintBottom_toBottomOf="@+id/avatar_image_message_row"
             app:layout_constraintStart_toEndOf="@+id/author_text_message_row"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_weight="50"
@@ -65,11 +63,14 @@
             android:id="@+id/content_text_message_row"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:padding="8dp"
+            android:paddingTop="@dimen/messageContentTopPadding"
+            android:paddingBottom="@dimen/messageContentBottomPadding"
+            android:paddingStart="@dimen/messageContentXPadding"
+            android:paddingEnd="@dimen/messageContentXPadding"
             app:layout_constraintTop_toBottomOf="@+id/barrier"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            android:textSize="@dimen/messageContentSize"/>
+            android:textSize="@dimen/messageContentFontSize"/>
 
     </android.support.constraint.ConstraintLayout>
 
