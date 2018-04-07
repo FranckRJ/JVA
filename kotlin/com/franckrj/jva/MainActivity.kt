@@ -80,7 +80,7 @@ class MainActivity : AppCompatActivity() {
                 if (editText.text.toString().isNotEmpty()) {
                     topicViewModel.updateAllTopicInfos(editText.text.toString())
                 } else {
-                    topicViewModel.updateAllTopicInfos("http://www.jeuxvideo.com/forums/42-1000021-55655934-1-0-1-0-un-topic-nique-les-arabes-present-depuis-plus-de-20-minutes.htm")
+                    topicViewModel.updateAllTopicInfos("http://www.jeuxvideo.com/forums/42-800-55783559-1-0-1-0-tests.htm")
                 }
             })
 
