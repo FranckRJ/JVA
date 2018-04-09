@@ -8,14 +8,16 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
+import com.bumptech.glide.load.resource.bitmap.RoundedCorners
 
-class TopicAdapter(private val context: Context) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
+class TopicAdapter(private val context: Context, sizeOfAvatarRoundedCorners: Int) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
     companion object {
         private const val TYPE_HEADER: Int = 0
         private const val TYPE_ITEM: Int = 1
     }
 
     private val spannableFactory: CopylessSpannableFactory = CopylessSpannableFactory.instance
+    private val avatarRoundedCorners = RoundedCorners(sizeOfAvatarRoundedCorners)
     var listOfHeaders: List<HeaderInfos> = ArrayList()
     var listOfMessagesShowable: List<MessageInfosShowable> = ArrayList()
     var authorClickedListener: OnItemClickedListener? = null
@@ -75,6 +77,7 @@ class TopicAdapter(private val context: Context) : RecyclerView.Adapter<Recycler
         fun bindView(message: MessageInfosShowable, position: Int) {
             GlideApp.with(context)
                     .load(message.avatarLink)
+                    .transform(avatarRoundedCorners)
                     .into(avatarImageView)
 
             authorTextView.setText(message.author, TextView.BufferType.SPANNABLE)
