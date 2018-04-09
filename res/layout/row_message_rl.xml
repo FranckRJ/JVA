@@ -21,7 +21,6 @@
                 android:id="@+id/avatar_image_message_row"
                 android:layout_width="@dimen/avatarSize"
                 android:layout_height="@dimen/avatarSize"
-                android:scaleType="center"
                 android:contentDescription="@string/avatar"/>
 
             <TextView

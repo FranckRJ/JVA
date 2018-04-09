@@ -19,7 +19,6 @@
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toStartOf="@+id/author_text_message_row"
-            android:scaleType="center"
             android:contentDescription="@string/avatar"/>
 
         <TextView

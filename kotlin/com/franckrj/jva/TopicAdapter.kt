@@ -32,11 +32,10 @@ class TopicAdapter(private val context: Context) : RecyclerView.Adapter<Recycler
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
         return when (viewType) {
             TYPE_HEADER -> {
-                HeaderViewHolder(LayoutInflater.from(parent.context).inflate(R.layout.row_topic_header, parent, false), spannableFactory)
+                HeaderViewHolder(LayoutInflater.from(parent.context).inflate(R.layout.row_topic_header, parent, false))
             }
             TYPE_ITEM -> {
-                MessageViewHolder(LayoutInflater.from(parent.context).inflate(R.layout.row_message_rl, parent, false),
-                                  internalAuthorClickedListener, internalDateClickedListener, spannableFactory, context)
+                MessageViewHolder(LayoutInflater.from(parent.context).inflate(R.layout.row_message_rl, parent, false))
             }
             else -> {
                 throw RuntimeException("Type non supporté.")
@@ -58,27 +57,23 @@ class TopicAdapter(private val context: Context) : RecyclerView.Adapter<Recycler
         }
     }
 
-    private class MessageViewHolder(mainView: View,
-                                    authorTextViewClickedListener: View.OnClickListener,
-                                    dateTextViewClickedListener: View.OnClickListener,
-                                    spannableFactoryToUse: Spannable.Factory,
-                                    private val contextToUse: Context) : RecyclerView.ViewHolder(mainView) {
+    private inner class MessageViewHolder(mainView: View) : RecyclerView.ViewHolder(mainView) {
         private val avatarImageView: ImageView = mainView.findViewById(R.id.avatar_image_message_row)
         private val authorTextView: TextView = mainView.findViewById(R.id.author_text_message_row)
         private val dateTextView: TextView = mainView.findViewById(R.id.date_text_message_row)
         private val contentTextView: TextView = mainView.findViewById(R.id.content_text_message_row)
 
         init {
-            authorTextView.setOnClickListener(authorTextViewClickedListener)
-            dateTextView.setOnClickListener(dateTextViewClickedListener)
+            authorTextView.setOnClickListener(internalAuthorClickedListener)
+            dateTextView.setOnClickListener(internalDateClickedListener)
 
-            authorTextView.setSpannableFactory(spannableFactoryToUse)
-            dateTextView.setSpannableFactory(spannableFactoryToUse)
-            contentTextView.setSpannableFactory(spannableFactoryToUse)
+            authorTextView.setSpannableFactory(spannableFactory)
+            dateTextView.setSpannableFactory(spannableFactory)
+            contentTextView.setSpannableFactory(spannableFactory)
         }
 
         fun bindView(message: MessageInfosShowable, position: Int) {
-            GlideApp.with(contextToUse)
+            GlideApp.with(context)
                     .load(message.avatarLink)
                     .into(avatarImageView)
 
@@ -91,11 +86,11 @@ class TopicAdapter(private val context: Context) : RecyclerView.Adapter<Recycler
         }
     }
 
-    private class HeaderViewHolder(mainView: View, spannableFactoryToUse: Spannable.Factory) : RecyclerView.ViewHolder(mainView) {
+    private inner class HeaderViewHolder(mainView: View) : RecyclerView.ViewHolder(mainView) {
         private val headerTextView: TextView = mainView as TextView
 
         init {
-            headerTextView.setSpannableFactory(spannableFactoryToUse)
+            headerTextView.setSpannableFactory(spannableFactory)
         }
 
         fun bindView(infosForHeader: HeaderInfos) {
