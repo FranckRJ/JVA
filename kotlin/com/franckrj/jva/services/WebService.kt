@@ -1,4 +1,4 @@
-package com.franckrj.jva
+package com.franckrj.jva.services
 
 import java.io.BufferedReader
 import java.io.DataOutputStream

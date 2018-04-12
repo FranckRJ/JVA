@@ -1,7 +1,8 @@
-package com.franckrj.jva
+package com.franckrj.jva.topic
 
 import android.arch.lifecycle.MutableLiveData
 import android.os.AsyncTask
+import com.franckrj.jva.services.WebService
 
 /* TODO: Stocker les messages dans une BDD pour pouvoir les récup' quand le process est kill (manque de RAM etc). */
 class TopicRepository private constructor() {
@@ -12,14 +13,14 @@ class TopicRepository private constructor() {
     private val serviceForWeb: WebService = WebService.instance
     private val parserForTopic: TopicParser = TopicParser.instance
 
-    fun updateAllTopicInfos(linkOfTopicPage: String, topicInfosLiveData: MutableLiveData<TopicInfos?>) {
-        TopicGetter(serviceForWeb, parserForTopic, linkOfTopicPage, topicInfosLiveData).execute()
+    fun updateAllTopicPageInfos(linkOfTopicPage: String, topicPageInfosLiveData: MutableLiveData<TopicPageInfos?>) {
+        TopicGetter(serviceForWeb, parserForTopic, linkOfTopicPage, topicPageInfosLiveData).execute()
     }
 }
 
 private class TopicGetter(private val webServiceToUse: WebService, private val topicParserToUse: TopicParser, private val linkOfTopicPage: String,
-                          private val topicInfosLiveData: MutableLiveData<TopicInfos?>) : AsyncTask<Void, Void, TopicInfos?>() {
-    override fun doInBackground(vararg voids: Void): TopicInfos? {
+                          private val topicPageInfosLiveData: MutableLiveData<TopicPageInfos?>) : AsyncTask<Void, Void, TopicPageInfos?>() {
+    override fun doInBackground(vararg voids: Void): TopicPageInfos? {
         val sourceOfWebPage: String?
         val webInfos: WebService.WebInfos = WebService.WebInfos()
         webInfos.followRedirects = false
@@ -29,14 +30,14 @@ private class TopicGetter(private val webServiceToUse: WebService, private val t
         return if (sourceOfWebPage == null) {
             null
         } else {
-            val tmpTopicInfos = MutableTopicInfos()
-            tmpTopicInfos.namesForForumAndTopic = topicParserToUse.getForumAndTopicNameFromPageSource(sourceOfWebPage)
-            tmpTopicInfos.listOfMessages = topicParserToUse.getListOfMessagesFromPageSource(sourceOfWebPage)
-            tmpTopicInfos
+            val tmpTopicPageInfos = MutableTopicPageInfos()
+            tmpTopicPageInfos.namesForForumAndTopic = topicParserToUse.getForumAndTopicNameFromPageSource(sourceOfWebPage)
+            tmpTopicPageInfos.listOfMessages = topicParserToUse.getListOfMessagesFromPageSource(sourceOfWebPage)
+            tmpTopicPageInfos
         }
     }
 
-    override fun onPostExecute(infosForTopic: TopicInfos?) {
-        topicInfosLiveData.value = infosForTopic
+    override fun onPostExecute(infosForTopicPage: TopicPageInfos?) {
+        topicPageInfosLiveData.value = infosForTopicPage
     }
 }

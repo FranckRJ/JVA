@@ -1,4 +1,4 @@
-package com.franckrj.jva
+package com.franckrj.jva.base
 
 abstract class AbsParser {
     protected fun StringBuilder.replaceInside(base: String, replacement: String) {
@@ -45,7 +45,7 @@ abstract class AbsParser {
     }
 
     protected fun parseMessageWithRegexAndModif(messageToParse: StringBuilder, regexToUse: Regex, groupToUse: Int, stringBefore: String = "",
-                                      stringAfter: String = "", firstModifier: StringModifier? = null, secondModifier: StringModifier? = null) {
+                                                stringAfter: String = "", firstModifier: StringModifier? = null, secondModifier: StringModifier? = null) {
         var matcherToUse: MatchResult? = regexToUse.find(messageToParse)
 
         while (matcherToUse != null) {

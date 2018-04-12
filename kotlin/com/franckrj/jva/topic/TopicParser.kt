@@ -1,4 +1,6 @@
-package com.franckrj.jva
+package com.franckrj.jva.topic
+
+import com.franckrj.jva.base.AbsParser
 
 class TopicParser private constructor() : AbsParser() {
     companion object {

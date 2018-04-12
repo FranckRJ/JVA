@@ -1,6 +1,7 @@
 package com.franckrj.jva
 
 import android.app.Application
+import com.franckrj.jva.services.ImageGetterService
 
 class MainApplication : Application() {
     override fun onCreate() {

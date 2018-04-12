@@ -1,4 +1,4 @@
-package com.franckrj.jva
+package com.franckrj.jva.topic
 
 import android.content.Context
 import android.support.v7.widget.RecyclerView
@@ -9,6 +9,9 @@ import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners
+import com.franckrj.jva.services.CopylessSpannableFactory
+import com.franckrj.jva.utils.GlideApp
+import com.franckrj.jva.R
 
 class TopicAdapter(private val context: Context, sizeOfAvatarRoundedCorners: Int) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
     companion object {

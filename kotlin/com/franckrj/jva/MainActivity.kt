@@ -12,6 +12,8 @@ import android.support.v7.widget.RecyclerView
 import android.text.SpannableString
 import android.widget.Toast
 import android.widget.EditText
+import com.franckrj.jva.topic.TopicAdapter
+import com.franckrj.jva.topic.TopicViewModel
 
 class MainActivity : AppCompatActivity() {
     private lateinit var topicViewModel: TopicViewModel
@@ -78,9 +80,9 @@ class MainActivity : AppCompatActivity() {
 
             alertDialog.setPositiveButton("Valider", { _, _ ->
                 if (editText.text.toString().isNotEmpty()) {
-                    topicViewModel.updateAllTopicInfos(editText.text.toString())
+                    topicViewModel.updateAllTopicPageInfos(editText.text.toString())
                 } else {
-                    topicViewModel.updateAllTopicInfos("http://www.jeuxvideo.com/forums/42-800-55783559-1-0-1-0-tests.htm")
+                    topicViewModel.updateAllTopicPageInfos("http://www.jeuxvideo.com/forums/42-800-55783559-1-0-1-0-tests.htm")
                 }
             })
 

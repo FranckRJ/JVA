@@ -1,4 +1,4 @@
-package com.franckrj.jva
+package com.franckrj.jva.topic
 
 import android.text.Spannable
 

@@ -1,4 +1,4 @@
-package com.franckrj.jva
+package com.franckrj.jva.services
 
 import android.content.Context
 import android.content.res.Resources

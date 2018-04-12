@@ -1,4 +1,4 @@
-package com.franckrj.jva
+package com.franckrj.jva.utils
 
 import android.os.Build
 import android.text.Html
