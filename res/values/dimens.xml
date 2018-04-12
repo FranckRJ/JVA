@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <dimen name="defaultCardElevation">2dp</dimen>
-    <dimen name="defaultCardCornerRadius">2dp</dimen>
+    <dimen name="defaultCardCornerRadius">4dp</dimen>
     <dimen name="messageListPadding">4dp</dimen>
     <dimen name="messageCardBottomMargin">7dp</dimen>
     <dimen name="avatarSize">30dp</dimen>

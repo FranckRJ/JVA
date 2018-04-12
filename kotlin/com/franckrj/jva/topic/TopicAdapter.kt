@@ -9,6 +9,7 @@ import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners
+import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions
 import com.franckrj.jva.services.CopylessSpannableFactory
 import com.franckrj.jva.utils.GlideApp
 import com.franckrj.jva.R
@@ -23,6 +24,7 @@ class TopicAdapter(private val context: Context,
 
     private val spannableFactory: CopylessSpannableFactory = CopylessSpannableFactory.instance
     private val avatarRoundedCorners = RoundedCorners(sizeOfAvatarRoundedCorners)
+    private val transitionOption = DrawableTransitionOptions.withCrossFade()
     var listOfHeaders: List<HeaderInfos> = ArrayList()
     var listOfMessagesShowable: List<MessageInfosShowable> = ArrayList()
     var authorClickedListener: OnItemClickedListener? = null
@@ -60,7 +62,7 @@ class TopicAdapter(private val context: Context,
         if (holder is HeaderViewHolder) {
             holder.bindView(listOfHeaders[position])
         } else if (holder is MessageViewHolder) {
-            holder.bindView(listOfMessagesShowable[position - listOfHeaders.size], position)
+            holder.bindView(listOfMessagesShowable[position - listOfHeaders.size], position - listOfHeaders.size)
         }
     }
 
@@ -84,6 +86,7 @@ class TopicAdapter(private val context: Context,
                     .load(message.avatarLink)
                     .override(sizeOfAvatars, sizeOfAvatars)
                     .transform(avatarRoundedCorners)
+                    .transition(transitionOption)
                     .into(avatarImageView)
 
             authorTextView.setText(message.author, TextView.BufferType.SPANNABLE)
