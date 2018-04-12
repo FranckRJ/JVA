@@ -5,6 +5,7 @@ import android.arch.lifecycle.ViewModelProviders
 import android.content.res.Configuration
 import android.os.Build
 import android.os.Bundle
+import android.support.v4.widget.SwipeRefreshLayout
 import android.support.v7.app.AlertDialog
 import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.LinearLayoutManager
@@ -14,6 +15,7 @@ import android.widget.Toast
 import android.widget.EditText
 import com.franckrj.jva.topic.TopicAdapter
 import com.franckrj.jva.topic.TopicViewModel
+import com.franckrj.jva.utils.LoadableValue
 
 class MainActivity : AppCompatActivity() {
     private lateinit var topicViewModel: TopicViewModel
@@ -28,6 +30,9 @@ class MainActivity : AppCompatActivity() {
         val statusBarHeight: Int = if (idOfStatusBarHeight > 0) resources.getDimensionPixelSize(idOfStatusBarHeight) else 0
         val defaultMessageListPadding = resources.getDimensionPixelSize(R.dimen.messageListPadding)
         val messageCardBottomMargin = resources.getDimensionPixelSize(R.dimen.messageCardBottomMargin)
+        val refreshSpinnerTopMargin = resources.getDimensionPixelSize(R.dimen.refreshSpinnerTopMargin)
+
+        val messageListRefreshLayout: SwipeRefreshLayout = findViewById(R.id.messagelist_refresh_main)
         val messageListView: RecyclerView = findViewById(R.id.message_list_main)
         val messageListAdapter = TopicAdapter(this, resources.getDimensionPixelSize(R.dimen.avatarSize), resources.getDimensionPixelSize(R.dimen.defaultCardCornerRadius))
         var navBarIsInApp = resources.configuration.orientation == Configuration.ORIENTATION_PORTRAIT
@@ -38,6 +43,9 @@ class MainActivity : AppCompatActivity() {
             }
         }
 
+        messageListRefreshLayout.isEnabled = false
+        messageListRefreshLayout.setColorSchemeResources(R.color.colorAccent)
+        messageListRefreshLayout.setProgressViewOffset(false, -messageListRefreshLayout.progressCircleDiameter, refreshSpinnerTopMargin + statusBarHeight)
         messageListView.setPaddingRelative(defaultMessageListPadding,
                                            defaultMessageListPadding + statusBarHeight,
                                            defaultMessageListPadding,
@@ -47,6 +55,10 @@ class MainActivity : AppCompatActivity() {
         messageListView.adapter = messageListAdapter
         messageListView.isNestedScrollingEnabled = false
         topicViewModel = ViewModelProviders.of(this).get(TopicViewModel::class.java)
+
+        topicViewModel.getInfosForTopicLoadingStatus().observe(this, Observer { infosForTopicLoadingStatus ->
+            messageListRefreshLayout.isRefreshing = (infosForTopicLoadingStatus == LoadableValue.STATUS_LOADING)
+        })
 
         topicViewModel.getListOfMessagesShowable().observe(this, Observer { listOfMessagesShowable ->
             messageListAdapter.listOfMessagesShowable = listOfMessagesShowable ?: ArrayList()
