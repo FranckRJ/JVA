@@ -29,7 +29,7 @@ class MainActivity : AppCompatActivity() {
         val defaultMessageListPadding = resources.getDimensionPixelSize(R.dimen.messageListPadding)
         val messageCardBottomMargin = resources.getDimensionPixelSize(R.dimen.messageCardBottomMargin)
         val messageListView: RecyclerView = findViewById(R.id.message_list_main)
-        val messageListAdapter = TopicAdapter(this, resources.getDimensionPixelSize(R.dimen.defaultCardCornerRadius))
+        val messageListAdapter = TopicAdapter(this, resources.getDimensionPixelSize(R.dimen.avatarSize), resources.getDimensionPixelSize(R.dimen.defaultCardCornerRadius))
         var navBarIsInApp = resources.configuration.orientation == Configuration.ORIENTATION_PORTRAIT
 
         if (Build.VERSION.SDK_INT >= 24) {
@@ -45,6 +45,7 @@ class MainActivity : AppCompatActivity() {
 
         messageListView.layoutManager = LinearLayoutManager(this)
         messageListView.adapter = messageListAdapter
+        messageListView.isNestedScrollingEnabled = false
         topicViewModel = ViewModelProviders.of(this).get(TopicViewModel::class.java)
 
         topicViewModel.getListOfMessagesShowable().observe(this, Observer { listOfMessagesShowable ->
@@ -82,7 +83,7 @@ class MainActivity : AppCompatActivity() {
                 if (editText.text.toString().isNotEmpty()) {
                     topicViewModel.updateAllTopicPageInfos(editText.text.toString())
                 } else {
-                    topicViewModel.updateAllTopicPageInfos("http://www.jeuxvideo.com/forums/42-800-55783559-1-0-1-0-tests.htm")
+                    topicViewModel.updateAllTopicPageInfos("http://www.jeuxvideo.com/forums/42-1000005-47929326-3-0-1-0-ok-google-blabla-android.htm")
                 }
             })
 

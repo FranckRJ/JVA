@@ -13,7 +13,9 @@ import com.franckrj.jva.services.CopylessSpannableFactory
 import com.franckrj.jva.utils.GlideApp
 import com.franckrj.jva.R
 
-class TopicAdapter(private val context: Context, sizeOfAvatarRoundedCorners: Int) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
+class TopicAdapter(private val context: Context,
+                   private val sizeOfAvatars: Int,
+                   sizeOfAvatarRoundedCorners: Int) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
     companion object {
         private const val TYPE_HEADER: Int = 0
         private const val TYPE_ITEM: Int = 1
@@ -40,7 +42,7 @@ class TopicAdapter(private val context: Context, sizeOfAvatarRoundedCorners: Int
                 HeaderViewHolder(LayoutInflater.from(parent.context).inflate(R.layout.row_topic_header, parent, false))
             }
             TYPE_ITEM -> {
-                MessageViewHolder(LayoutInflater.from(parent.context).inflate(R.layout.row_message_rl, parent, false))
+                MessageViewHolder(LayoutInflater.from(parent.context).inflate(R.layout.row_message_ll, parent, false))
             }
             else -> {
                 throw RuntimeException("Type non supporté.")
@@ -80,6 +82,7 @@ class TopicAdapter(private val context: Context, sizeOfAvatarRoundedCorners: Int
         fun bindView(message: MessageInfosShowable, position: Int) {
             GlideApp.with(context)
                     .load(message.avatarLink)
+                    .override(sizeOfAvatars, sizeOfAvatars)
                     .transform(avatarRoundedCorners)
                     .into(avatarImageView)
 
