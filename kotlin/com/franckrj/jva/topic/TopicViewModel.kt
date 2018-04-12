@@ -8,6 +8,7 @@ import android.text.SpannableString
 import com.franckrj.jva.services.ImageGetterService
 import com.franckrj.jva.services.TagHandlerService
 import com.franckrj.jva.utils.UndeprecatorUtils
+import com.franckrj.jva.utils.Utils
 
 class TopicViewModel : ViewModel() {
     private val imageGetter: ImageGetterService = ImageGetterService.instance
@@ -32,7 +33,7 @@ class TopicViewModel : ViewModel() {
                     MessageInfosShowable(messageInfos.avatarLink,
                             SpannableString(messageInfos.author),
                             SpannableString(messageInfos.date),
-                            SpannableString(UndeprecatorUtils.fromHtml(topicParser.formatMessageToPrettyMessage(messageInfos.content), imageGetter, tagHandler)))
+                            SpannableString(Utils.applyEmojiCompatIfPossible(UndeprecatorUtils.fromHtml(topicParser.formatMessageToPrettyMessage(messageInfos.content), imageGetter, tagHandler))))
                 }
             } else {
                 listOfMessagesShowable.value = ArrayList()
