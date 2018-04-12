@@ -5,6 +5,7 @@
     <dimen name="messageListPadding">4dp</dimen>
     <dimen name="messageCardBottomMargin">7dp</dimen>
     <dimen name="avatarSize">30dp</dimen>
+    <dimen name="stickerSize">50dp</dimen>
     <dimen name="messageAuthorStartMargin">8dp</dimen>
     <dimen name="messageDateEndMargin">8dp</dimen>
     <dimen name="messageContentXPadding">5dp</dimen>
