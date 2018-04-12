@@ -1,4 +1,5 @@
 <resources>
     <string name="app_name">JVA</string>
     <string name="avatar">Avatar</string>
+    <string name="back">retour</string>
 </resources>

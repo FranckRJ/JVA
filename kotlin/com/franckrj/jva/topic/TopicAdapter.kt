@@ -99,19 +99,21 @@ class TopicAdapter(private val context: Context,
     }
 
     private inner class HeaderViewHolder(mainView: View) : RecyclerView.ViewHolder(mainView) {
-        private val headerTextView: TextView = mainView as TextView
+        private val firstLineTextView: TextView = mainView.findViewById(R.id.firstline_text_header_row)
+        private val secondLineTextView: TextView = mainView.findViewById(R.id.secondline_text_header_row)
 
         init {
-            headerTextView.setSpannableFactory(spannableFactory)
+            firstLineTextView.setSpannableFactory(spannableFactory)
+            secondLineTextView.setSpannableFactory(spannableFactory)
         }
 
         fun bindView(infosForHeader: HeaderInfos) {
-            headerTextView.setText(infosForHeader.content, TextView.BufferType.SPANNABLE)
-            headerTextView.setCompoundDrawablesRelativeWithIntrinsicBounds((if (infosForHeader.hasAnArrow) R.drawable.ic_arrow_back else 0), 0, 0, 0)
+            firstLineTextView.setText(infosForHeader.firstLineContent, TextView.BufferType.SPANNABLE)
+            secondLineTextView.setText(infosForHeader.secondLineContent, TextView.BufferType.SPANNABLE)
         }
     }
 
-    class HeaderInfos(val content: Spannable, val hasAnArrow: Boolean)
+    class HeaderInfos(val firstLineContent: Spannable, val secondLineContent: Spannable)
 
     interface OnItemClickedListener {
         fun onItemClicked(position: Int)
