@@ -21,11 +21,7 @@ class TopicRepository private constructor() {
 private class TopicGetter(private val webServiceToUse: WebService, private val topicParserToUse: TopicParser, private val linkOfTopicPage: String,
                           private val topicPageInfosLiveData: MutableLiveData<TopicPageInfos?>) : AsyncTask<Void, Void, TopicPageInfos?>() {
     override fun doInBackground(vararg voids: Void): TopicPageInfos? {
-        val sourceOfWebPage: String?
-        val webInfos: WebService.WebInfos = WebService.WebInfos()
-        webInfos.followRedirects = false
-
-        sourceOfWebPage = webServiceToUse.sendRequest(linkOfTopicPage, "GET", "", "", webInfos)
+        val sourceOfWebPage:String? = webServiceToUse.getPage(linkOfTopicPage)
 
         return if (sourceOfWebPage == null) {
             null
