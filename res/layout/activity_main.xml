@@ -7,7 +7,7 @@
         android:id="@+id/messagelist_refresh_main"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
-        <android.support.v7.widget.RecyclerView
+        <com.franckrj.jva.utils.SmoothScrollbarRecyclerView
             android:id="@+id/message_list_main"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
