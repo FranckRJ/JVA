@@ -1,48 +1,40 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.v7.widget.CardView
+<RelativeLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_marginBottom="@dimen/messageCardBottomMargin"
-    app:cardElevation="@dimen/defaultCardElevation"
-    app:cardCornerRadius="@dimen/defaultCardCornerRadius">
-
-    <LinearLayout
-        android:layout_width="match_parent"
+    android:paddingTop="6dp"
+    android:paddingBottom="6dp">
+    <TextView
+        android:id="@+id/firstpage_button_header_row"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:orientation="horizontal">
-
-        <ImageView
-            android:layout_width="40dp"
-            android:layout_height="40dp"
-            android:layout_gravity="top"
-            android:scaleType="center"
-            android:src="@drawable/ic_arrow_back"
-            android:contentDescription="@string/back"/>
-
-        <LinearLayout
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:orientation="vertical">
-            <TextView
-                android:id="@+id/firstline_text_header_row"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:paddingTop="4dp"
-                android:paddingStart="4dp"
-                android:paddingEnd="4dp"
-                android:textStyle="bold"/>
-
-            <TextView
-                android:id="@+id/secondline_text_header_row"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:paddingBottom="4dp"
-                android:paddingStart="4dp"
-                android:paddingEnd="4dp"/>
-        </LinearLayout>
-
-    </LinearLayout>
-
-</android.support.v7.widget.CardView>
+        android:layout_marginStart="4dp"
+        android:layout_alignParentStart="true"/>
+    <TextView
+        android:id="@+id/previouspage_button_header_row"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_toStartOf="@+id/currentpage_button_header_row"
+        android:text="@string/previousPageText"/>
+    <TextView
+        android:id="@+id/currentpage_button_header_row"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="15dp"
+        android:layout_marginRight="15dp"
+        android:layout_centerHorizontal="true"
+        android:text="@string/waitingText"/>
+    <TextView
+        android:id="@+id/nextpage_button_header_row"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_toEndOf="@+id/currentpage_button_header_row"
+        android:text="@string/nextPageText"/>
+    <TextView
+        android:id="@+id/lastpage_button_header_row"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="4dp"
+        android:layout_alignParentEnd="true"/>
+</RelativeLayout>

@@ -2,7 +2,6 @@ package com.franckrj.jva.topic
 
 import android.content.Context
 import android.support.v7.widget.RecyclerView
-import android.text.Spannable
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -99,21 +98,18 @@ class TopicAdapter(private val context: Context,
     }
 
     private inner class HeaderViewHolder(mainView: View) : RecyclerView.ViewHolder(mainView) {
-        private val firstLineTextView: TextView = mainView.findViewById(R.id.firstline_text_header_row)
-        private val secondLineTextView: TextView = mainView.findViewById(R.id.secondline_text_header_row)
-
-        init {
-            firstLineTextView.setSpannableFactory(spannableFactory)
-            secondLineTextView.setSpannableFactory(spannableFactory)
-        }
+        private val firstPageButton: TextView = mainView.findViewById(R.id.firstpage_button_header_row)
+        private val currentPageButton: TextView = mainView.findViewById(R.id.currentpage_button_header_row)
+        private val lastPageButton: TextView = mainView.findViewById(R.id.lastpage_button_header_row)
 
         fun bindView(infosForHeader: HeaderInfos) {
-            firstLineTextView.setText(infosForHeader.firstLineContent, TextView.BufferType.SPANNABLE)
-            secondLineTextView.setText(infosForHeader.secondLineContent, TextView.BufferType.SPANNABLE)
+            firstPageButton.text = infosForHeader.firstPageNumber.toString()
+            currentPageButton.text = infosForHeader.currentPageNumber.toString()
+            lastPageButton.text = infosForHeader.lastPageNumber.toString()
         }
     }
 
-    class HeaderInfos(val firstLineContent: Spannable, val secondLineContent: Spannable)
+    class HeaderInfos(val firstPageNumber: Int, val currentPageNumber: Int, val lastPageNumber: Int)
 
     interface OnItemClickedListener {
         fun onItemClicked(position: Int)

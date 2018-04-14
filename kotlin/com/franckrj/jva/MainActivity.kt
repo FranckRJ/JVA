@@ -10,7 +10,6 @@ import android.support.v7.app.AlertDialog
 import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
-import android.text.SpannableString
 import android.view.View
 import android.widget.Toast
 import android.widget.EditText
@@ -54,7 +53,7 @@ class MainActivity : AppCompatActivity() {
         messageListRefreshLayout.setColorSchemeResources(R.color.colorAccent)
         messageListRefreshLayout.setProgressViewOffset(false, -messageListRefreshLayout.progressCircleDiameter, refreshSpinnerTopMargin + statusBarHeight)
         messageListView.setPaddingRelative(defaultMessageListPadding,
-                                           defaultMessageListPadding,
+                                           0,
                                            defaultMessageListPadding,
                                            defaultMessageListPadding - messageCardBottomMargin + if (navBarIsInApp) navBarHeight else 0)
         toolbarLayout.setPaddingRelative(0, statusBarHeight, 0, 0)
@@ -73,7 +72,7 @@ class MainActivity : AppCompatActivity() {
 
         topicViewModel.getForumAndTopicName().observe(this, Observer { forumAndTopicName ->
             if (forumAndTopicName != null) {
-                messageListAdapter.listOfHeaders = listOf(TopicAdapter.HeaderInfos(SpannableString(forumAndTopicName.forumName), SpannableString(forumAndTopicName.topicName)))
+                messageListAdapter.listOfHeaders = listOf(TopicAdapter.HeaderInfos(1, 10, 100))
                 messageListAdapter.notifyDataSetChanged()
                 setTitle(forumAndTopicName.forumName)
                 setSubTitle(forumAndTopicName.topicName)
