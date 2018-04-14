@@ -42,7 +42,7 @@ class SmoothScrollbarRecyclerView : RecyclerView {
                 val firstItemPosition: Int = linearLm.findFirstVisibleItemPosition()
                 val firstItem: View = linearLm.findViewByPosition(firstItemPosition)
 
-                lastOffsetComputed = ((lastAverageSizeOfOneItemComputed * firstItemPosition.toDouble()) + (getFractionOfItemTopNotVisible(firstItem) * lastAverageSizeOfOneItemComputed)).toInt()
+                lastOffsetComputed = ((firstItemPosition + getFractionOfItemTopNotVisible(firstItem)) * lastAverageSizeOfOneItemComputed).toInt()
                 lastOffsetComputed
             } else {
                 0
@@ -60,7 +60,7 @@ class SmoothScrollbarRecyclerView : RecyclerView {
                 val lastItemPosition: Int = linearLm.findLastVisibleItemPosition()
                 val lastItem: View = linearLm.findViewByPosition(lastItemPosition)
 
-                lastRangeComputed - lastOffsetComputed - ((lastAverageSizeOfOneItemComputed * (adapter.itemCount - 1 - lastItemPosition)) + (getFractionOfItemBottomNotVisible(lastItem) * lastAverageSizeOfOneItemComputed)).toInt()
+                lastRangeComputed - lastOffsetComputed - (((adapter.itemCount - 1 - lastItemPosition) + getFractionOfItemBottomNotVisible(lastItem)) * lastAverageSizeOfOneItemComputed).toInt()
             } else {
                 0
             }
@@ -106,29 +106,17 @@ class SmoothScrollbarRecyclerView : RecyclerView {
 
     private fun getFractionOfScreenOccupedByItem(item: View): Double {
         val tmpFractionOfScreenOccupedByItem: Double = (minOf(getRecyclerViewInsideBottom(), getViewOutsideBottom(item)) - maxOf(getRecyclerViewInsideTop(), getViewOutsideTop(item))) / getRecyclerViewInsideBottom().toDouble()
-        return when {
-            tmpFractionOfScreenOccupedByItem < 0 -> 0.0
-            tmpFractionOfScreenOccupedByItem > 1 -> 1.0
-            else -> tmpFractionOfScreenOccupedByItem
-        }
+        return tmpFractionOfScreenOccupedByItem.coerceIn(0.0, 1.0)
     }
 
     private fun getFractionOfItemTopNotVisible(item: View): Double {
         val tmpFractionOfItemTopNotVisible: Double = maxOf(getRecyclerViewInsideTop() - getViewOutsideTop(item), 0) / getViewOutsideHeight(item).toDouble()
-        return when {
-            tmpFractionOfItemTopNotVisible < 0 -> 0.0
-            tmpFractionOfItemTopNotVisible > 1 -> 1.0
-            else -> tmpFractionOfItemTopNotVisible
-        }
+        return tmpFractionOfItemTopNotVisible.coerceIn(0.0, 1.0)
     }
 
     private fun getFractionOfItemBottomNotVisible(item: View): Double {
         val tmpFractionOfItemBottomNotVisible: Double = maxOf(getViewOutsideBottom(item) - getRecyclerViewInsideBottom(), 0) / getViewOutsideHeight(item).toDouble()
-        return when {
-            tmpFractionOfItemBottomNotVisible < 0 -> 0.0
-            tmpFractionOfItemBottomNotVisible > 1 -> 1.0
-            else -> tmpFractionOfItemBottomNotVisible
-        }
+        return tmpFractionOfItemBottomNotVisible.coerceIn(0.0, 1.0)
     }
 
     private fun getViewOutsideTop(view: View): Int {
