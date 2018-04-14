@@ -13,4 +13,6 @@
     <dimen name="messageContentBottomPadding">5dp</dimen>
     <dimen name="messageContentFontSize">14.5sp</dimen>
     <dimen name="refreshSpinnerTopMargin">32dp</dimen>
+    <dimen name="toolbarTitleTextSize">18dp</dimen>
+    <dimen name="toolbarSubtitleTextSize">14dp</dimen>
 </resources>

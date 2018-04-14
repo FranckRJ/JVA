@@ -6,4 +6,5 @@
     <color name="authorColor">#000000</color>
     <color name="dateColor">#26A69A</color>
     <color name="windowBackgroundColor">#E9EFF2</color>
+    <color name="toolbarColor">#FFFFFF</color>
 </resources>
