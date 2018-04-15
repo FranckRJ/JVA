@@ -103,8 +103,8 @@ class MainActivity : AppCompatActivity() {
             if (forumAndTopicName != null) {
                 messageListAdapter.listOfHeaders = listOf(TopicAdapter.HeaderInfos(1, 10, 100))
                 messageListAdapter.notifyDataSetChanged()
-                setTitle(forumAndTopicName.forumName)
-                setSubTitle(forumAndTopicName.topicName)
+                setTitle(forumAndTopicName.topicName)
+                setSubTitle(getString(R.string.onForum, forumAndTopicName.forumName))
             }
         })
 
