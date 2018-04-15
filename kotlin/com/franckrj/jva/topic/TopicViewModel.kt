@@ -4,16 +4,9 @@ import android.arch.lifecycle.LiveData
 import android.arch.lifecycle.MediatorLiveData
 import android.arch.lifecycle.MutableLiveData
 import android.arch.lifecycle.ViewModel
-import android.text.SpannableString
-import com.franckrj.jva.services.ImageGetterService
-import com.franckrj.jva.services.TagHandlerService
 import com.franckrj.jva.utils.LoadableValue
-import com.franckrj.jva.utils.UndeprecatorUtils
-import com.franckrj.jva.utils.Utils
 
 class TopicViewModel : ViewModel() {
-    private val imageGetter: ImageGetterService = ImageGetterService.instance
-    private val tagHandler: TagHandlerService = TagHandlerService.instance
     private val topicRepo: TopicRepository = TopicRepository.instance
     private val topicParser: TopicParser = TopicParser.instance
 
@@ -47,12 +40,7 @@ class TopicViewModel : ViewModel() {
 
         listOfMessagesShowable.addSource(infosForTopicPage, { newInfosForTopicPage ->
             if (newInfosForTopicPage?.value != null && newInfosForTopicPage.status == LoadableValue.STATUS_LOADED) {
-                listOfMessagesShowable.value = newInfosForTopicPage.value.listOfMessages.map { messageInfos ->
-                    MessageInfosShowable(messageInfos.avatarLink,
-                            SpannableString(messageInfos.author),
-                            SpannableString(messageInfos.date),
-                            SpannableString(Utils.applyEmojiCompatIfPossible(UndeprecatorUtils.fromHtml(topicParser.formatMessageToPrettyMessage(messageInfos.content, messageInfos.containSpoilTag), imageGetter, tagHandler))))
-                }
+                listOfMessagesShowable.value = newInfosForTopicPage.value.listOfMessagesShowable
             } else {
                 /* Effacement de la liste des messages lors d'une erreur ou d'un début de chargement.
                  * Comportement voulu ? */
