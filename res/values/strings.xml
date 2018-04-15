@@ -6,4 +6,5 @@
     <string name="waitingText">…</string>
     <string name="nextPageText"><![CDATA[>]]></string>
     <string name="onForum">Sur le forum %1$s</string>
+    <string name="one">1</string>
 </resources>

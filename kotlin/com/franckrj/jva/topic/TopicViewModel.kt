@@ -20,6 +20,8 @@ class TopicViewModel : ViewModel() {
     private val infosForTopicPage: MutableLiveData<LoadableValue<TopicPageInfos?>?> = MutableLiveData()
     private val infosForTopicLoadingStatus: MediatorLiveData<Int> = MediatorLiveData()
     private val forumAndTopicName: MediatorLiveData<ForumAndTopicName> = MediatorLiveData()
+    private val currentPageNumber: MutableLiveData<Int> = MutableLiveData()
+    private val lastPageNumber: MediatorLiveData<Int> = MediatorLiveData()
     private val listOfMessagesShowable: MediatorLiveData<List<MessageInfosShowable>> = MediatorLiveData()
 
     init {
@@ -33,6 +35,13 @@ class TopicViewModel : ViewModel() {
             if (newInfosForTopicPage?.value != null && newInfosForTopicPage.status == LoadableValue.STATUS_LOADED &&
                     forumAndTopicName.value != newInfosForTopicPage.value.namesForForumAndTopic) {
                 forumAndTopicName.value = newInfosForTopicPage.value.namesForForumAndTopic
+            }
+        })
+
+        lastPageNumber.addSource(infosForTopicPage, { newInfosForTopicPage ->
+            if (newInfosForTopicPage?.value != null && newInfosForTopicPage.status == LoadableValue.STATUS_LOADED &&
+                    lastPageNumber.value != newInfosForTopicPage.value.lastPageNumber) {
+                lastPageNumber.value = newInfosForTopicPage.value.lastPageNumber
             }
         })
 
@@ -56,9 +65,20 @@ class TopicViewModel : ViewModel() {
 
     fun getForumAndTopicName(): LiveData<ForumAndTopicName> = forumAndTopicName
 
+    fun getCurrentPageNumber(): LiveData<Int> = currentPageNumber
+
+    fun getLastPageNumber(): LiveData<Int> = lastPageNumber
+
     fun getListOfMessagesShowable(): LiveData<List<MessageInfosShowable>> = listOfMessagesShowable
 
     fun updateAllTopicPageInfos(linkOfTopicPage: String) {
-        topicRepo.updateAllTopicPageInfos(topicParser.formatThisUrlToClassicJvcUrl(linkOfTopicPage), infosForTopicPage)
+        val formatedLinkOfTopicPage: String = topicParser.formatThisUrlToClassicJvcUrl(linkOfTopicPage)
+        val newCurrentPageNumber: Int = topicParser.getPageNumberOfThisTopicUrl(formatedLinkOfTopicPage)
+
+        if (newCurrentPageNumber != currentPageNumber.value) {
+            currentPageNumber.value = newCurrentPageNumber
+        }
+
+        topicRepo.updateAllTopicPageInfos(formatedLinkOfTopicPage, infosForTopicPage)
     }
 }

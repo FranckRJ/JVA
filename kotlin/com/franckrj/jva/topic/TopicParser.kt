@@ -7,11 +7,16 @@ class TopicParser private constructor() : AbsParser() {
         val instance: TopicParser by lazy { TopicParser() }
     }
 
+    /* Regex pour les liens des topics. */
+    private val pageTopicLinkNumberPattern = Regex("""^(http://www\.jeuxvideo\.com/forums/[0-9]*-([0-9]*)-([0-9]*)-)([0-9]*)(-[0-9]*-[0-9]*-[0-9]*-[^.]*\.htm)""")
+
     /* Regex pour récupérer les infos d'une page d'un topic. */
     private val allArianeStringPattern = Regex("""<div class="fil-ariane-crumb">.*?</h1>""", RegexOption.DOT_MATCHES_ALL)
     private val forumNameInArianeStringPattern = Regex("""<span><a href="/forums/0-[^"]*">([^<]*)</a></span>""")
     private val topicNameInArianeStringPattern = Regex("""<span><a href="/forums/(42|1)-[^"]*">([^<]*)</a></span>""")
     private val highlightInArianeStringPattern = Regex("""<h1 class="highlight">([^<]*)</h1>""")
+    private val currentPagePattern = Regex("""<span class="page-active">([^<]*)</span>""")
+    private val pageLinkPattern = Regex("""<span><a href="([^"]*)" class="lien-jv">([0-9]*)</a></span>""")
 
     /* Regex pour récupérer les infos des messages. */
     private val wholeMessagePattern = Regex("""(<div class="bloc-message-forum[^"]*".*?)(<span id="post_[^"]*" class="bloc-message-forum-anchor">|<div class="bloc-outils-plus-modo bloc-outils-bottom">|<div class="bloc-pagi-default">)""", RegexOption.DOT_MATCHES_ALL)
@@ -49,6 +54,16 @@ class TopicParser private constructor() : AbsParser() {
     private val rightParagraphePattern = Regex("""<(/)?p>(<br /> *){1,2}""")
     private val smallParagraphePattern = Regex("""<(/)?p>""")
 
+    fun getPageNumberOfThisTopicUrl(topicUrl: String): Int {
+        val pageTopicLinkNumberMatcher: MatchResult? = pageTopicLinkNumberPattern.find(topicUrl)
+
+        return if (pageTopicLinkNumberMatcher != null) {
+            pageTopicLinkNumberMatcher.groupValues[4].toIntOrNull() ?: -1
+        } else {
+            -1
+        }
+    }
+
     fun getForumAndTopicNameFromPageSource(pageSource: String): ForumAndTopicName {
         var currentForumName = ""
         var currentTopicName = ""
@@ -75,6 +90,31 @@ class TopicParser private constructor() : AbsParser() {
         }
 
         return ForumAndTopicName(currentForumName, currentTopicName)
+    }
+
+    fun getLastPageNumberFromPageSource(pageSource: String): Int {
+        val currentPageMatcher: MatchResult? = currentPagePattern.find(pageSource)
+        val allPageLinkMatcher: Sequence<MatchResult> = pageLinkPattern.findAll(pageSource)
+        val currentPageNumber: Int
+        var lastPageNumber = -1
+
+        currentPageNumber = if (currentPageMatcher != null) {
+            Integer.parseInt(currentPageMatcher.groupValues[1])
+        } else {
+            0
+        }
+
+        for (currentPageLinkMatcher in allPageLinkMatcher) {
+            lastPageNumber = currentPageLinkMatcher.groupValues[2].toIntOrNull()?.let { newLastPageNumber ->
+                if (newLastPageNumber > currentPageNumber && newLastPageNumber > lastPageNumber) {
+                    newLastPageNumber
+                } else {
+                    null
+                }
+            } ?: lastPageNumber
+        }
+
+        return lastPageNumber
     }
 
     fun getListOfMessagesFromPageSource(pageSource: String): ArrayList<MessageInfos> {

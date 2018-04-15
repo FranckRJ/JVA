@@ -19,12 +19,17 @@ class TopicAdapter(private val context: Context,
     companion object {
         private const val TYPE_HEADER: Int = 0
         private const val TYPE_ITEM: Int = 1
+        private const val NUMBER_OF_HEADERS: Int = 1
+
+        const val HEADER_POSITION: Int = 0
     }
 
     private val spannableFactory: CopylessSpannableFactory = CopylessSpannableFactory.instance
     private val avatarRoundedCorners = RoundedCorners(sizeOfAvatarRoundedCorners)
     private val transitionOption = DrawableTransitionOptions.withCrossFade()
-    var listOfHeaders: List<HeaderInfos> = ArrayList()
+    private val waitingText: String = context.getString(R.string.waitingText)
+    var currentPageNumber: Int = -1
+    var lastPageNumber: Int = -1
     var listOfMessagesShowable: List<MessageInfosShowable> = ArrayList()
     var authorClickedListener: OnItemClickedListener? = null
     var dateClickedListener: OnItemClickedListener? = null
@@ -52,16 +57,16 @@ class TopicAdapter(private val context: Context,
     }
 
     override fun getItemViewType(position: Int): Int {
-        return if (position < listOfHeaders.size) TYPE_HEADER else TYPE_ITEM
+        return if (position < NUMBER_OF_HEADERS) TYPE_HEADER else TYPE_ITEM
     }
 
-    override fun getItemCount(): Int = listOfHeaders.size + listOfMessagesShowable.size
+    override fun getItemCount(): Int = NUMBER_OF_HEADERS + listOfMessagesShowable.size
 
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
         if (holder is HeaderViewHolder) {
-            holder.bindView(listOfHeaders[position])
+            holder.bindView(currentPageNumber, lastPageNumber)
         } else if (holder is MessageViewHolder) {
-            holder.bindView(listOfMessagesShowable[position - listOfHeaders.size], position - listOfHeaders.size)
+            holder.bindView(listOfMessagesShowable[position - NUMBER_OF_HEADERS], position - NUMBER_OF_HEADERS)
         }
     }
 
@@ -99,17 +104,40 @@ class TopicAdapter(private val context: Context,
 
     private inner class HeaderViewHolder(mainView: View) : RecyclerView.ViewHolder(mainView) {
         private val firstPageButton: TextView = mainView.findViewById(R.id.firstpage_button_header_row)
+        private val previousPageButton: TextView = mainView.findViewById(R.id.previouspage_button_header_row)
         private val currentPageButton: TextView = mainView.findViewById(R.id.currentpage_button_header_row)
+        private val nextPageButton: TextView = mainView.findViewById(R.id.nextpage_button_header_row)
         private val lastPageButton: TextView = mainView.findViewById(R.id.lastpage_button_header_row)
 
-        fun bindView(infosForHeader: HeaderInfos) {
-            firstPageButton.text = infosForHeader.firstPageNumber.toString()
-            currentPageButton.text = infosForHeader.currentPageNumber.toString()
-            lastPageButton.text = infosForHeader.lastPageNumber.toString()
+        fun bindView(currentPageNumber: Int, lastPageNumber: Int) {
+            if (currentPageNumber >= 0) {
+                currentPageButton.text = currentPageNumber.toString()
+
+                if (currentPageNumber > 1) {
+                    firstPageButton.visibility = View.VISIBLE
+                    previousPageButton.visibility = View.VISIBLE
+                } else {
+                    firstPageButton.visibility = View.INVISIBLE
+                    previousPageButton.visibility = View.INVISIBLE
+                }
+
+                if (lastPageNumber > currentPageNumber) {
+                    lastPageButton.text = lastPageNumber.toString()
+                    nextPageButton.visibility = View.VISIBLE
+                    lastPageButton.visibility = View.VISIBLE
+                } else {
+                    nextPageButton.visibility = View.INVISIBLE
+                    lastPageButton.visibility = View.INVISIBLE
+                }
+            } else {
+                currentPageButton.text = waitingText
+                firstPageButton.visibility = View.INVISIBLE
+                previousPageButton.visibility = View.INVISIBLE
+                nextPageButton.visibility = View.INVISIBLE
+                lastPageButton.visibility = View.INVISIBLE
+            }
         }
     }
-
-    class HeaderInfos(val firstPageNumber: Int, val currentPageNumber: Int, val lastPageNumber: Int)
 
     interface OnItemClickedListener {
         fun onItemClicked(position: Int)

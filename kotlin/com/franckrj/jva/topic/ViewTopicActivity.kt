@@ -100,10 +100,22 @@ class ViewTopicActivity : AppCompatActivity() {
 
         topicViewModel.getForumAndTopicName().observe(this, Observer { forumAndTopicName ->
             if (forumAndTopicName != null) {
-                messageListAdapter.listOfHeaders = listOf(TopicAdapter.HeaderInfos(1, 10, 100))
-                messageListAdapter.notifyDataSetChanged()
                 setTitle(forumAndTopicName.topicName)
                 setSubTitle(getString(R.string.onForum, forumAndTopicName.forumName))
+            }
+        })
+
+        topicViewModel.getCurrentPageNumber().observe(this, Observer { newCurrentPageNumber ->
+            if (newCurrentPageNumber != null) {
+                messageListAdapter.currentPageNumber = newCurrentPageNumber
+                messageListAdapter.notifyItemChanged(TopicAdapter.HEADER_POSITION)
+            }
+        })
+
+        topicViewModel.getLastPageNumber().observe(this, Observer { newLastPageNumber ->
+            if (newLastPageNumber != null) {
+                messageListAdapter.lastPageNumber = newLastPageNumber
+                messageListAdapter.notifyItemChanged(TopicAdapter.HEADER_POSITION)
             }
         })
 

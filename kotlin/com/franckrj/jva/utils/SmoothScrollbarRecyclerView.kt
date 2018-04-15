@@ -26,7 +26,7 @@ class SmoothScrollbarRecyclerView : RecyclerView {
 
             when (firstItemPos) {
                 NO_POSITION -> true
-                0 -> (getViewOutsideTop(linearLm.findViewByPosition(firstItemPos)) == paddingTop)
+                0 -> (getViewOutsideTop(linearLm.findViewByPosition(firstItemPos)) == getRecyclerViewInsideTop())
                 else -> false
             }
         } else {

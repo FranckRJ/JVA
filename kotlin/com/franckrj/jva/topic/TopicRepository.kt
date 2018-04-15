@@ -32,6 +32,7 @@ class TopicRepository private constructor() {
             } else {
                 val tmpTopicPageInfos = MutableTopicPageInfos()
                 tmpTopicPageInfos.namesForForumAndTopic = parserForTopic.getForumAndTopicNameFromPageSource(sourceOfWebPage)
+                tmpTopicPageInfos.lastPageNumber = parserForTopic.getLastPageNumberFromPageSource(sourceOfWebPage)
                 tmpTopicPageInfos.listOfMessages = parserForTopic.getListOfMessagesFromPageSource(sourceOfWebPage)
                 tmpTopicPageInfos
             }
