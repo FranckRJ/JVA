@@ -129,29 +129,30 @@ class TopicParser private constructor() : AbsParser() {
         return listOfMessages
     }
 
-    fun formatMessageToPrettyMessage(message: String): String {
+    fun formatMessageToPrettyMessage(message: String, containSpoilTag: Boolean): String {
         val messageInBuilder = StringBuilder(message)
         val makeLinkDependingOnSettingsAndForceMake = MakeShortenedLinkIfPossible(50, true)
 
-        parseMessageWithRegexAndModif(messageInBuilder, codeBlockPattern, 1, "<p><font face=\"monospace\">", "</font></p>", MakeCodeTagGreatAgain(true))
-        parseMessageWithRegexAndModif(messageInBuilder, codeLinePattern, 1, " <font face=\"monospace\">", "</font> ", MakeCodeTagGreatAgain(false))
+        parseMessageWithRegexAndModif(messageInBuilder, codeBlockPattern, 1, """<p><font face="monospace">""", """</font></p>""", MakeCodeTagGreatAgain(true))
+        parseMessageWithRegexAndModif(messageInBuilder, codeLinePattern, 1, """ <font face="monospace">""", """</font> """, MakeCodeTagGreatAgain(false))
         messageInBuilder.replaceInside("\n", "")
 
         /* TODO: Gérer les différents noms de stickers identiques. */
-        parseMessageWithRegexAndModif(messageInBuilder, stickerPattern, 1, "<img src=\"sticker_", ".png\"/>", ConvertUrlToStickerId(), ConvertStringToString("-", "_"))
-        parseMessageWithRegex(messageInBuilder, smileyPattern, 2, "<img src=\"smiley_", "\"/>")
+        parseMessageWithRegexAndModif(messageInBuilder, stickerPattern, 1, """<img src="sticker_""", """.png"/>""", ConvertUrlToStickerId(), ConvertStringToString("-", "_"))
+        parseMessageWithRegex(messageInBuilder, smileyPattern, 2, """<img src="smiley_""", """"/>""")
 
-        parseMessageWithRegex(messageInBuilder, youtubeVideoPattern, 2, "<a href=\"http://youtu.be/", "\">http://youtu.be/", 2, "</a>")
-        parseMessageWithRegex(messageInBuilder, jvcVideoPattern, -1, "[[Vidéo non supportée par l'application]]")
+        parseMessageWithRegex(messageInBuilder, youtubeVideoPattern, 2, """<a href="http://youtu.be/""", """">http://youtu.be/""", 2, """</a>""")
+        parseMessageWithRegex(messageInBuilder, jvcVideoPattern, -1, """[[Vidéo non supportée par l'application]]""")
         parseMessageWithRegexAndModif(messageInBuilder, jvcLinkPattern, 1, "", "", makeLinkDependingOnSettingsAndForceMake)
         parseMessageWithRegexAndModif(messageInBuilder, shortLinkPattern, 1, "", "", makeLinkDependingOnSettingsAndForceMake)
         parseMessageWithRegexAndModif(messageInBuilder, longLinkPattern, 1, "", "", makeLinkDependingOnSettingsAndForceMake)
 
-        parseMessageWithRegex(messageInBuilder, noelshackImagePattern, 3, "<a href=\"", "\"><img src=\"http://", 2, "\"/></a>")
+        parseMessageWithRegex(messageInBuilder, noelshackImagePattern, 3, """<a href="""", """"><img src="http://""", 2, """"/></a>""")
 
-        /* TODO: Check s'il y a des spoils avant d'exécuter (comme sur RespawnIRC) pour économiser les perfs ? */
-        parseMessageWithRegex(messageInBuilder, spoilLinePattern, -1, "<bg_spoil_button><font color=\"#FFFFFF\">&nbsp;SPOIL&nbsp;</font></bg_spoil_button>")
-        parseMessageWithRegex(messageInBuilder, spoilBlockPattern, -1, "<p><bg_spoil_button><font color=\"#FFFFFF\">&nbsp;SPOIL&nbsp;</font></bg_spoil_button></p>")
+        if (containSpoilTag) {
+            parseMessageWithRegex(messageInBuilder, spoilLinePattern, -1, """<bg_spoil_button><font color="#FFFFFF">&nbsp;SPOIL&nbsp;</font></bg_spoil_button>""")
+            parseMessageWithRegex(messageInBuilder, spoilBlockPattern, -1, """<p><bg_spoil_button><font color="#FFFFFF">&nbsp;SPOIL&nbsp;</font></bg_spoil_button></p>""")
+        }
 
         removeDivAndAdaptParagraphInMessage(messageInBuilder)
         parseMessageWithRegex(messageInBuilder, surroundedBlockquotePattern, 2)
@@ -188,13 +189,15 @@ class TopicParser private constructor() : AbsParser() {
         }
 
         if (messageContentMatcher != null) {
-            infosForMessage.content = makeBasicFormatOfMessage(messageContentMatcher.groupValues[1])
+            infosForMessage.content = messageContentMatcher.groupValues[1]
+            infosForMessage.containSpoilTag = infosForMessage.content.contains("""<div class="contenu-spoil">""")
+            infosForMessage.content = makeBasicFormatOfMessage(messageContentMatcher.groupValues[1], infosForMessage.containSpoilTag)
         }
 
         return infosForMessage
     }
 
-    private fun makeBasicFormatOfMessage(message: String): String {
+    private fun makeBasicFormatOfMessage(message: String, containSpoilTag: Boolean): String {
         val messageInBuilder = StringBuilder(message)
 
         parseMessageWithRegex(messageInBuilder, adPattern, -1)
@@ -202,8 +205,9 @@ class TopicParser private constructor() : AbsParser() {
         parseListInMessageIfNeeded(messageInBuilder)
         messageInBuilder.replaceInside("""<blockquote class="blockquote-jv">""", "<blockquote>")
 
-        /* TODO: Check s'il y a des spoils avant d'exécuter (comme sur RespawnIRC) pour économiser les perfs ? */
-        removeOverlySpoils(messageInBuilder)
+        if (containSpoilTag) {
+            removeOverlySpoils(messageInBuilder)
+        }
 
         return messageInBuilder.toString()
     }

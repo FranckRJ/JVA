@@ -51,7 +51,7 @@ class TopicViewModel : ViewModel() {
                     MessageInfosShowable(messageInfos.avatarLink,
                             SpannableString(messageInfos.author),
                             SpannableString(messageInfos.date),
-                            SpannableString(Utils.applyEmojiCompatIfPossible(UndeprecatorUtils.fromHtml(topicParser.formatMessageToPrettyMessage(messageInfos.content), imageGetter, tagHandler))))
+                            SpannableString(Utils.applyEmojiCompatIfPossible(UndeprecatorUtils.fromHtml(topicParser.formatMessageToPrettyMessage(messageInfos.content, messageInfos.containSpoilTag), imageGetter, tagHandler))))
                 }
             } else {
                 /* Effacement de la liste des messages lors d'une erreur ou d'un début de chargement.
