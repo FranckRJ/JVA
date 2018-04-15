@@ -18,6 +18,22 @@ class SmoothScrollbarRecyclerView : RecyclerView {
 
     constructor(context: Context, attrs: AttributeSet?, defStyle: Int) : super(context, attrs, defStyle)
 
+    fun isScrolledAtTop(): Boolean {
+        val linearLm: LinearLayoutManager? = layoutManager as? LinearLayoutManager
+
+        return if (linearLm != null) {
+            val firstItemPos = linearLm.findFirstVisibleItemPosition()
+
+            when (firstItemPos) {
+                NO_POSITION -> true
+                0 -> (getViewOutsideTop(linearLm.findViewByPosition(firstItemPos)) == paddingTop)
+                else -> false
+            }
+        } else {
+            false
+        }
+    }
+
     override fun computeVerticalScrollRange(): Int {
         val linearLm: LinearLayoutManager? = layoutManager as? LinearLayoutManager
 

@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <dimen name="aboveToolbarCardElevation">6dp</dimen>
+    <dimen name="defaultToolbarCardElevation">2dp</dimen>
     <dimen name="defaultCardElevation">2dp</dimen>
     <dimen name="defaultCardCornerRadius">4dp</dimen>
     <dimen name="messageListPadding">4dp</dimen>
@@ -13,6 +15,8 @@
     <dimen name="messageContentBottomPadding">5dp</dimen>
     <dimen name="messageContentFontSize">14.5sp</dimen>
     <dimen name="refreshSpinnerTopMargin">32dp</dimen>
+    <dimen name="toolbarHeight">48dp</dimen>
+    <dimen name="defaultToolbarMargin">8dp</dimen>
     <dimen name="toolbarTitleTextSize">18dp</dimen>
     <dimen name="toolbarSubtitleTextSize">14dp</dimen>
 </resources>

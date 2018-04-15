@@ -5,18 +5,23 @@ import android.arch.lifecycle.ViewModelProviders
 import android.content.res.Configuration
 import android.os.Build
 import android.os.Bundle
+import android.support.design.widget.AppBarLayout
 import android.support.v4.widget.SwipeRefreshLayout
 import android.support.v7.app.AlertDialog
 import android.support.v7.app.AppCompatActivity
+import android.support.v7.widget.CardView
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
 import android.view.View
+import android.view.ViewTreeObserver
 import android.widget.Toast
 import android.widget.EditText
+import android.widget.FrameLayout
 import android.widget.TextView
 import com.franckrj.jva.topic.TopicAdapter
 import com.franckrj.jva.topic.TopicViewModel
 import com.franckrj.jva.utils.LoadableValue
+import com.franckrj.jva.utils.SmoothScrollbarRecyclerView
 
 class MainActivity : AppCompatActivity() {
     private lateinit var titleTextToolbar: TextView
@@ -30,13 +35,19 @@ class MainActivity : AppCompatActivity() {
         val navBarHeight: Int = if (idOfNavBarHeight > 0) resources.getDimensionPixelSize(idOfNavBarHeight) else 0
         val idOfStatusBarHeight: Int = resources.getIdentifier("status_bar_height", "dimen", "android")
         val statusBarHeight: Int = if (idOfStatusBarHeight > 0) resources.getDimensionPixelSize(idOfStatusBarHeight) else 0
-        val defaultMessageListPadding = resources.getDimensionPixelSize(R.dimen.messageListPadding)
-        val messageCardBottomMargin = resources.getDimensionPixelSize(R.dimen.messageCardBottomMargin)
-        val refreshSpinnerTopMargin = resources.getDimensionPixelSize(R.dimen.refreshSpinnerTopMargin)
+        val toolbarHeight: Int = resources.getDimensionPixelSize(R.dimen.toolbarHeight)
+        val defaultToolbarMargin: Int = resources.getDimensionPixelSize(R.dimen.defaultToolbarMargin)
+        val defaultToolbarCardElevation: Float = resources.getDimensionPixelSize(R.dimen.defaultToolbarCardElevation).toFloat()
+        val aboveToolbarCardElevation: Float = resources.getDimensionPixelSize(R.dimen.aboveToolbarCardElevation).toFloat()
+        val defaultMessageListPadding: Int = resources.getDimensionPixelSize(R.dimen.messageListPadding)
+        val messageCardBottomMargin: Int = resources.getDimensionPixelSize(R.dimen.messageCardBottomMargin)
+        val refreshSpinnerTopMargin: Int = resources.getDimensionPixelSize(R.dimen.refreshSpinnerTopMargin)
 
-        val toolbarLayout: View = findViewById(R.id.toolbar_layout_main)
+        val appbarLayout: AppBarLayout = findViewById(R.id.appbar_layout_main)
+        val toolbarLayout: FrameLayout = findViewById(R.id.toolbar_layout_main)
+        val toolbarCard: CardView = findViewById(R.id.toolbar_card_main)
         val messageListRefreshLayout: SwipeRefreshLayout = findViewById(R.id.messagelist_refresh_main)
-        val messageListView: RecyclerView = findViewById(R.id.message_list_main)
+        val messageListView: SmoothScrollbarRecyclerView = findViewById(R.id.message_list_main)
         val messageListAdapter = TopicAdapter(this, resources.getDimensionPixelSize(R.dimen.avatarSize), resources.getDimensionPixelSize(R.dimen.defaultCardCornerRadius))
         val topicViewModel: TopicViewModel = ViewModelProviders.of(this).get(TopicViewModel::class.java)
         var navBarIsInApp = resources.configuration.orientation == Configuration.ORIENTATION_PORTRAIT
@@ -49,17 +60,35 @@ class MainActivity : AppCompatActivity() {
             }
         }
 
+        val messageListLayoutManager = LinearLayoutManager(this)
+        messageListView.layoutManager = messageListLayoutManager
+        messageListView.adapter = messageListAdapter
+
+        toolbarLayout.setPaddingRelative(defaultToolbarMargin, defaultToolbarMargin + statusBarHeight, defaultToolbarMargin, defaultToolbarMargin)
+        toolbarCard.translationZ = defaultToolbarCardElevation
         messageListRefreshLayout.isEnabled = false
         messageListRefreshLayout.setColorSchemeResources(R.color.colorAccent)
-        messageListRefreshLayout.setProgressViewOffset(false, -messageListRefreshLayout.progressCircleDiameter, refreshSpinnerTopMargin + statusBarHeight)
+        messageListRefreshLayout.setProgressViewOffset(false, -messageListRefreshLayout.progressCircleDiameter, refreshSpinnerTopMargin + toolbarHeight + (defaultToolbarMargin * 2) + statusBarHeight)
+        messageListRefreshLayout.viewTreeObserver.addOnGlobalLayoutListener(object : ViewTreeObserver.OnGlobalLayoutListener {
+            override fun onGlobalLayout() {
+                messageListRefreshLayout.viewTreeObserver.removeOnGlobalLayoutListener(this)
+                messageListRefreshLayout.translationY = -(appbarLayout.height.toFloat())
+                messageListRefreshLayout.layoutParams.height = messageListRefreshLayout.height + appbarLayout.height
+            }
+        })
         messageListView.setPaddingRelative(defaultMessageListPadding,
-                                           0,
+                                           toolbarHeight + (defaultToolbarMargin * 2) + statusBarHeight,
                                            defaultMessageListPadding,
                                            defaultMessageListPadding - messageCardBottomMargin + if (navBarIsInApp) navBarHeight else 0)
-        toolbarLayout.setPaddingRelative(0, statusBarHeight, 0, 0)
-
-        messageListView.layoutManager = LinearLayoutManager(this)
-        messageListView.adapter = messageListAdapter
+        messageListView.addOnScrollListener(object : RecyclerView.OnScrollListener() {
+            override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
+                if (toolbarCard.translationZ == aboveToolbarCardElevation && messageListView.isScrolledAtTop()) {
+                    toolbarCard.animate().translationZ(defaultToolbarCardElevation).setDuration(200).start()
+                } else if (toolbarCard.translationZ == defaultToolbarCardElevation && !messageListView.isScrolledAtTop()) {
+                    toolbarCard.translationZ = aboveToolbarCardElevation
+                }
+            }
+        })
 
         topicViewModel.getInfosForTopicLoadingStatus().observe(this, Observer { infosForTopicLoadingStatus ->
             messageListRefreshLayout.isRefreshing = (infosForTopicLoadingStatus == LoadableValue.STATUS_LOADING)

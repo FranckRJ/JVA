@@ -22,52 +22,67 @@
     <android.support.design.widget.AppBarLayout
         android:id="@+id/appbar_layout_main"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:background="@android:color/transparent"
+        app:elevation="0dp">
 
-        <LinearLayout
+        <FrameLayout
             android:id="@+id/toolbar_layout_main"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:background="@color/toolbarColor"
+            android:padding="16dp"
+            android:clipToPadding="false"
             app:layout_scrollFlags="scroll|enterAlways">
-
-            <ImageView
-                android:layout_width="48dp"
-                android:layout_height="48dp"
-                android:layout_gravity="center_vertical"
-                android:scaleType="center"
-                android:src="@drawable/ic_arrow_back"
-                android:contentDescription="@string/back"/>
-
-            <LinearLayout
-                android:layout_width="wrap_content"
+            <android.support.v7.widget.CardView
+                android:id="@+id/toolbar_card_main"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_gravity="center_vertical"
-                android:orientation="vertical">
-                <TextView
-                    android:id="@+id/title_text_toolbar_main"
+                app:cardElevation="0dp"
+                app:cardCornerRadius="@dimen/defaultCardCornerRadius">
+                <LinearLayout
                     android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:paddingStart="4dp"
-                    android:paddingEnd="4dp"
-                    android:textStyle="bold"
-                    android:textColor="@color/colorAccent"
-                    android:textSize="@dimen/toolbarTitleTextSize"
-                    android:text="@string/app_name"/>
+                    android:layout_height="@dimen/toolbarHeight"
+                    android:orientation="horizontal"
+                    android:background="@color/toolbarColor">
 
-                <TextView
-                    android:id="@+id/subtitle_text_toolbar_main"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:paddingStart="4dp"
-                    android:paddingEnd="4dp"
-                    android:textColor="@color/colorAccent"
-                    android:textSize="@dimen/toolbarSubtitleTextSize"
-                    android:visibility="gone"/>
-            </LinearLayout>
+                    <ImageView
+                        android:layout_width="@dimen/toolbarHeight"
+                        android:layout_height="@dimen/toolbarHeight"
+                        android:layout_gravity="center_vertical"
+                        android:scaleType="center"
+                        android:src="@drawable/ic_arrow_back"
+                        android:contentDescription="@string/back"/>
 
-        </LinearLayout>
+                    <LinearLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center_vertical"
+                        android:orientation="vertical">
+                        <TextView
+                            android:id="@+id/title_text_toolbar_main"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:paddingStart="4dp"
+                            android:paddingEnd="4dp"
+                            android:textStyle="bold"
+                            android:textColor="@color/colorAccent"
+                            android:textSize="@dimen/toolbarTitleTextSize"
+                            android:text="@string/app_name"/>
+
+                        <TextView
+                            android:id="@+id/subtitle_text_toolbar_main"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:paddingStart="4dp"
+                            android:paddingEnd="4dp"
+                            android:textColor="@color/colorAccent"
+                            android:textSize="@dimen/toolbarSubtitleTextSize"
+                            android:visibility="gone"/>
+                    </LinearLayout>
+
+                </LinearLayout>
+            </android.support.v7.widget.CardView>
+        </FrameLayout>
 
     </android.support.design.widget.AppBarLayout>
 
