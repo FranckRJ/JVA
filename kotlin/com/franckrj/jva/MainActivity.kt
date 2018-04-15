@@ -68,7 +68,7 @@ class MainActivity : AppCompatActivity() {
         toolbarCard.translationZ = defaultToolbarCardElevation
         messageListRefreshLayout.isEnabled = false
         messageListRefreshLayout.setColorSchemeResources(R.color.colorAccent)
-        messageListRefreshLayout.setProgressViewOffset(false, -messageListRefreshLayout.progressCircleDiameter, refreshSpinnerTopMargin + toolbarHeight + (defaultToolbarMargin * 2) + statusBarHeight)
+        messageListRefreshLayout.setProgressViewOffset(false, statusBarHeight + defaultToolbarMargin, refreshSpinnerTopMargin + toolbarHeight + (defaultToolbarMargin * 2) + statusBarHeight)
         messageListRefreshLayout.viewTreeObserver.addOnGlobalLayoutListener(object : ViewTreeObserver.OnGlobalLayoutListener {
             override fun onGlobalLayout() {
                 messageListRefreshLayout.viewTreeObserver.removeOnGlobalLayoutListener(this)
