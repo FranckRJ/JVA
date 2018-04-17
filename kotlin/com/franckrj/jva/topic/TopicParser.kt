@@ -40,6 +40,7 @@ class TopicParser private constructor() : AbsParser() {
     private val spoilBlockPattern = Regex("""<div class="bloc-spoil-jv">.*?<div class="contenu-spoil">(.*?)</div></div>""", RegexOption.DOT_MATCHES_ALL)
     private val surroundedBlockquotePattern = Regex("""(<br /> *)*(<(/)?blockquote>)( *<br />)*""")
     private val jvCarePattern = Regex("""<span class="JvCare [^"]*">([^<]*)</span>""")
+    private val overlyBetterQuotePattern = Regex("""<(/)?blockquote>""")
 
     /* Regex de pré-parsage du contenu des messages. */
     private val adPattern = Regex("""<ins[^>]*></ins>""")
@@ -161,7 +162,7 @@ class TopicParser private constructor() : AbsParser() {
 
         removeFirstAndLastBrInMessage(messageInBuilder)
 
-        /* TODO: Gérer les quotes imbriquées. */
+        removeOverlyQuoteInPrettyMessage(messageInBuilder, 2)
 
         return messageInBuilder.toString()
     }
@@ -251,6 +252,47 @@ class TopicParser private constructor() : AbsParser() {
                     currentSpoilTagDeepness = 0
                 }
             }
+        }
+    }
+
+    private fun removeOverlyQuoteInPrettyMessage(prettyMessage: StringBuilder, maxNumberOfOverlyQuotes: Int) {
+        var numberOfOverlyQuotesRemaining = maxNumberOfOverlyQuotes + 1
+        var quoteTagMatcher = overlyBetterQuotePattern.find(prettyMessage)
+
+        while (quoteTagMatcher != null) {
+            if (quoteTagMatcher.value == "<blockquote>") {
+                --numberOfOverlyQuotesRemaining
+            } else {
+                ++numberOfOverlyQuotesRemaining
+            }
+
+            if (numberOfOverlyQuotesRemaining <= 0) {
+                var secQuoteTagMatcher = overlyBetterQuotePattern.find(prettyMessage, quoteTagMatcher.range.endInclusive + 1)
+                var lastStartOfMatch = -1
+                var tmpNumberQuote = 0
+
+                while (secQuoteTagMatcher != null) {
+                    if (secQuoteTagMatcher.value == "<blockquote>") {
+                        ++tmpNumberQuote
+                    } else {
+                        --tmpNumberQuote
+                    }
+
+                    lastStartOfMatch = secQuoteTagMatcher.range.start
+
+                    if (tmpNumberQuote < 0) {
+                        break
+                    }
+
+                    secQuoteTagMatcher = overlyBetterQuotePattern.find(prettyMessage, secQuoteTagMatcher.range.endInclusive + 1)
+                }
+
+                if (lastStartOfMatch != -1) {
+                    prettyMessage.replace(quoteTagMatcher.range.endInclusive + 1, lastStartOfMatch, "[...]")
+                }
+            }
+
+            quoteTagMatcher = overlyBetterQuotePattern.find(prettyMessage, quoteTagMatcher.range.endInclusive + 1)
         }
     }
 
