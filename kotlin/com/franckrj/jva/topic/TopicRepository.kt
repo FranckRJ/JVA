@@ -4,12 +4,8 @@ import android.annotation.SuppressLint
 import android.arch.lifecycle.MutableLiveData
 import android.os.AsyncTask
 import android.text.SpannableString
-import com.franckrj.jva.services.ImageGetterService
-import com.franckrj.jva.services.TagHandlerService
 import com.franckrj.jva.services.WebService
 import com.franckrj.jva.utils.LoadableValue
-import com.franckrj.jva.utils.UndeprecatorUtils
-import com.franckrj.jva.utils.Utils
 
 /* TODO: Stocker les messages dans une BDD pour pouvoir les récup' quand le process est kill (manque de RAM etc). */
 class TopicRepository private constructor() {
@@ -19,18 +15,18 @@ class TopicRepository private constructor() {
 
     private val serviceForWeb: WebService = WebService.instance
     private val parserForTopic: TopicParser = TopicParser.instance
-    private val imageGetter: ImageGetterService = ImageGetterService.instance
-    private val tagHandler: TagHandlerService = TagHandlerService.instance
 
-    fun updateAllTopicPageInfos(linkOfTopicPage: String, topicPageInfosLiveData: MutableLiveData<LoadableValue<TopicPageInfos?>?>) {
+    fun updateAllTopicPageInfos(linkOfTopicPage: String, topicPageInfosLiveData: MutableLiveData<LoadableValue<TopicPageInfos?>?>, settingsForMessages: TopicParser.MessageSettings) {
         topicPageInfosLiveData.value = LoadableValue.loading(topicPageInfosLiveData.value?.value)
-        TopicGetter(linkOfTopicPage, topicPageInfosLiveData).execute()
+        TopicGetter(linkOfTopicPage, topicPageInfosLiveData, settingsForMessages).execute()
     }
 
     /* Ça ne devrait pas poser de problème normalement car
      * cette AsyncTask n'a aucune référence vers un contexte. */
     @SuppressLint("StaticFieldLeak")
-    private inner class TopicGetter(private val linkOfTopicPage: String, private val topicPageInfosLiveData: MutableLiveData<LoadableValue<TopicPageInfos?>?>) : AsyncTask<Void, Void, TopicPageInfos?>() {
+    private inner class TopicGetter(private val linkOfTopicPage: String,
+                                    private val topicPageInfosLiveData: MutableLiveData<LoadableValue<TopicPageInfos?>?>,
+                                    private val settingsForMessages: TopicParser.MessageSettings) : AsyncTask<Void, Void, TopicPageInfos?>() {
         override fun doInBackground(vararg voids: Void): TopicPageInfos? {
             val sourceOfWebPage:String? = serviceForWeb.getPage(linkOfTopicPage)
 
@@ -46,7 +42,7 @@ class TopicRepository private constructor() {
                     MessageInfosShowable(messageInfos.avatarLink,
                                          SpannableString(messageInfos.author),
                                          SpannableString(messageInfos.date),
-                                         SpannableString(Utils.applyEmojiCompatIfPossible(UndeprecatorUtils.fromHtml(parserForTopic.formatMessageToPrettyMessage(messageInfos.content, messageInfos.containSpoilTag), imageGetter, tagHandler))))
+                                         parserForTopic.createMessageContentShowable(messageInfos, settingsForMessages))
                 }
 
                 tmpTopicPageInfos

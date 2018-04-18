@@ -7,4 +7,5 @@
     <color name="dateColor">#26A69A</color>
     <color name="windowBackgroundColor">#E9EFF2</color>
     <color name="toolbarColor">#FFFFFF</color>
+    <color name="quoteBackgroundColor">#EEEEEE</color>
 </resources>

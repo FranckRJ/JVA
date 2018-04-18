@@ -1,14 +1,23 @@
 package com.franckrj.jva.topic
 
+import android.app.Application
+import android.arch.lifecycle.AndroidViewModel
 import android.arch.lifecycle.LiveData
 import android.arch.lifecycle.MediatorLiveData
 import android.arch.lifecycle.MutableLiveData
-import android.arch.lifecycle.ViewModel
+import com.franckrj.jva.R
+import com.franckrj.jva.services.ImageGetterService
+import com.franckrj.jva.services.TagHandlerService
+import com.franckrj.jva.utils.BetterQuoteSpan
 import com.franckrj.jva.utils.LoadableValue
+import com.franckrj.jva.utils.UndeprecatorUtils
 
-class TopicViewModel : ViewModel() {
+class TopicViewModel(app: Application) : AndroidViewModel(app) {
     private val topicRepo: TopicRepository = TopicRepository.instance
     private val topicParser: TopicParser = TopicParser.instance
+    private val imageGetter: ImageGetterService = ImageGetterService.instance
+    private val tagHandler: TagHandlerService = TagHandlerService.instance
+    private val settingsForMessages: TopicParser.MessageSettings
 
     private val infosForTopicPage: MutableLiveData<LoadableValue<TopicPageInfos?>?> = MutableLiveData()
     private val infosForTopicLoadingStatus: MediatorLiveData<Int> = MediatorLiveData()
@@ -18,6 +27,13 @@ class TopicViewModel : ViewModel() {
     private val listOfMessagesShowable: MediatorLiveData<List<MessageInfosShowable>> = MediatorLiveData()
 
     init {
+        val settingsForBetterQuotes = BetterQuoteSpan.BetterQuoteSettings(UndeprecatorUtils.getColor(app, R.color.quoteBackgroundColor),
+                                                                          UndeprecatorUtils.getColor(app, R.color.colorAccent),
+                                                                          app.resources.getDimensionPixelSize(R.dimen.quoteStripeSize),
+                                                                          app.resources.getDimensionPixelSize(R.dimen.quoteGapSize))
+
+        settingsForMessages = TopicParser.MessageSettings(settingsForBetterQuotes, imageGetter, tagHandler, 2)
+
         infosForTopicLoadingStatus.addSource(infosForTopicPage, { newInfosForTopicPage ->
             if (newInfosForTopicPage != null) {
                 infosForTopicLoadingStatus.value = newInfosForTopicPage.status
@@ -67,6 +83,6 @@ class TopicViewModel : ViewModel() {
             currentPageNumber.value = newCurrentPageNumber
         }
 
-        topicRepo.updateAllTopicPageInfos(formatedLinkOfTopicPage, infosForTopicPage)
+        topicRepo.updateAllTopicPageInfos(formatedLinkOfTopicPage, infosForTopicPage, settingsForMessages)
     }
 }

@@ -1,6 +1,14 @@
 package com.franckrj.jva.topic
 
+import android.text.Html
+import android.text.Spannable
+import android.text.Spanned
 import com.franckrj.jva.base.AbsParser
+import android.text.style.QuoteSpan
+import android.text.SpannableString
+import com.franckrj.jva.utils.BetterQuoteSpan
+import com.franckrj.jva.utils.UndeprecatorUtils
+import com.franckrj.jva.utils.Utils
 
 class TopicParser private constructor() : AbsParser() {
     companion object {
@@ -130,7 +138,24 @@ class TopicParser private constructor() : AbsParser() {
         return listOfMessages
     }
 
-    fun formatMessageToPrettyMessage(message: String, containSpoilTag: Boolean): String {
+    fun createMessageContentShowable(infosForMessages: MessageInfos, settingsForMessages: MessageSettings): Spannable {
+        val messageContent: String = formatMessageToPrettyMessage(infosForMessages.content, infosForMessages.containSpoilTag, settingsForMessages.maxNumberOfOverlyQuotes)
+        /* Dans un <span></span> pour corriger un bug de BackgroundSpan qui se ferme jamais si ouvert tout au début. */
+        return replaceNeededSpansAndEmojis(UndeprecatorUtils.fromHtml("<span>$messageContent</span>", settingsForMessages.imageGetterToUse, settingsForMessages.tagHandlerToUse), settingsForMessages.settingsForBetterQuotes)
+    }
+
+    private fun replaceNeededSpansAndEmojis(spanToChange: Spanned, settingsForBetterQuotes: BetterQuoteSpan.BetterQuoteSettings): Spannable {
+        val spannable = SpannableString(Utils.applyEmojiCompatIfPossible(spanToChange))
+
+        val quoteSpanArray: Array<QuoteSpan> = spannable.getSpans(0, spannable.length, QuoteSpan::class.java)
+        for (quoteSpan in quoteSpanArray) {
+            replaceSpanByAnotherSpan(spannable, quoteSpan, BetterQuoteSpan(settingsForBetterQuotes))
+        }
+
+        return spannable
+    }
+
+    private fun formatMessageToPrettyMessage(message: String, containSpoilTag: Boolean, maxNumberOfOverlyQuotes: Int): String {
         val messageInBuilder = StringBuilder(message)
         val makeLinkDependingOnSettingsAndForceMake = MakeShortenedLinkIfPossible(50, true)
 
@@ -162,7 +187,7 @@ class TopicParser private constructor() : AbsParser() {
 
         removeFirstAndLastBrInMessage(messageInBuilder)
 
-        removeOverlyQuoteInPrettyMessage(messageInBuilder, 2)
+        removeOverlyQuoteInPrettyMessage(messageInBuilder, maxNumberOfOverlyQuotes)
 
         return messageInBuilder.toString()
     }
@@ -385,4 +410,9 @@ class TopicParser private constructor() : AbsParser() {
             return newString
         }
     }
+
+    class MessageSettings(val settingsForBetterQuotes: BetterQuoteSpan.BetterQuoteSettings,
+                          val imageGetterToUse: Html.ImageGetter,
+                          val tagHandlerToUse: Html.TagHandler,
+                          val maxNumberOfOverlyQuotes: Int)
 }

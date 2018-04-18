@@ -1,5 +1,7 @@
 package com.franckrj.jva.base
 
+import android.text.Spannable
+
 abstract class AbsParser {
     protected fun StringBuilder.replaceInside(base: String, replacement: String) {
         var index = this.indexOf(base)
@@ -18,6 +20,14 @@ abstract class AbsParser {
         while (this.isNotEmpty() && this[this.length - 1] == ' ') {
             this.deleteCharAt(this.length - 1)
         }
+    }
+
+    protected fun replaceSpanByAnotherSpan(inThisSpan: Spannable, oldSpan: Any, newSpan: Any) {
+        val start = inThisSpan.getSpanStart(oldSpan)
+        val end = inThisSpan.getSpanEnd(oldSpan)
+        val flags = inThisSpan.getSpanFlags(oldSpan)
+        inThisSpan.setSpan(newSpan, start, end, flags)
+        inThisSpan.removeSpan(oldSpan)
     }
 
     protected fun parseMessageWithRegex(messageToParse: StringBuilder, regexToUse: Regex, groupToUse: Int, stringBefore: String = "",

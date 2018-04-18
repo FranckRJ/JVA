@@ -1,6 +1,9 @@
 package com.franckrj.jva.utils
 
+import android.content.Context
 import android.os.Build
+import android.support.annotation.ColorInt
+import android.support.annotation.ColorRes
 import android.text.Html
 import android.text.Spanned
 
@@ -11,6 +14,16 @@ object UndeprecatorUtils {
         } else {
             @Suppress("DEPRECATION")
             Html.fromHtml(source, imageGetter, tagHandler)
+        }
+    }
+
+    @ColorInt
+    fun getColor(context: Context, @ColorRes colorId: Int): Int {
+        return if (Build.VERSION.SDK_INT >= 23) {
+            context.getColor(colorId)
+        } else {
+            @Suppress("DEPRECATION")
+            context.resources.getColor(colorId)
         }
     }
 }

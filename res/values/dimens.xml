@@ -19,4 +19,6 @@
     <dimen name="defaultToolbarMargin">8dp</dimen>
     <dimen name="toolbarTitleTextSize">18dp</dimen>
     <dimen name="toolbarSubtitleTextSize">14dp</dimen>
+    <dimen name="quoteStripeSize">2dp</dimen>
+    <dimen name="quoteGapSize">4dp</dimen>
 </resources>
