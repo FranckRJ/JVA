@@ -3,7 +3,6 @@ package com.franckrj.jva.topic
 import android.annotation.SuppressLint
 import android.arch.lifecycle.MutableLiveData
 import android.os.AsyncTask
-import android.text.SpannableString
 import com.franckrj.jva.services.WebService
 import com.franckrj.jva.utils.LoadableValue
 
@@ -16,17 +15,15 @@ class TopicRepository private constructor() {
     private val serviceForWeb: WebService = WebService.instance
     private val parserForTopic: TopicParser = TopicParser.instance
 
-    fun updateAllTopicPageInfos(linkOfTopicPage: String, topicPageInfosLiveData: MutableLiveData<LoadableValue<TopicPageInfos?>?>, settingsForMessages: TopicParser.MessageSettings) {
+    fun updateAllTopicPageInfos(linkOfTopicPage: String, topicPageInfosLiveData: MutableLiveData<LoadableValue<TopicPageInfos?>?>) {
         topicPageInfosLiveData.value = LoadableValue.loading(topicPageInfosLiveData.value?.value)
-        TopicGetter(linkOfTopicPage, topicPageInfosLiveData, settingsForMessages).execute()
+        TopicGetter(linkOfTopicPage, topicPageInfosLiveData).execute()
     }
 
     /* Ça ne devrait pas poser de problème normalement car
      * cette AsyncTask n'a aucune référence vers un contexte. */
     @SuppressLint("StaticFieldLeak")
-    private inner class TopicGetter(private val linkOfTopicPage: String,
-                                    private val topicPageInfosLiveData: MutableLiveData<LoadableValue<TopicPageInfos?>?>,
-                                    private val settingsForMessages: TopicParser.MessageSettings) : AsyncTask<Void, Void, TopicPageInfos?>() {
+    private inner class TopicGetter(private val linkOfTopicPage: String, private val topicPageInfosLiveData: MutableLiveData<LoadableValue<TopicPageInfos?>?>) : AsyncTask<Void, Void, TopicPageInfos?>() {
         override fun doInBackground(vararg voids: Void): TopicPageInfos? {
             val sourceOfWebPage:String? = serviceForWeb.getPage(linkOfTopicPage)
 
@@ -38,12 +35,6 @@ class TopicRepository private constructor() {
                 tmpTopicPageInfos.namesForForumAndTopic = parserForTopic.getForumAndTopicNameFromPageSource(sourceOfWebPage)
                 tmpTopicPageInfos.lastPageNumber = parserForTopic.getLastPageNumberFromPageSource(sourceOfWebPage)
                 tmpTopicPageInfos.listOfMessages = parserForTopic.getListOfMessagesFromPageSource(sourceOfWebPage)
-                tmpTopicPageInfos.listOfMessagesShowable = tmpTopicPageInfos.listOfMessages.map { messageInfos ->
-                    MessageInfosShowable(messageInfos.avatarLink,
-                                         SpannableString(messageInfos.author),
-                                         SpannableString(messageInfos.date),
-                                         parserForTopic.createMessageContentShowable(messageInfos, settingsForMessages))
-                }
 
                 tmpTopicPageInfos
             }

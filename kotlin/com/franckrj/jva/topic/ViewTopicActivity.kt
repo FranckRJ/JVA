@@ -89,13 +89,12 @@ class ViewTopicActivity : AppCompatActivity() {
             }
         })
 
-        topicViewModel.getInfosForTopicLoadingStatus().observe(this, Observer { infosForTopicLoadingStatus ->
-            messageListRefreshLayout.isRefreshing = (infosForTopicLoadingStatus == LoadableValue.STATUS_LOADING)
-        })
-
         topicViewModel.getListOfMessagesShowable().observe(this, Observer { listOfMessagesShowable ->
-            messageListAdapter.listOfMessagesShowable = listOfMessagesShowable ?: ArrayList()
-            messageListAdapter.notifyDataSetChanged()
+            messageListRefreshLayout.isRefreshing = (listOfMessagesShowable?.status == LoadableValue.STATUS_LOADING)
+            if (listOfMessagesShowable != null) {
+                messageListAdapter.listOfMessagesShowable = listOfMessagesShowable.value
+                messageListAdapter.notifyDataSetChanged()
+            }
         })
 
         topicViewModel.getForumAndTopicName().observe(this, Observer { forumAndTopicName ->
