@@ -40,8 +40,7 @@ class SmoothScrollbarRecyclerView : RecyclerView {
         return if (linearLm != null) {
             if (scrollbarNeedToBeShown(linearLm)) {
                 lastAverageSizeOfOneItemComputed = computeAverageSizeOfOneItem(linearLm)
-                lastRangeComputed = (lastAverageSizeOfOneItemComputed * adapter.itemCount).toInt()
-                lastRangeComputed
+                (lastAverageSizeOfOneItemComputed * adapter.itemCount).toInt().also { lastRangeComputed = it }
             } else {
                 0
             }
@@ -58,8 +57,7 @@ class SmoothScrollbarRecyclerView : RecyclerView {
                 val firstItemPosition: Int = linearLm.findFirstVisibleItemPosition()
                 val firstItem: View = linearLm.findViewByPosition(firstItemPosition)
 
-                lastOffsetComputed = ((firstItemPosition + getFractionOfItemTopNotVisible(firstItem)) * lastAverageSizeOfOneItemComputed).toInt()
-                lastOffsetComputed
+                ((firstItemPosition + getFractionOfItemTopNotVisible(firstItem)) * lastAverageSizeOfOneItemComputed).toInt().also { lastOffsetComputed = it }
             } else {
                 0
             }
