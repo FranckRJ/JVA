@@ -63,6 +63,22 @@ class TopicParser private constructor() : AbsParser() {
     private val rightParagraphePattern = Regex("""<(/)?p>(<br /> *){1,2}""")
     private val smallParagraphePattern = Regex("""<(/)?p>""")
 
+    private val stickerChangeMap: MutableMap<String, String>
+
+    init {
+        stickerChangeMap = hashMapOf("1jc3" to "1jc3-fr",
+                                     "1lej" to "1lej-en",
+                                     "1leq" to "1leq-en",
+                                     "1n1q" to "1n1q-fr",
+                                     "1n1t" to "1n1t-fr",
+                                     "1n1r" to "1n1r-fr",
+                                     "1n1o" to "1n1o-fr",
+                                     "1n1n" to "1n1n-fr",
+                                     "1n1m" to "1n1m-fr",
+                                     "1n1p" to "1n1p-fr",
+                                     "zuc" to "zuc-fr")
+    }
+
     fun getPageNumberOfThisTopicUrl(topicUrl: String): Int {
         val pageTopicLinkNumberMatcher: MatchResult? = pageTopicLinkNumberPattern.find(topicUrl)
 
@@ -163,7 +179,7 @@ class TopicParser private constructor() : AbsParser() {
         parseMessageWithRegexAndModif(messageInBuilder, codeLinePattern, 1, """ <font face="monospace">""", """</font> """, MakeCodeTagGreatAgain(false))
         messageInBuilder.replaceInside("\n", "")
 
-        /* TODO: Gérer les différents noms de stickers identiques. */
+        parseMessageWithRegexAndModif(messageInBuilder, stickerPattern, 1, "", "", ChangeStickersIfNeededModifier())
         parseMessageWithRegexAndModif(messageInBuilder, stickerPattern, 1, """<img src="sticker_""", """.png"/>""", ConvertUrlToStickerId(), ConvertStringToString("-", "_"))
         parseMessageWithRegex(messageInBuilder, smileyPattern, 2, """<img src="smiley_""", """"/>""")
 
@@ -345,23 +361,25 @@ class TopicParser private constructor() : AbsParser() {
         }
     }
 
+    private fun urlToStickerId(stickerUrl: String): String {
+        val stickerId: String = stickerUrl.removeSuffix("/")
+
+        return if (stickerId.contains("/")) {
+            stickerId.substring(stickerId.lastIndexOf("/") + 1)
+        } else {
+            stickerId
+        }
+    }
+
     private class ConvertStringToString(private val stringToRemplace: String, private val stringNew: String) : AbsParser.StringModifier {
         override fun changeString(baseString: String): String {
             return baseString.replace(stringToRemplace, stringNew)
         }
     }
 
-    private class ConvertUrlToStickerId : AbsParser.StringModifier {
+    private inner class ConvertUrlToStickerId : AbsParser.StringModifier {
         override fun changeString(baseString: String): String {
-            var newString: String = baseString
-
-            newString = newString.removeSuffix("/")
-
-            return if (newString.contains("/")) {
-                newString.substring(newString.lastIndexOf("/") + 1)
-            } else {
-                newString
-            }
+            return urlToStickerId(baseString)
         }
     }
 
@@ -408,6 +426,14 @@ class TopicParser private constructor() : AbsParser() {
             }
 
             return newString
+        }
+    }
+
+    private inner class ChangeStickersIfNeededModifier : StringModifier {
+        override fun changeString(baseString: String): String {
+            val idOfCurrentSticker = urlToStickerId(baseString)
+
+            return """<img class="img-stickers" src="""" + (stickerChangeMap[idOfCurrentSticker] ?: idOfCurrentSticker) + """"/>"""
         }
     }
 
