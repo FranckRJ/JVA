@@ -39,7 +39,7 @@ class ViewTopicActivity : AppCompatActivity() {
         val defaultToolbarCardElevation: Float = resources.getDimensionPixelSize(R.dimen.defaultToolbarCardElevation).toFloat()
         val aboveToolbarCardElevation: Float = resources.getDimensionPixelSize(R.dimen.aboveToolbarCardElevation).toFloat()
         val defaultMessageListPadding: Int = resources.getDimensionPixelSize(R.dimen.messageListPadding)
-        val messageCardBottomMargin: Int = resources.getDimensionPixelSize(R.dimen.messageCardBottomMargin)
+        val messageCardSpacing: Int = resources.getDimensionPixelSize(R.dimen.messageCardSpacing)
         val refreshSpinnerTopMargin: Int = resources.getDimensionPixelSize(R.dimen.refreshSpinnerTopMargin)
 
         val appbarLayout: AppBarLayout = findViewById(R.id.appbar_layout_main)
@@ -78,7 +78,7 @@ class ViewTopicActivity : AppCompatActivity() {
         messageListView.setPaddingRelative(defaultMessageListPadding,
                 toolbarHeight + (defaultToolbarMargin * 2) + statusBarHeight,
                 defaultMessageListPadding,
-                defaultMessageListPadding - messageCardBottomMargin + if (navBarIsInApp) navBarHeight else 0)
+                defaultMessageListPadding - messageCardSpacing + if (navBarIsInApp) navBarHeight else 0)
         messageListView.addOnScrollListener(object : RecyclerView.OnScrollListener() {
             override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
                 if (toolbarCard.translationZ == aboveToolbarCardElevation && messageListView.isScrolledAtTop()) {

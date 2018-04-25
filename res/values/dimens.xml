@@ -4,8 +4,8 @@
     <dimen name="defaultToolbarCardElevation">2dp</dimen>
     <dimen name="defaultCardElevation">2dp</dimen>
     <dimen name="defaultCardCornerRadius">4dp</dimen>
-    <dimen name="messageListPadding">4dp</dimen>
-    <dimen name="messageCardBottomMargin">7dp</dimen>
+    <dimen name="messageListPadding">6dp</dimen>
+    <dimen name="messageCardSpacing">6dp</dimen>
     <dimen name="avatarSize">30dp</dimen>
     <dimen name="stickerSize">50dp</dimen>
     <dimen name="messageAuthorStartMargin">8dp</dimen>
