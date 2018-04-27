@@ -173,14 +173,15 @@ class TopicParser private constructor() : AbsParser() {
 
     private fun formatMessageToPrettyMessage(message: String, containSpoilTag: Boolean, maxNumberOfOverlyQuotes: Int): String {
         val messageInBuilder = StringBuilder(message)
-        val makeLinkDependingOnSettingsAndForceMake = MakeShortenedLinkIfPossible(50, true)
+        val makeLinkDependingOnSettingsAndForceMake: (String) -> String = { it: String -> makeShortenedLinkIfPossible(it, 50, true) }
 
-        parseMessageWithRegexAndModif(messageInBuilder, codeBlockPattern, 1, """<p><font face="monospace">""", """</font></p>""", MakeCodeTagGreatAgain(true))
-        parseMessageWithRegexAndModif(messageInBuilder, codeLinePattern, 1, """ <font face="monospace">""", """</font> """, MakeCodeTagGreatAgain(false))
+        parseMessageWithRegexAndModif(messageInBuilder, codeBlockPattern, 1, """<p><font face="monospace">""", """</font></p>""", ::makeBetterCodeBlockTag)
+        parseMessageWithRegexAndModif(messageInBuilder, codeLinePattern, 1, """ <font face="monospace">""", """</font> """, ::makeBetterCodeLineTag)
         messageInBuilder.replaceInside("\n", "")
 
-        parseMessageWithRegexAndModif(messageInBuilder, stickerPattern, 1, "", "", ChangeStickersIfNeededModifier())
-        parseMessageWithRegexAndModif(messageInBuilder, stickerPattern, 1, """<img src="sticker_""", """.png"/>""", ConvertUrlToStickerId(), ConvertStringToString("-", "_"))
+        /* Remplace le code des stickers par celui par défaut quand le sticker a plusieurs noms différents. */
+        parseMessageWithRegexAndModif(messageInBuilder, stickerPattern, 1, "", "", ::createCorrectStickerCodeForThisStickerUrl)
+        parseMessageWithRegexAndModif(messageInBuilder, stickerPattern, 1, """<img src="sticker_""", """.png"/>""", ::urlToStickerId, { it: String -> it.replace("-", "_") })
         parseMessageWithRegex(messageInBuilder, smileyPattern, 2, """<img src="smiley_""", """"/>""")
 
         parseMessageWithRegex(messageInBuilder, youtubeVideoPattern, 2, """<a href="http://youtu.be/""", """">http://youtu.be/""", 2, """</a>""")
@@ -199,7 +200,7 @@ class TopicParser private constructor() : AbsParser() {
         removeDivAndAdaptParagraphInMessage(messageInBuilder)
         parseMessageWithRegex(messageInBuilder, surroundedBlockquotePattern, 2)
 
-        parseMessageWithRegexAndModif(messageInBuilder, jvCarePattern, 1, "", "", MakeShortenedLinkIfPossible(50, false))
+        parseMessageWithRegexAndModif(messageInBuilder, jvCarePattern, 1, "", "", { it: String -> makeShortenedLinkIfPossible(it, 50, false) })
 
         removeFirstAndLastBrInMessage(messageInBuilder)
 
@@ -371,70 +372,56 @@ class TopicParser private constructor() : AbsParser() {
         }
     }
 
-    private class ConvertStringToString(private val stringToRemplace: String, private val stringNew: String) : AbsParser.StringModifier {
-        override fun changeString(baseString: String): String {
-            return baseString.replace(stringToRemplace, stringNew)
+    private fun makeBetterCodeBlockTag(codeTagContent: String): String {
+        var newString: String = codeTagContent
+
+        while (newString.startsWith("\n")) {
+            newString = newString.removePrefix("\n")
         }
+
+        while (newString.endsWith("\n")) {
+            newString = newString.removeSuffix("\n")
+        }
+
+        newString = newString.replace("\n", "<br />")
+
+        return newString.replace("  ", "&nbsp;&nbsp;")
     }
 
-    private inner class ConvertUrlToStickerId : AbsParser.StringModifier {
-        override fun changeString(baseString: String): String {
-            return urlToStickerId(baseString)
+    private fun makeBetterCodeLineTag(codeTagContent: String): String {
+        var newString: String = codeTagContent
+
+        if (newString.startsWith(" ")) {
+            newString = "&nbsp;" + newString.removePrefix(" ")
         }
+
+        if (newString.endsWith(" ")) {
+            newString = newString.removeSuffix(" ") + "&nbsp;"
+        }
+
+        return newString.replace("  ", "&nbsp;&nbsp;")
     }
 
-    private class MakeCodeTagGreatAgain(private val isCodeBlock: Boolean) : AbsParser.StringModifier {
-        override fun changeString(baseString: String): String {
-            var newString: String = baseString
+    private fun makeShortenedLinkIfPossible(possibleLink: String, maxStringSize: Int, forceLinkCreation: Boolean): String {
+        var newString: String = possibleLink
 
-            if (isCodeBlock) {
-                while (newString.startsWith("\n")) {
-                    newString = newString.removePrefix("\n")
-                }
+        if (forceLinkCreation || ((newString.startsWith("http://") || newString.startsWith("https://")) && !newString.contains(" "))) {
+            var linkShowed = newString
 
-                while (newString.endsWith("\n")) {
-                    newString = newString.removeSuffix("\n")
-                }
-
-                newString = newString.replace("\n", "<br />")
-            } else {
-                if (newString.startsWith(" ")) {
-                    newString = "&nbsp;" + newString.removePrefix(" ")
-                }
-
-                if (newString.endsWith(" ")) {
-                    newString = newString.removeSuffix(" ") + "&nbsp;"
-                }
+            if (maxStringSize > 0 && linkShowed.length > maxStringSize + 3) {
+                linkShowed = linkShowed.substring(0, maxStringSize / 2) + "[…]" + linkShowed.substring(linkShowed.length - maxStringSize / 2)
             }
 
-            return newString.replace("  ", "&nbsp;&nbsp;")
+            newString = """<a href="$newString">$linkShowed</a>"""
         }
+
+        return newString
     }
 
-    private class MakeShortenedLinkIfPossible(private val maxStringSize: Int, private val forceLinkCreation: Boolean) : AbsParser.StringModifier {
-        override fun changeString(baseString: String): String {
-            var newString: String = baseString
+    private fun createCorrectStickerCodeForThisStickerUrl(stickerUrl: String): String {
+        val idOfCurrentSticker = urlToStickerId(stickerUrl)
 
-            if (forceLinkCreation || ((newString.startsWith("http://") || newString.startsWith("https://")) && !newString.contains(" "))) {
-                var linkShowed = newString
-
-                if (maxStringSize > 0 && linkShowed.length > maxStringSize + 3) {
-                    linkShowed = linkShowed.substring(0, maxStringSize / 2) + "[…]" + linkShowed.substring(linkShowed.length - maxStringSize / 2)
-                }
-
-                newString = """<a href="$newString">$linkShowed</a>"""
-            }
-
-            return newString
-        }
-    }
-
-    private inner class ChangeStickersIfNeededModifier : StringModifier {
-        override fun changeString(baseString: String): String {
-            val idOfCurrentSticker = urlToStickerId(baseString)
-
-            return """<img class="img-stickers" src="""" + (stickerChangeMap[idOfCurrentSticker] ?: idOfCurrentSticker) + """"/>"""
-        }
+        return """<img class="img-stickers" src="""" + (stickerChangeMap[idOfCurrentSticker] ?: idOfCurrentSticker) + """"/>"""
     }
 
     class MessageSettings(val settingsForBetterQuotes: BetterQuoteSpan.BetterQuoteSettings,

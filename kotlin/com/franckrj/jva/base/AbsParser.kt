@@ -54,19 +54,19 @@ abstract class AbsParser {
         }
     }
 
-    protected fun parseMessageWithRegexAndModif(messageToParse: StringBuilder, regexToUse: Regex, groupToUse: Int, stringBefore: String = "",
-                                                stringAfter: String = "", firstModifier: StringModifier? = null, secondModifier: StringModifier? = null) {
+    protected fun parseMessageWithRegexAndModif(messageToParse: StringBuilder, regexToUse: Regex, groupToUse: Int, stringBefore: String = "", stringAfter: String = "",
+                                                firstStringModifier: ((String) -> String)? = null, secondStringModifier: ((String) -> String)? = null) {
         var matcherToUse: MatchResult? = regexToUse.find(messageToParse)
 
         while (matcherToUse != null) {
             val newMessage = StringBuilder(stringBefore)
             var messageToUse: String = if (groupToUse == -1) "" else matcherToUse.groupValues[groupToUse]
 
-            if (firstModifier != null) {
-                messageToUse = firstModifier.changeString(messageToUse)
+            if (firstStringModifier != null) {
+                messageToUse = firstStringModifier(messageToUse)
             }
-            if (secondModifier != null) {
-                messageToUse = secondModifier.changeString(messageToUse)
+            if (secondStringModifier != null) {
+                messageToUse = secondStringModifier(messageToUse)
             }
 
             newMessage.append(messageToUse).append(stringAfter)
@@ -100,9 +100,5 @@ abstract class AbsParser {
         }
 
         return newUrl
-    }
-
-    interface StringModifier {
-        fun changeString(baseString: String): String
     }
 }
