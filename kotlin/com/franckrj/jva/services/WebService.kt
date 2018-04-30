@@ -13,6 +13,8 @@ class WebService private constructor(private val userAgentToUse: String) {
             .connectTimeout(5, TimeUnit.SECONDS)
             .writeTimeout(5, TimeUnit.SECONDS)
             .readTimeout(5, TimeUnit.SECONDS)
+            .followRedirects(false)
+            .followSslRedirects(false)
             .build()
 
     fun getPage(urlForPage: String): String? {

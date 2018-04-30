@@ -13,9 +13,9 @@ import com.franckrj.jva.services.CopylessSpannableFactory
 import com.franckrj.jva.utils.GlideApp
 import com.franckrj.jva.R
 
-class TopicAdapter(private val context: Context,
-                   private val sizeOfAvatars: Int,
-                   sizeOfAvatarRoundedCorners: Int) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
+class TopicPageAdapter(private val context: Context,
+                       private val sizeOfAvatars: Int,
+                       sizeOfAvatarRoundedCorners: Int) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
     companion object {
         private const val TYPE_HEADER: Int = 0
         private const val TYPE_ITEM: Int = 1

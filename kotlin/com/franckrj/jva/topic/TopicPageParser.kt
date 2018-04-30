@@ -10,13 +10,13 @@ import com.franckrj.jva.utils.BetterQuoteSpan
 import com.franckrj.jva.utils.UndeprecatorUtils
 import com.franckrj.jva.utils.Utils
 
-class TopicParser private constructor() : AbsParser() {
+class TopicPageParser private constructor() : AbsParser() {
     companion object {
-        val instance: TopicParser by lazy { TopicParser() }
+        val instance: TopicPageParser by lazy { TopicPageParser() }
     }
 
     /* Regex pour les liens des topics. */
-    private val pageTopicLinkNumberPattern = Regex("""^(http://www\.jeuxvideo\.com/forums/[0-9]*-([0-9]*)-([0-9]*)-)([0-9]*)(-[0-9]*-[0-9]*-[0-9]*-[^.]*\.htm)""")
+    private val pageTopicUrlNumberPattern = Regex("""^(http://www\.jeuxvideo\.com/forums/[0-9]*-([0-9]*)-([0-9]*)-)([0-9]*)(-[0-9]*-[0-9]*-[0-9]*-[^.]*\.htm)""")
 
     /* Regex pour récupérer les infos d'une page d'un topic. */
     private val allArianeStringPattern = Regex("""<div class="fil-ariane-crumb">.*?</h1>""", RegexOption.DOT_MATCHES_ALL)
@@ -80,12 +80,22 @@ class TopicParser private constructor() : AbsParser() {
     }
 
     fun getPageNumberOfThisTopicUrl(topicUrl: String): Int {
-        val pageTopicLinkNumberMatcher: MatchResult? = pageTopicLinkNumberPattern.find(topicUrl)
+        val pageTopicUrlNumberMatcher: MatchResult? = pageTopicUrlNumberPattern.find(topicUrl)
 
-        return if (pageTopicLinkNumberMatcher != null) {
-            pageTopicLinkNumberMatcher.groupValues[4].toIntOrNull() ?: -1
+        return if (pageTopicUrlNumberMatcher != null) {
+            pageTopicUrlNumberMatcher.groupValues[4].toIntOrNull() ?: -1
         } else {
             -1
+        }
+    }
+
+    fun setPageNumberForThisTopicUrl(topicUrl: String, newPageNumber: Int): String {
+        val pageTopicUrlNumberMatcher: MatchResult? = pageTopicUrlNumberPattern.find(topicUrl)
+
+        return if (pageTopicUrlNumberMatcher != null) {
+            pageTopicUrlNumberMatcher.groupValues[1] + newPageNumber.toString() + pageTopicUrlNumberMatcher.groupValues[5]
+        } else {
+            ""
         }
     }
 
@@ -218,7 +228,7 @@ class TopicParser private constructor() : AbsParser() {
         val messageContentMatcher: MatchResult? = messageContentPattern.find(wholeMessage)
 
         if (messageAvatarMatcher != null) {
-            infosForMessage.avatarLink = "http://" + messageAvatarMatcher.groupValues[2]
+            infosForMessage.avatarUrl = "http://" + messageAvatarMatcher.groupValues[2]
         }
 
         if (messageAuthorInfosMatcher != null) {
