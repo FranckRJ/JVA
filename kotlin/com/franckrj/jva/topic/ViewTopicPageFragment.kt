@@ -21,8 +21,9 @@ import com.franckrj.jva.utils.SmoothScrollbarRecyclerView
 
 class ViewTopicPageFragment : Fragment() {
     companion object {
+        private const val SAVE_IS_ACTIVE: String = "SAVE_IS_ACTIVE"
+
         const val ARG_PAGE_NUMBER: String = "ARG_PAGE_NUMBER"
-        const val ARG_IS_ACTIVE_FRAG: String = "ARG_IS_ACTIVE_FRAG"
     }
 
     private lateinit var messageListRefreshLayout: SwipeRefreshLayout
@@ -30,6 +31,7 @@ class ViewTopicPageFragment : Fragment() {
     private lateinit var messageListAdapter: TopicPageAdapter
     private lateinit var topicViewModel: TopicViewModel
     private lateinit var topicPageViewModel: TopicPageViewModel
+    private var isActive: Boolean = false
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         val mainView: View = inflater.inflate(R.layout.fragment_viewtopicpage, container, false)
@@ -88,13 +90,14 @@ class ViewTopicPageFragment : Fragment() {
         })
 
         topicPageViewModel.init(arguments?.getInt(ARG_PAGE_NUMBER) ?: 1)
-        if (arguments?.getBoolean(ARG_IS_ACTIVE_FRAG) == true) {
+
+        if (savedInstanceState?.getBoolean(SAVE_IS_ACTIVE) == true) {
             setIsActiveFragment(true)
         }
 
         topicPageViewModel.getListOfMessagesShowable().observe(this, Observer { listOfMessagesShowable ->
             messageListRefreshLayout.isRefreshing = (listOfMessagesShowable?.status == LoadableValue.STATUS_LOADING)
-            if (listOfMessagesShowable != null) {
+            if (listOfMessagesShowable != null && (listOfMessagesShowable.value.isNotEmpty() || messageListAdapter.listOfMessagesShowable.isNotEmpty())) {
                 messageListAdapter.listOfMessagesShowable = listOfMessagesShowable.value
                 messageListAdapter.notifyDataSetChanged()
             }
@@ -126,17 +129,25 @@ class ViewTopicPageFragment : Fragment() {
         }
     }
 
-    fun setIsActiveFragment(isActive: Boolean) {
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+        outState.putBoolean(SAVE_IS_ACTIVE, isActive)
+    }
+
+    fun setIsActiveFragment(newIsActive: Boolean) {
+        isActive = newIsActive
         if (isActive) {
             topicViewModel.setNewSourceForPageInfos(topicPageViewModel.getInfosForTopicPage())
-            topicPageViewModel.updateTopicPageInfos(topicViewModel.topicUrl)
+            messageListAdapter.showAllPageInfos = true
+            topicPageViewModel.getTopicPageInfosIfNeeded(topicViewModel.topicUrl)
         } else {
+            messageListAdapter.showAllPageInfos = false
             //TODO: stoper la récupération des infos etc
         }
+        messageListAdapter.notifyItemChanged(TopicPageAdapter.HEADER_POSITION)
     }
 
     fun clearMessages() {
-        messageListAdapter.listOfMessagesShowable = ArrayList()
-        messageListAdapter.notifyDataSetChanged()
+        topicPageViewModel.clearListOfMessagesShowable()
     }
 }

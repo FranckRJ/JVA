@@ -67,14 +67,22 @@ class TopicPageViewModel(app: Application) : AndroidViewModel(app) {
         currentPageNumber.value = pageNumberUsed
     }
 
+    fun clearListOfMessagesShowable() {
+        listOfMessagesShowable.value = LoadableValue.loaded(ArrayList())
+    }
+
     fun getInfosForTopicPage() : LiveData<LoadableValue<TopicPageInfos?>?> = infosForTopicPage
 
-    fun getCurrentPageNumber(): LiveData<Int> = currentPageNumber
+    fun getCurrentPageNumber(): LiveData<Int?> = currentPageNumber
 
-    fun getListOfMessagesShowable(): LiveData<LoadableValue<List<MessageInfosShowable>>> = listOfMessagesShowable
+    fun getListOfMessagesShowable(): LiveData<LoadableValue<List<MessageInfosShowable>>?> = listOfMessagesShowable
 
-    fun updateTopicPageInfos(formatedTopicUrl: String) {
-        topicPageRepo.updateTopicPageInfos(topicPageParser.setPageNumberForThisTopicUrl(formatedTopicUrl, currentPageNumber.value ?: 0), infosForTopicPage)
+    /* Ne récupère les informations que si aucun message n'est actuellement affiché ni en cours de chargement. */
+    fun getTopicPageInfosIfNeeded(formatedTopicUrl: String) {
+        val realListOfMessagesShowable: LoadableValue<List<MessageInfosShowable>>? = listOfMessagesShowable.value
+        if (realListOfMessagesShowable == null || (realListOfMessagesShowable.value.isEmpty() && realListOfMessagesShowable.status != LoadableValue.STATUS_LOADING)) {
+            topicPageRepo.updateTopicPageInfos(topicPageParser.setPageNumberForThisTopicUrl(formatedTopicUrl, currentPageNumber.value ?: 0), infosForTopicPage)
+        }
     }
 
     private class FormatMessagesToShowableMessages(private var listOfBaseMessages: List<MessageInfos>,

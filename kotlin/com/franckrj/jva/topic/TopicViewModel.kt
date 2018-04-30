@@ -50,7 +50,7 @@ class TopicViewModel : ViewModel() {
         removeCurrentSourceForPageInfos()
     }
 
-    fun getForumAndTopicName(): LiveData<ForumAndTopicName> = forumAndTopicName
+    fun getForumAndTopicName(): LiveData<ForumAndTopicName?> = forumAndTopicName
 
     fun getLastPageNumber(): LiveData<Int> = lastPageNumber
 }

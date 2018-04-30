@@ -30,6 +30,7 @@ class TopicPageAdapter(private val context: Context,
     private val waitingText: String = context.getString(R.string.waitingText)
     var currentPageNumber: Int = -1
     var lastPageNumber: Int = -1
+    var showAllPageInfos: Boolean = false
     var listOfMessagesShowable: List<MessageInfosShowable> = ArrayList()
     var authorClickedListener: OnItemClickedListener? = null
     var dateClickedListener: OnItemClickedListener? = null
@@ -64,7 +65,7 @@ class TopicPageAdapter(private val context: Context,
 
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
         if (holder is HeaderViewHolder) {
-            holder.bindView(currentPageNumber, lastPageNumber)
+            holder.bindView(currentPageNumber, lastPageNumber, showAllPageInfos)
         } else if (holder is MessageViewHolder) {
             holder.bindView(listOfMessagesShowable[position - NUMBER_OF_HEADERS], position - NUMBER_OF_HEADERS)
         }
@@ -109,23 +110,30 @@ class TopicPageAdapter(private val context: Context,
         private val nextPageButton: TextView = mainView.findViewById(R.id.nextpage_button_header_row)
         private val lastPageButton: TextView = mainView.findViewById(R.id.lastpage_button_header_row)
 
-        fun bindView(currentPageNumber: Int, lastPageNumber: Int) {
+        fun bindView(currentPageNumber: Int, lastPageNumber: Int, showAllPageInfos: Boolean) {
             if (currentPageNumber >= 0) {
                 currentPageButton.text = currentPageNumber.toString()
 
-                if (currentPageNumber > 1) {
-                    firstPageButton.visibility = View.VISIBLE
-                    previousPageButton.visibility = View.VISIBLE
+                if (showAllPageInfos) {
+                    if (currentPageNumber > 1) {
+                        firstPageButton.visibility = View.VISIBLE
+                        previousPageButton.visibility = View.VISIBLE
+                    } else {
+                        firstPageButton.visibility = View.INVISIBLE
+                        previousPageButton.visibility = View.INVISIBLE
+                    }
+
+                    if (lastPageNumber > currentPageNumber) {
+                        lastPageButton.text = lastPageNumber.toString()
+                        nextPageButton.visibility = View.VISIBLE
+                        lastPageButton.visibility = View.VISIBLE
+                    } else {
+                        nextPageButton.visibility = View.INVISIBLE
+                        lastPageButton.visibility = View.INVISIBLE
+                    }
                 } else {
                     firstPageButton.visibility = View.INVISIBLE
                     previousPageButton.visibility = View.INVISIBLE
-                }
-
-                if (lastPageNumber > currentPageNumber) {
-                    lastPageButton.text = lastPageNumber.toString()
-                    nextPageButton.visibility = View.VISIBLE
-                    lastPageButton.visibility = View.VISIBLE
-                } else {
                     nextPageButton.visibility = View.INVISIBLE
                     lastPageButton.visibility = View.INVISIBLE
                 }

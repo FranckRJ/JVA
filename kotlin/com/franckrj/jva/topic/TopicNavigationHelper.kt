@@ -60,7 +60,7 @@ class TopicNavigationHelper(private val topicViewPager: ViewPager,
         topicViewPagerAdapter.notifyDataSetChanged()
     }
 
-    inner class TopicViewPagerAdapter(fragManager: FragmentManager) : FragmentStatePagerAdapter(fragManager) {
+    private class TopicViewPagerAdapter(fragManager: FragmentManager) : FragmentStatePagerAdapter(fragManager) {
         private var referenceMap = SparseArray<ViewTopicPageFragment>()
         var numberOfPages: Int = 1
             set(newNumberOfPages) {
@@ -84,10 +84,6 @@ class TopicNavigationHelper(private val topicViewPager: ViewPager,
         override fun getItem(position: Int): Fragment {
             val argForFrag = Bundle()
             val newViewTopicPageFrag = ViewTopicPageFragment()
-
-            if (position == getCurrentItemIndex()) {
-                argForFrag.putBoolean(ViewTopicPageFragment.ARG_IS_ACTIVE_FRAG, true)
-            }
 
             argForFrag.putInt(ViewTopicPageFragment.ARG_PAGE_NUMBER, position + 1)
             newViewTopicPageFrag.arguments = argForFrag
