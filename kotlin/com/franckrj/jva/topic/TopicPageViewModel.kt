@@ -23,7 +23,7 @@ class TopicPageViewModel(app: Application) : AndroidViewModel(app) {
     private var currentTaskForMessagesFormat: FormatMessagesToShowableMessages? = null
 
     private val infosForTopicPage: MutableLiveData<LoadableValue<TopicPageInfos?>?> = MutableLiveData()
-    private val currentPageNumber: MutableLiveData<Int> = MutableLiveData()
+    private val pageNumber: MutableLiveData<Int> = MutableLiveData()
     private val listOfMessagesShowable: MediatorLiveData<LoadableValue<List<MessageInfosShowable>>> = MediatorLiveData()
 
     init {
@@ -64,7 +64,7 @@ class TopicPageViewModel(app: Application) : AndroidViewModel(app) {
     }
 
     fun init(pageNumberUsed: Int) {
-        currentPageNumber.value = pageNumberUsed
+        pageNumber.value = pageNumberUsed
     }
 
     fun clearListOfMessagesShowable() {
@@ -73,7 +73,7 @@ class TopicPageViewModel(app: Application) : AndroidViewModel(app) {
 
     fun getInfosForTopicPage() : LiveData<LoadableValue<TopicPageInfos?>?> = infosForTopicPage
 
-    fun getCurrentPageNumber(): LiveData<Int?> = currentPageNumber
+    fun getCurrentPageNumber(): LiveData<Int?> = pageNumber
 
     fun getListOfMessagesShowable(): LiveData<LoadableValue<List<MessageInfosShowable>>?> = listOfMessagesShowable
 
@@ -81,7 +81,7 @@ class TopicPageViewModel(app: Application) : AndroidViewModel(app) {
     fun getTopicPageInfosIfNeeded(formatedTopicUrl: String) {
         val realListOfMessagesShowable: LoadableValue<List<MessageInfosShowable>>? = listOfMessagesShowable.value
         if (realListOfMessagesShowable == null || (realListOfMessagesShowable.value.isEmpty() && realListOfMessagesShowable.status != LoadableValue.STATUS_LOADING)) {
-            topicPageRepo.updateTopicPageInfos(topicPageParser.setPageNumberForThisTopicUrl(formatedTopicUrl, currentPageNumber.value ?: 0), infosForTopicPage)
+            topicPageRepo.updateTopicPageInfos(topicPageParser.setPageNumberForThisTopicUrl(formatedTopicUrl, pageNumber.value ?: 0), infosForTopicPage)
         }
     }
 

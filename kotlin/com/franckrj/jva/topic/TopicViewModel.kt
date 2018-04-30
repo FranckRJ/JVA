@@ -2,21 +2,19 @@ package com.franckrj.jva.topic
 
 import android.arch.lifecycle.LiveData
 import android.arch.lifecycle.MediatorLiveData
+import android.arch.lifecycle.MutableLiveData
 import android.arch.lifecycle.ViewModel
 import com.franckrj.jva.utils.LoadableValue
 
 class TopicViewModel : ViewModel() {
     private val topicPageParser: TopicPageParser = TopicPageParser.instance
 
+    private var infosForTopicPage: LiveData<LoadableValue<TopicPageInfos?>?>? = null
     private val forumAndTopicName: MediatorLiveData<ForumAndTopicName> = MediatorLiveData()
     private val lastPageNumber: MediatorLiveData<Int> = MediatorLiveData()
-    private var infosForTopicPage: LiveData<LoadableValue<TopicPageInfos?>?>? = null
-
+    private val currentPageNumber: MutableLiveData<Int> = MutableLiveData()
     var topicUrl: String = ""
-        set(newTopicUrl) {
-            field = topicPageParser.formatThisUrlToClassicJvcUrl(newTopicUrl)
-            lastPageNumber.value = topicPageParser.getPageNumberOfThisTopicUrl(topicUrl)
-        }
+        private set
 
     private fun removeCurrentSourceForPageInfos() {
         val currentInfosForTopicPage: LiveData<LoadableValue<TopicPageInfos?>?>? = infosForTopicPage
@@ -24,6 +22,19 @@ class TopicViewModel : ViewModel() {
             forumAndTopicName.removeSource(currentInfosForTopicPage)
             lastPageNumber.removeSource(currentInfosForTopicPage)
             infosForTopicPage = null
+        }
+    }
+
+    fun setUrlForTopic(newTopicUrl: String) {
+        topicUrl = topicPageParser.formatThisUrlToClassicJvcUrl(newTopicUrl)
+        /* Dans cet ordre bien précisément car currentPageNumber ne doit jamais être supérieur à lastPageNumber. */
+        lastPageNumber.value = topicPageParser.getPageNumberOfThisTopicUrl(topicUrl)
+        currentPageNumber.value = lastPageNumber.value
+    }
+
+    fun setCurrentPageNumber(newCurrentPageNumber: Int) {
+        if (currentPageNumber.value != newCurrentPageNumber) {
+            currentPageNumber.value = newCurrentPageNumber
         }
     }
 
@@ -52,5 +63,7 @@ class TopicViewModel : ViewModel() {
 
     fun getForumAndTopicName(): LiveData<ForumAndTopicName?> = forumAndTopicName
 
-    fun getLastPageNumber(): LiveData<Int> = lastPageNumber
+    fun getLastPageNumber(): LiveData<Int?> = lastPageNumber
+
+    fun getCurrentPageNumber(): LiveData<Int?> = currentPageNumber
 }

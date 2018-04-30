@@ -52,6 +52,20 @@ class ViewTopicActivity : AppCompatActivity(), MovableToolbar {
             }
         })
 
+        topicViewPager.addOnPageChangeListener(object : ViewPager.OnPageChangeListener {
+            override fun onPageScrolled(position: Int, positionOffset: Float, positionOffsetPixels: Int) {
+                //rien
+            }
+
+            override fun onPageSelected(position: Int) {
+                topicViewModel.setCurrentPageNumber(position + 1)
+            }
+
+            override fun onPageScrollStateChanged(state: Int) {
+                //rien
+            }
+        })
+
         topicViewModel.getForumAndTopicName().observe(this, Observer { forumAndTopicName ->
             if (forumAndTopicName != null) {
                 setTitle(forumAndTopicName.topicName)
@@ -65,6 +79,12 @@ class ViewTopicActivity : AppCompatActivity(), MovableToolbar {
             }
         })
 
+        topicViewModel.getCurrentPageNumber().observe(this, Observer { newCurrentPageNumber ->
+            if (newCurrentPageNumber != null && (newCurrentPageNumber - 1) != topicNavigation.getCurrentItemIndex()) {
+                topicNavigation.setCurrentItemIndex(newCurrentPageNumber - 1)
+            }
+        })
+
         if (savedInstanceState == null) {
             val alertDialog = AlertDialog.Builder(this)
             val editText = EditText(this)
@@ -74,12 +94,15 @@ class ViewTopicActivity : AppCompatActivity(), MovableToolbar {
 
             alertDialog.setPositiveButton("Valider", { _, _ ->
                 if (editText.text.toString().isNotEmpty()) {
-                    topicViewModel.topicUrl = editText.text.toString()
+                    topicViewModel.setUrlForTopic(editText.text.toString())
                 } else {
-                    topicViewModel.topicUrl = "http://www.jeuxvideo.com/forums/42-1000005-47929326-3-0-1-0-ok-google-blabla-android.htm"
+                    topicViewModel.setUrlForTopic("http://www.jeuxvideo.com/forums/42-1000005-47929326-3-0-1-0-ok-google-blabla-android.htm")
                 }
-                topicNavigation.setNumberOfPages((topicViewModel.getLastPageNumber().value ?: 1))
-                topicNavigation.setCurrentItemIndex((topicViewModel.getLastPageNumber().value ?: 1) - 1)
+
+                /* Ce n'est pas censé être utile car normalement ViewTopicActivity connait l'url du topic dès le début. */
+                if (topicViewModel.getCurrentPageNumber().value == 1) {
+                    topicNavigation.setCurrentItemIndex(0)
+                }
             })
 
             alertDialog.show()
