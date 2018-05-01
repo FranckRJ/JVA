@@ -37,19 +37,21 @@ class TopicPageViewModel(app: Application) : AndroidViewModel(app) {
         listOfMessagesShowable.addSource(infosForTopicPage, { newInfosForTopicPage ->
             /* Effacement de la liste des messages lors d'une erreur ou d'un début de chargement.
              * Comportement voulu ? */
-            when {
-                newInfosForTopicPage?.value != null && newInfosForTopicPage.status == LoadableValue.STATUS_LOADED -> {
-                    if (currentTaskForMessagesFormat != null) {
-                        cancelCurrentFormatMessagesTask()
+            if (newInfosForTopicPage != null) {
+                when {
+                    newInfosForTopicPage.value != null && newInfosForTopicPage.status == LoadableValue.STATUS_LOADED -> {
+                        if (currentTaskForMessagesFormat != null) {
+                            cancelCurrentFormatMessagesTask()
+                        }
+                        currentTaskForMessagesFormat = FormatMessagesToShowableMessages(newInfosForTopicPage.value.listOfMessages,
+                                topicPageParser,
+                                settingsForMessages,
+                                listOfMessagesShowable)
+                        currentTaskForMessagesFormat?.execute()
                     }
-                    currentTaskForMessagesFormat = FormatMessagesToShowableMessages(newInfosForTopicPage.value.listOfMessages,
-                            topicPageParser,
-                            settingsForMessages,
-                            listOfMessagesShowable)
-                    currentTaskForMessagesFormat?.execute()
+                    newInfosForTopicPage.status == LoadableValue.STATUS_LOADING -> listOfMessagesShowable.value = LoadableValue.loading(ArrayList())
+                    else -> listOfMessagesShowable.value = LoadableValue.error(ArrayList())
                 }
-                newInfosForTopicPage?.status == LoadableValue.STATUS_LOADING -> listOfMessagesShowable.value = LoadableValue.loading(ArrayList())
-                else -> listOfMessagesShowable.value = LoadableValue.error(ArrayList())
             }
         })
     }
@@ -69,6 +71,10 @@ class TopicPageViewModel(app: Application) : AndroidViewModel(app) {
 
     fun clearListOfMessagesShowable() {
         listOfMessagesShowable.value = LoadableValue.loaded(ArrayList())
+    }
+
+    fun clearInfosForTopicPage() {
+        infosForTopicPage.value = null
     }
 
     fun getInfosForTopicPage() : LiveData<LoadableValue<TopicPageInfos?>?> = infosForTopicPage

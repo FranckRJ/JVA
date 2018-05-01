@@ -122,9 +122,21 @@ class ViewTopicPageFragment : Fragment() {
                 Toast.makeText(requireActivity(), "Position d'auteur cliqué : " + position.toString(), Toast.LENGTH_SHORT).show()
             }
         }
+
         messageListAdapter.dateClickedListener = object : TopicPageAdapter.OnItemClickedListener {
             override fun onItemClicked(position: Int) {
                 Toast.makeText(requireActivity(), "Position de date cliquée : " + position.toString(), Toast.LENGTH_SHORT).show()
+            }
+        }
+
+        messageListAdapter.pageNavigationButtonClickedListener = object : TopicPageAdapter.OnPageNavigationButtonClickedListener {
+            override fun onPageNavigationButtonClicked(idOfButton: Int) {
+                when (idOfButton) {
+                    R.id.firstpage_button_header_row -> topicViewModel.setCurrentPageNumber(1)
+                    R.id.previouspage_button_header_row -> topicViewModel.setCurrentPageNumber((topicViewModel.getCurrentPageNumber().value ?: 2) - 1)
+                    R.id.nextpage_button_header_row -> topicViewModel.setCurrentPageNumber((topicViewModel.getCurrentPageNumber().value ?: 1) + 1)
+                    R.id.lastpage_button_header_row -> topicViewModel.setCurrentPageNumber(topicViewModel.getLastPageNumber().value ?: 1)
+                }
             }
         }
     }
@@ -142,6 +154,7 @@ class ViewTopicPageFragment : Fragment() {
             topicPageViewModel.getTopicPageInfosIfNeeded(topicViewModel.topicUrl)
         } else {
             messageListAdapter.showAllPageInfos = false
+            topicPageViewModel.clearInfosForTopicPage()
             //TODO: stoper la récupération des infos etc
         }
         messageListAdapter.notifyItemChanged(TopicPageAdapter.HEADER_POSITION)

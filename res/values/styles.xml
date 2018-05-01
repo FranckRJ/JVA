@@ -14,4 +14,13 @@
         <item name="android:windowTranslucentNavigation">true</item>
         <item name="android:windowBackground">@drawable/splashscreen</item>
     </style>
+
+    <style name="SelectableItemTheme">
+        <item name="colorControlHighlight">@color/colorAccent</item>
+    </style>
+
+    <style name="SelectableItemBackground">
+        <item name="android:theme">@style/SelectableItemTheme</item>
+        <item name="android:background">?attr/selectableItemBackgroundBorderless</item>
+    </style>
 </resources>

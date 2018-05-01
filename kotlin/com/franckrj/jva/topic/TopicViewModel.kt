@@ -27,14 +27,17 @@ class TopicViewModel : ViewModel() {
 
     fun setUrlForTopic(newTopicUrl: String) {
         topicUrl = topicPageParser.formatThisUrlToClassicJvcUrl(newTopicUrl)
-        /* Dans cet ordre bien précisément car currentPageNumber ne doit jamais être supérieur à lastPageNumber. */
-        lastPageNumber.value = topicPageParser.getPageNumberOfThisTopicUrl(topicUrl)
+        /* Dans cet ordre bien précisément car currentPageNumber ne peut pas être supérieur à lastPageNumber.
+         * Le atLeast(1) pour éviter des possibles bugs. */
+        lastPageNumber.value = topicPageParser.getPageNumberOfThisTopicUrl(topicUrl).coerceAtLeast(1)
         currentPageNumber.value = lastPageNumber.value
     }
 
-    fun setCurrentPageNumber(newCurrentPageNumber: Int) {
-        if (currentPageNumber.value != newCurrentPageNumber) {
-            currentPageNumber.value = newCurrentPageNumber
+    fun setCurrentPageNumber(newPossibleCurrentPageNumber: Int) {
+        val newRealCurrentPageNumber = newPossibleCurrentPageNumber.coerceIn(1, (lastPageNumber.value ?: 1))
+
+        if (currentPageNumber.value != newRealCurrentPageNumber) {
+            currentPageNumber.value = newRealCurrentPageNumber
         }
     }
 
@@ -52,7 +55,12 @@ class TopicViewModel : ViewModel() {
         lastPageNumber.addSource(newInfosForTopicPage, { lastInfosForTopicPage ->
             if (lastInfosForTopicPage?.value != null && lastInfosForTopicPage.status == LoadableValue.STATUS_LOADED &&
                     lastPageNumber.value != lastInfosForTopicPage.value.lastPageNumber) {
-                lastPageNumber.value = lastInfosForTopicPage.value.lastPageNumber
+                /* La fonction pour récupérer le numéro de la dernière page retourne -1 quand c'est la page courante. */
+                lastPageNumber.value = if (lastInfosForTopicPage.value.lastPageNumber < 1) {
+                    (currentPageNumber.value ?: 1)
+                } else {
+                    lastInfosForTopicPage.value.lastPageNumber
+                }
             }
         })
     }

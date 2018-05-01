@@ -5,6 +5,7 @@ import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Button
 import android.widget.ImageView
 import android.widget.TextView
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners
@@ -34,6 +35,7 @@ class TopicPageAdapter(private val context: Context,
     var listOfMessagesShowable: List<MessageInfosShowable> = ArrayList()
     var authorClickedListener: OnItemClickedListener? = null
     var dateClickedListener: OnItemClickedListener? = null
+    var pageNavigationButtonClickedListener: OnPageNavigationButtonClickedListener? = null
 
     private val internalAuthorClickedListener = View.OnClickListener { view ->
         authorClickedListener?.onItemClicked(view.tag as Int)
@@ -41,6 +43,10 @@ class TopicPageAdapter(private val context: Context,
 
     private val internalDateClickedListener = View.OnClickListener { view ->
         dateClickedListener?.onItemClicked(view.tag as Int)
+    }
+
+    private val internalPageNavigationButtonClickedListener = View.OnClickListener { view ->
+        pageNavigationButtonClickedListener?.onPageNavigationButtonClicked(view.id)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
@@ -104,11 +110,19 @@ class TopicPageAdapter(private val context: Context,
     }
 
     private inner class HeaderViewHolder(mainView: View) : RecyclerView.ViewHolder(mainView) {
-        private val firstPageButton: TextView = mainView.findViewById(R.id.firstpage_button_header_row)
-        private val previousPageButton: TextView = mainView.findViewById(R.id.previouspage_button_header_row)
-        private val currentPageButton: TextView = mainView.findViewById(R.id.currentpage_button_header_row)
-        private val nextPageButton: TextView = mainView.findViewById(R.id.nextpage_button_header_row)
-        private val lastPageButton: TextView = mainView.findViewById(R.id.lastpage_button_header_row)
+        private val firstPageButton: Button = mainView.findViewById(R.id.firstpage_button_header_row)
+        private val previousPageButton: Button = mainView.findViewById(R.id.previouspage_button_header_row)
+        private val currentPageButton: Button = mainView.findViewById(R.id.currentpage_button_header_row)
+        private val nextPageButton: Button = mainView.findViewById(R.id.nextpage_button_header_row)
+        private val lastPageButton: Button = mainView.findViewById(R.id.lastpage_button_header_row)
+
+        init {
+            firstPageButton.setOnClickListener(internalPageNavigationButtonClickedListener)
+            previousPageButton.setOnClickListener(internalPageNavigationButtonClickedListener)
+            currentPageButton.setOnClickListener(internalPageNavigationButtonClickedListener)
+            nextPageButton.setOnClickListener(internalPageNavigationButtonClickedListener)
+            lastPageButton.setOnClickListener(internalPageNavigationButtonClickedListener)
+        }
 
         fun bindView(currentPageNumber: Int, lastPageNumber: Int, showAllPageInfos: Boolean) {
             if (currentPageNumber >= 0) {
@@ -149,5 +163,9 @@ class TopicPageAdapter(private val context: Context,
 
     interface OnItemClickedListener {
         fun onItemClicked(position: Int)
+    }
+
+    interface OnPageNavigationButtonClickedListener {
+        fun onPageNavigationButtonClicked(idOfButton: Int)
     }
 }

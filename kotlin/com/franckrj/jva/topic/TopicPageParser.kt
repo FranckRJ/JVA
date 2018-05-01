@@ -127,6 +127,7 @@ class TopicPageParser private constructor() : AbsParser() {
         return ForumAndTopicName(currentForumName, currentTopicName)
     }
 
+    /* Retourne -1 si la page courante est la dernière page. */
     fun getLastPageNumberFromPageSource(pageSource: String): Int {
         val currentPageMatcher: MatchResult? = currentPagePattern.find(pageSource)
         val allPageLinkMatcher: Sequence<MatchResult> = pageLinkPattern.findAll(pageSource)

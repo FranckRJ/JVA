@@ -46,7 +46,7 @@ class TopicNavigationHelper(private val topicViewPager: ViewPager,
     fun getCurrentItemIndex() : Int = topicViewPager.currentItem
 
     fun setCurrentItemIndex(position: Int) {
-        val newPosition = (if (position < 0) 0 else position)
+        val newPosition = position.coerceIn(0, (topicViewPagerAdapter.numberOfPages - 1))
 
         if (newPosition == getCurrentItemIndex()) {
             topicViewPagerAdapter.getFragment(newPosition)?.setIsActiveFragment(true)
