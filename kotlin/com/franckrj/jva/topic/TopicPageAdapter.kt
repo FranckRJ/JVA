@@ -13,8 +13,9 @@ import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions
 import com.franckrj.jva.services.CopylessSpannableFactory
 import com.franckrj.jva.utils.GlideApp
 import com.franckrj.jva.R
+import com.franckrj.jva.utils.GlideRequests
 
-class TopicPageAdapter(private val context: Context,
+class TopicPageAdapter(context: Context,
                        private val sizeOfAvatars: Int,
                        sizeOfAvatarRoundedCorners: Int) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
     companion object {
@@ -29,6 +30,7 @@ class TopicPageAdapter(private val context: Context,
     private val avatarRoundedCorners = RoundedCorners(sizeOfAvatarRoundedCorners)
     private val transitionOption = DrawableTransitionOptions.withCrossFade()
     private val waitingText: String = context.getString(R.string.waitingText)
+    private val glide: GlideRequests = GlideApp.with(context)
     var currentPageNumber: Int = -1
     var lastPageNumber: Int = -1
     var showAllPageInfos: Boolean = false
@@ -93,12 +95,11 @@ class TopicPageAdapter(private val context: Context,
         }
 
         fun bindView(message: MessageInfosShowable, position: Int) {
-            GlideApp.with(context)
-                    .load(message.avatarLink)
-                    .override(sizeOfAvatars, sizeOfAvatars)
-                    .transform(avatarRoundedCorners)
-                    .transition(transitionOption)
-                    .into(avatarImageView)
+            glide.load(message.avatarLink)
+                 .override(sizeOfAvatars, sizeOfAvatars)
+                 .transform(avatarRoundedCorners)
+                 .transition(transitionOption)
+                 .into(avatarImageView)
 
             authorTextView.setText(message.author, TextView.BufferType.SPANNABLE)
             dateTextView.setText(message.date, TextView.BufferType.SPANNABLE)
