@@ -8,6 +8,8 @@
     <dimen name="messageCardSpacing">6dp</dimen>
     <dimen name="avatarSize">30dp</dimen>
     <dimen name="stickerSize">50dp</dimen>
+    <dimen name="miniNoelshackWidth">68dp</dimen>
+    <dimen name="miniNoelshackHeight">51dp</dimen>
     <dimen name="messageAuthorStartMargin">8dp</dimen>
     <dimen name="messageDateEndMargin">8dp</dimen>
     <dimen name="messageContentXPadding">5dp</dimen>

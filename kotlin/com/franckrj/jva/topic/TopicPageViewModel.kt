@@ -1,5 +1,6 @@
 package com.franckrj.jva.topic
 
+import android.annotation.SuppressLint
 import android.app.Application
 import android.arch.lifecycle.AndroidViewModel
 import android.arch.lifecycle.LiveData
@@ -17,7 +18,7 @@ import com.franckrj.jva.utils.UndeprecatorUtils
 class TopicPageViewModel(app: Application) : AndroidViewModel(app) {
     private val topicPageRepo: TopicPageRepository = TopicPageRepository.instance
     private val topicPageParser: TopicPageParser = TopicPageParser.instance
-    private val imageGetter: ImageGetterService = ImageGetterService.instance
+    private val imageGetter: ImageGetterService = ImageGetterService(app.applicationContext, R.drawable.ic_image_download, R.drawable.ic_image_deleted)
     private val tagHandler: TagHandlerService = TagHandlerService.instance
     private val settingsForMessages: TopicPageParser.MessageSettings
     private var currentTaskForMessagesFormat: FormatMessagesToShowableMessages? = null
@@ -25,6 +26,7 @@ class TopicPageViewModel(app: Application) : AndroidViewModel(app) {
     private val infosForTopicPage: MutableLiveData<LoadableValue<TopicPageInfos?>?> = MutableLiveData()
     private val pageNumber: MutableLiveData<Int> = MutableLiveData()
     private val listOfMessagesShowable: MediatorLiveData<LoadableValue<List<MessageInfosShowable>>> = MediatorLiveData()
+    private val invalidateTextViewNeeded: MutableLiveData<Boolean> = MutableLiveData()
 
     init {
         val settingsForBetterQuotes = BetterQuoteSpan.BetterQuoteSettings(UndeprecatorUtils.getColor(app, R.color.quoteBackgroundColor),
@@ -43,17 +45,30 @@ class TopicPageViewModel(app: Application) : AndroidViewModel(app) {
                         if (currentTaskForMessagesFormat != null) {
                             cancelCurrentFormatMessagesTask()
                         }
-                        currentTaskForMessagesFormat = FormatMessagesToShowableMessages(newInfosForTopicPage.value.listOfMessages,
-                                topicPageParser,
-                                settingsForMessages,
-                                listOfMessagesShowable)
+                        currentTaskForMessagesFormat = FormatMessagesToShowableMessages(newInfosForTopicPage.value.listOfMessages)
                         currentTaskForMessagesFormat?.execute()
                     }
-                    newInfosForTopicPage.status == LoadableValue.STATUS_LOADING -> listOfMessagesShowable.value = LoadableValue.loading(ArrayList())
-                    else -> listOfMessagesShowable.value = LoadableValue.error(ArrayList())
+                    newInfosForTopicPage.status == LoadableValue.STATUS_LOADING -> setListOfMessagesShowableValue(LoadableValue.loading(ArrayList()))
+                    else -> setListOfMessagesShowableValue(LoadableValue.error(ArrayList()))
                 }
             }
         })
+
+        imageGetter.listenerForInvalidateTextViewNeeded = object : ImageGetterService.OnInvalidateTextViewNeededListener {
+            override fun onInvalidateTextViewNeeded() {
+                invalidateTextViewNeeded.value = true
+            }
+        }
+    }
+
+    private fun setListOfMessagesShowableValue(newValue: LoadableValue<List<MessageInfosShowable>>) {
+        listOfMessagesShowable.value = newValue
+        if (newValue.value.isEmpty()) {
+            imageGetter.clearDrawables()
+        } else {
+            imageGetter.clearOnlyDownloadedDrawables()
+            imageGetter.downloadDrawables()
+        }
     }
 
     private fun cancelCurrentFormatMessagesTask() {
@@ -64,6 +79,7 @@ class TopicPageViewModel(app: Application) : AndroidViewModel(app) {
     override fun onCleared() {
         cancelGetTopicPageInfos()
         cancelCurrentFormatMessagesTask()
+        imageGetter.clearDrawables()
     }
 
     fun init(pageNumberUsed: Int) {
@@ -75,7 +91,7 @@ class TopicPageViewModel(app: Application) : AndroidViewModel(app) {
     }
 
     fun clearListOfMessagesShowable() {
-        listOfMessagesShowable.value = LoadableValue.loaded(ArrayList())
+        setListOfMessagesShowableValue(LoadableValue.loaded(ArrayList()))
     }
 
     fun clearInfosForTopicPage() {
@@ -88,6 +104,8 @@ class TopicPageViewModel(app: Application) : AndroidViewModel(app) {
 
     fun getListOfMessagesShowable(): LiveData<LoadableValue<List<MessageInfosShowable>>?> = listOfMessagesShowable
 
+    fun getInvalidateTextViewNeeded(): LiveData<Boolean?> = invalidateTextViewNeeded
+
     /* Ne récupère les informations que si aucun message n'est actuellement affiché ni en cours de chargement. */
     fun getTopicPageInfosIfNeeded(formatedTopicUrl: String) {
         val realListOfMessagesShowable: LoadableValue<List<MessageInfosShowable>>? = listOfMessagesShowable.value
@@ -96,22 +114,21 @@ class TopicPageViewModel(app: Application) : AndroidViewModel(app) {
         }
     }
 
-    private class FormatMessagesToShowableMessages(private var listOfBaseMessages: List<MessageInfos>,
-                                                   private var parserForTopic: TopicPageParser,
-                                                   private var settingsForMessages: TopicPageParser.MessageSettings,
-                                                   private var listOfShowableMessagesToUpdate: MutableLiveData<LoadableValue<List<MessageInfosShowable>>>) : AsyncTask<Void, Void, List<MessageInfosShowable>>() {
+    /* Ne devrait pas leak, normalement. */
+    @SuppressLint("StaticFieldLeak")
+    private inner class FormatMessagesToShowableMessages(private var listOfBaseMessages: List<MessageInfos>) : AsyncTask<Void, Void, List<MessageInfosShowable>>() {
         override fun doInBackground(vararg voids: Void): List<MessageInfosShowable> {
             return listOfBaseMessages.map { messageInfos ->
                 MessageInfosShowable(messageInfos.avatarUrl,
-                        SpannableString(messageInfos.author),
-                        SpannableString(messageInfos.date),
-                        parserForTopic.createMessageContentShowable(messageInfos, settingsForMessages))
+                                     SpannableString(messageInfos.author),
+                                     SpannableString(messageInfos.date),
+                                     topicPageParser.createMessageContentShowable(messageInfos, settingsForMessages))
             }
         }
 
         override fun onPostExecute(newListOfShowableMessages: List<MessageInfosShowable>) {
             if (!isCancelled) {
-                listOfShowableMessagesToUpdate.value = LoadableValue.loaded(newListOfShowableMessages)
+                setListOfMessagesShowableValue(LoadableValue.loaded(newListOfShowableMessages))
             }
         }
     }

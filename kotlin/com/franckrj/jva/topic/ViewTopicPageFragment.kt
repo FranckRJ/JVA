@@ -103,6 +103,13 @@ class ViewTopicPageFragment : Fragment() {
             }
         })
 
+        topicPageViewModel.getInvalidateTextViewNeeded().observe(this, Observer { newInvalidateTextViewNeeded ->
+            if (newInvalidateTextViewNeeded == true) {
+                /* TODO: Optimiser ça si possible ? */
+                messageListAdapter.notifyDataSetChanged()
+            }
+        })
+
         topicPageViewModel.getCurrentPageNumber().observe(this, Observer { newCurrentPageNumber ->
             if (newCurrentPageNumber != null) {
                 messageListAdapter.currentPageNumber = newCurrentPageNumber
