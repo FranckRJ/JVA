@@ -62,11 +62,16 @@ class TopicPageViewModel(app: Application) : AndroidViewModel(app) {
     }
 
     override fun onCleared() {
+        cancelGetTopicPageInfos()
         cancelCurrentFormatMessagesTask()
     }
 
     fun init(pageNumberUsed: Int) {
         pageNumber.value = pageNumberUsed
+    }
+
+    fun cancelGetTopicPageInfos() {
+        topicPageRepo.cancelRequestForThisLiveData(infosForTopicPage)
     }
 
     fun clearListOfMessagesShowable() {

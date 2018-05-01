@@ -17,11 +17,25 @@ class WebService private constructor(private val userAgentToUse: String) {
             .followSslRedirects(false)
             .build()
 
-    fun getPage(urlForPage: String): String? {
+    fun cancelRequest(withThisTag: Any) {
+        for (call in client.dispatcher().queuedCalls()) {
+            if (call.request().tag() == withThisTag) {
+                call.cancel()
+            }
+        }
+        for (call in client.dispatcher().runningCalls()) {
+            if (call.request().tag() == withThisTag) {
+                call.cancel()
+            }
+        }
+    }
+
+    fun getPage(urlForPage: String, tagToUse: Any): String? {
         return try {
             val request = Request.Builder()
                     .url(urlForPage)
                     .header("User-Agent", userAgentToUse)
+                    .tag(tagToUse)
                     .build()
 
             client.newCall(request).execute().body()?.string()

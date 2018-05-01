@@ -155,7 +155,7 @@ class ViewTopicPageFragment : Fragment() {
         } else {
             messageListAdapter.showAllPageInfos = false
             topicPageViewModel.clearInfosForTopicPage()
-            //TODO: stoper la récupération des infos etc
+            topicPageViewModel.cancelGetTopicPageInfos()
         }
         messageListAdapter.notifyItemChanged(TopicPageAdapter.HEADER_POSITION)
     }

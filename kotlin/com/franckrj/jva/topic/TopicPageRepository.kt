@@ -14,10 +14,24 @@ class TopicPageRepository private constructor() {
 
     private val serviceForWeb: WebService = WebService.instance
     private val parserForTopicPage: TopicPageParser = TopicPageParser.instance
+    private val mapOfTopicGetterInstances: HashMap<MutableLiveData<LoadableValue<TopicPageInfos?>?>, TopicGetter> = HashMap()
+
+    fun cancelRequestForThisLiveData(liveDataLinkedToRequest: MutableLiveData<LoadableValue<TopicPageInfos?>?>) {
+        val requestInstance: TopicGetter? = mapOfTopicGetterInstances[liveDataLinkedToRequest]
+
+        if (requestInstance != null) {
+            requestInstance.cancel(false)
+            serviceForWeb.cancelRequest(requestInstance.hashCode())
+            mapOfTopicGetterInstances.remove(liveDataLinkedToRequest)
+        }
+    }
 
     fun updateTopicPageInfos(urlOfTopicPage: String, topicPageInfosLiveData: MutableLiveData<LoadableValue<TopicPageInfos?>?>) {
+        val newTopicGetterInstance = TopicGetter(urlOfTopicPage, topicPageInfosLiveData)
+        cancelRequestForThisLiveData(topicPageInfosLiveData)
+        mapOfTopicGetterInstances[topicPageInfosLiveData] = newTopicGetterInstance
         topicPageInfosLiveData.value = LoadableValue.loading(topicPageInfosLiveData.value?.value)
-        TopicGetter(urlOfTopicPage, topicPageInfosLiveData).execute()
+        newTopicGetterInstance.execute()
     }
 
     /* Ça ne devrait pas poser de problème normalement car
@@ -25,7 +39,7 @@ class TopicPageRepository private constructor() {
     @SuppressLint("StaticFieldLeak")
     private inner class TopicGetter(private val urlOfTopicPage: String, private val topicPageInfosLiveData: MutableLiveData<LoadableValue<TopicPageInfos?>?>) : AsyncTask<Void, Void, TopicPageInfos?>() {
         override fun doInBackground(vararg voids: Void): TopicPageInfos? {
-            val sourceOfWebPage:String? = serviceForWeb.getPage(urlOfTopicPage)
+            val sourceOfWebPage:String? = serviceForWeb.getPage(urlOfTopicPage, hashCode())
 
             return if (sourceOfWebPage == null) {
                 null
@@ -41,11 +55,18 @@ class TopicPageRepository private constructor() {
         }
 
         override fun onPostExecute(infosForTopicPage: TopicPageInfos?) {
-            if (infosForTopicPage == null) {
-                topicPageInfosLiveData.value = LoadableValue.error(null)
-            } else {
-                topicPageInfosLiveData.value = LoadableValue.loaded(infosForTopicPage)
+            if (!isCancelled) {
+                if (infosForTopicPage == null) {
+                    topicPageInfosLiveData.value = LoadableValue.error(null)
+                } else {
+                    topicPageInfosLiveData.value = LoadableValue.loaded(infosForTopicPage)
+                }
+                mapOfTopicGetterInstances.remove(topicPageInfosLiveData)
             }
+        }
+
+        override fun onCancelled(result: TopicPageInfos?) {
+            topicPageInfosLiveData.value = LoadableValue.error(null)
         }
     }
 }
