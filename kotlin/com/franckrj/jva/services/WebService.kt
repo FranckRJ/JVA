@@ -1,5 +1,6 @@
 package com.franckrj.jva.services
 
+import com.bumptech.glide.integration.okhttp3.OkHttpUrlLoader
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import java.util.concurrent.TimeUnit
@@ -16,6 +17,10 @@ class WebService private constructor(private val userAgentToUse: String) {
             .followRedirects(false)
             .followSslRedirects(false)
             .build()
+
+    fun getOkHttpUrlLoaderFactory() : OkHttpUrlLoader.Factory {
+        return OkHttpUrlLoader.Factory(client)
+    }
 
     fun cancelRequest(withThisTag: Any) {
         for (call in client.dispatcher().queuedCalls()) {
