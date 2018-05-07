@@ -44,7 +44,7 @@ class WebService private constructor(private val userAgentToUse: String) {
                     .build()
 
             client.newCall(request).execute().body()?.string()
-        } catch (e: Exception) {
+        } catch (_: Exception) {
             /* Je sais pas vraiment quelles exceptions peuvent être lancées mais
              * je sais qu'il y en a. */
             null

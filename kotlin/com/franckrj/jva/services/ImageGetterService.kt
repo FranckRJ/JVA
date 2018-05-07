@@ -28,10 +28,10 @@ class ImageGetterService(contextToUse: Context, @DrawableRes private val downloa
 
     /* TODO: Faire en sorte que tous les chargements de drawable passent par Glide ? */
     override fun getDrawable(source: String): Drawable {
-        if (!source.startsWith("http://")) {
+        if (!source.startsWith("http://") && !source.startsWith("https://")) {
             val resId: Int = resources.getIdentifier(source.substring(0, source.lastIndexOf(".")), "drawable", packageName)
 
-            return try {
+            try {
                 val drawable: Drawable = resources.getDrawable(resId, null)
 
                 if (source.startsWith("sticker")) {
@@ -40,16 +40,18 @@ class ImageGetterService(contextToUse: Context, @DrawableRes private val downloa
                     drawable.setBounds(0, 0, drawable.intrinsicWidth, drawable.intrinsicHeight)
                 }
 
-                drawable
-            } catch (e: Exception) {
-                deletedDrawable
+                return drawable
+            } catch (_: Exception) {
+                //rien
             }
-        } else {
+        } else if (source.startsWith("http://image.noelshack.com/minis/") || source.startsWith("https://image.noelshack.com/minis/")) {
             val newDrawableTarget = WrapperTarget(source, miniNoelshackWidth, miniNoelshackHeight)
             newDrawableTarget.wrapperDrawable.callback = this
             listOfTargetForDrawables.add(newDrawableTarget)
             return newDrawableTarget.wrapperDrawable
         }
+
+        return deletedDrawable
     }
 
     fun downloadDrawables() {
