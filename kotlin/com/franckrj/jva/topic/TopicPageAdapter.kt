@@ -51,6 +51,12 @@ class TopicPageAdapter(context: Context,
         pageNavigationButtonClickedListener?.onPageNavigationButtonClicked(view.id)
     }
 
+    fun invalidateTextViewOfThisViewHolder(holder: RecyclerView.ViewHolder) {
+        if (holder is MessageViewHolder) {
+            holder.invalidateTextViewWithImageSpan()
+        }
+    }
+
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
         return when (viewType) {
             TYPE_HEADER -> {
@@ -107,6 +113,10 @@ class TopicPageAdapter(context: Context,
 
             authorTextView.tag = position
             dateTextView.tag = position
+        }
+
+        fun invalidateTextViewWithImageSpan() {
+            contentTextView.invalidate()
         }
     }
 

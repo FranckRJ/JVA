@@ -105,8 +105,12 @@ class ViewTopicPageFragment : Fragment() {
 
         topicPageViewModel.getInvalidateTextViewNeeded().observe(this, Observer { newInvalidateTextViewNeeded ->
             if (newInvalidateTextViewNeeded == true) {
-                /* TODO: Optimiser ça si possible ? */
-                messageListAdapter.notifyDataSetChanged()
+                /* TODO: Vérifier pour être sur que ça fonctionne vraiment correctement.
+                 * Il est possible que toutes les vues créée ne soient pas invalidées (certaines sont dans un cache), mais ces dites vues
+                 * ne sont normalement pas affichées et donc le onDraw n'a pas encore été appelé. */
+                for (childIndex: Int in 0..(messageListView.childCount - 1)) {
+                    messageListAdapter.invalidateTextViewOfThisViewHolder(messageListView.getChildViewHolder(messageListView.getChildAt(childIndex)))
+                }
             }
         })
 
