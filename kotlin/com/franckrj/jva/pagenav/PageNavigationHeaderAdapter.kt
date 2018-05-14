@@ -20,6 +20,7 @@ abstract class PageNavigationHeaderAdapter(context: Context) : RecyclerView.Adap
     var currentPageNumber: Int = -1
     var lastPageNumber: Int = -1
     var showAllPageInfos: Boolean = false
+    var showLastPageButton: Boolean = true
     var pageNavigationButtonClickedListener: OnPageNavigationButtonClickedListener? = null
 
     protected val internalPageNavigationButtonClickedListener = View.OnClickListener { view ->
@@ -40,7 +41,7 @@ abstract class PageNavigationHeaderAdapter(context: Context) : RecyclerView.Adap
 
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
         if (holder is HeaderViewHolder) {
-            holder.bindView(currentPageNumber, lastPageNumber, showAllPageInfos)
+            holder.bindView(currentPageNumber, lastPageNumber, showAllPageInfos, showLastPageButton)
         }
     }
 
@@ -59,7 +60,7 @@ abstract class PageNavigationHeaderAdapter(context: Context) : RecyclerView.Adap
             lastPageButton.setOnClickListener(internalPageNavigationButtonClickedListener)
         }
 
-        fun bindView(currentPageNumber: Int, lastPageNumber: Int, showAllPageInfos: Boolean) {
+        fun bindView(currentPageNumber: Int, lastPageNumber: Int, showAllPageInfos: Boolean, showLastPageButton: Boolean) {
             if (currentPageNumber >= 0) {
                 currentPageButton.text = currentPageNumber.toString()
 
@@ -73,9 +74,14 @@ abstract class PageNavigationHeaderAdapter(context: Context) : RecyclerView.Adap
                     }
 
                     if (lastPageNumber > currentPageNumber) {
-                        lastPageButton.text = lastPageNumber.toString()
+                        if (showLastPageButton) {
+                            lastPageButton.text = lastPageNumber.toString()
+                            lastPageButton.visibility = View.VISIBLE
+                        } else {
+                            lastPageButton.visibility = View.INVISIBLE
+                        }
+
                         nextPageButton.visibility = View.VISIBLE
-                        lastPageButton.visibility = View.VISIBLE
                     } else {
                         nextPageButton.visibility = View.INVISIBLE
                         lastPageButton.visibility = View.INVISIBLE

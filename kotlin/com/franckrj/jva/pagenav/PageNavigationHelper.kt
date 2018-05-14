@@ -61,8 +61,8 @@ class PageNavigationHelper(private val navigationViewPager: ViewPager,
         navigationViewPagerAdapter.notifyDataSetChanged()
     }
 
-    private class NavigationViewPagerAdapter(private val fragmentBuilder: () -> ViewNavigablePageFragment,
-                                             fragManager: FragmentManager) : FragmentStatePagerAdapter(fragManager) {
+    private inner class NavigationViewPagerAdapter(private val fragmentBuilder: () -> ViewNavigablePageFragment,
+                                                   fragManager: FragmentManager) : FragmentStatePagerAdapter(fragManager) {
         private var referenceMap = SparseArray<ViewNavigablePageFragment>()
         var numberOfPages: Int = 1
             set(newNumberOfPages) {
@@ -88,6 +88,7 @@ class PageNavigationHelper(private val navigationViewPager: ViewPager,
             val newViewNavigablePageFrag = fragmentBuilder()
 
             argForFrag.putInt(ViewNavigablePageFragment.ARG_PAGE_NUMBER, position + 1)
+            argForFrag.putBoolean(ViewNavigablePageFragment.ARG_IS_ACTIVE, (position == getCurrentItemIndex()))
             newViewNavigablePageFrag.arguments = argForFrag
 
             return newViewNavigablePageFrag

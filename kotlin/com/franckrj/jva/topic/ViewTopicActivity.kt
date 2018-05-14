@@ -4,8 +4,6 @@ import android.arch.lifecycle.Observer
 import android.arch.lifecycle.ViewModelProviders
 import android.os.Bundle
 import android.support.v4.view.ViewPager
-import android.support.v7.app.AlertDialog
-import android.widget.EditText
 import com.franckrj.jva.R
 import com.franckrj.jva.base.CollapsibleToolbarActivity
 import com.franckrj.jva.pagenav.PageNavigationHelper
@@ -54,28 +52,5 @@ class ViewTopicActivity : CollapsibleToolbarActivity() {
                 topicNavigation.setCurrentItemIndex(newCurrentPageNumber - 1)
             }
         })
-
-        if (savedInstanceState == null) {
-            val alertDialog = AlertDialog.Builder(this)
-            val editText = EditText(this)
-            alertDialog.setTitle("Lien du topic")
-
-            alertDialog.setView(editText)
-
-            alertDialog.setPositiveButton("Valider", { _, _ ->
-                if (editText.text.toString().isNotEmpty()) {
-                    topicViewModel.setUrlForTopic(editText.text.toString())
-                } else {
-                    topicViewModel.setUrlForTopic("http://www.jeuxvideo.com/forums/42-1000005-47929326-3-0-1-0-ok-google-blabla-android.htm")
-                }
-
-                /* Ce n'est pas censé être utile car normalement ViewTopicActivity connait l'url du topic dès le début. */
-                if (topicViewModel.getCurrentPageNumber().value == 1) {
-                    topicNavigation.setCurrentItemIndex(0)
-                }
-            })
-
-            alertDialog.show()
-        }
     }
 }

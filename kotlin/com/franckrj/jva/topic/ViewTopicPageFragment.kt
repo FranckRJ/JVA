@@ -1,14 +1,9 @@
 package com.franckrj.jva.topic
 
-import android.app.Activity
 import android.arch.lifecycle.Observer
 import android.arch.lifecycle.ViewModelProviders
-import android.content.res.Configuration
-import android.os.Build
 import android.os.Bundle
-import android.support.v4.widget.SwipeRefreshLayout
 import android.support.v7.widget.LinearLayoutManager
-import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -17,85 +12,37 @@ import com.franckrj.jva.R
 import com.franckrj.jva.pagenav.PageNavigationHeaderAdapter
 import com.franckrj.jva.pagenav.ViewNavigablePageFragment
 import com.franckrj.jva.utils.LoadableValue
-import com.franckrj.jva.utils.MovableToolbar
-import com.franckrj.jva.utils.SmoothScrollbarRecyclerView
 
 class ViewTopicPageFragment : ViewNavigablePageFragment() {
-    companion object {
-        private const val SAVE_IS_ACTIVE: String = "SAVE_IS_ACTIVE"
-    }
-
-    private lateinit var messageListRefreshLayout: SwipeRefreshLayout
-    private lateinit var messageListView: SmoothScrollbarRecyclerView
     private lateinit var messageListAdapter: TopicPageAdapter
     private lateinit var topicViewModel: TopicViewModel
     private lateinit var topicPageViewModel: TopicPageViewModel
-    private var isActive: Boolean = false
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         val mainView: View = inflater.inflate(R.layout.fragment_viewtopicpage, container, false)
 
-        val idOfNavBarHeight: Int = resources.getIdentifier("navigation_bar_height", "dimen", "android")
-        val navBarHeight: Int = if (idOfNavBarHeight > 0) resources.getDimensionPixelSize(idOfNavBarHeight) else 0
-        val idOfStatusBarHeight: Int = resources.getIdentifier("status_bar_height", "dimen", "android")
-        val statusBarHeight: Int = if (idOfStatusBarHeight > 0) resources.getDimensionPixelSize(idOfStatusBarHeight) else 0
-        val toolbarHeight: Int = resources.getDimensionPixelSize(R.dimen.toolbarHeight)
-        val defaultToolbarMargin: Int = resources.getDimensionPixelSize(R.dimen.defaultToolbarMargin)
-        val defaultMessageListPadding: Int = resources.getDimensionPixelSize(R.dimen.messageListPadding)
-        val messageCardSpacing: Int = resources.getDimensionPixelSize(R.dimen.messageCardSpacing)
-        val refreshSpinnerTopMargin: Int = resources.getDimensionPixelSize(R.dimen.refreshSpinnerTopMargin)
-        val realToolbarHeight: Int = toolbarHeight + (defaultToolbarMargin * 2)
-
-        var navBarIsInApp = resources.configuration.orientation == Configuration.ORIENTATION_PORTRAIT
-
-        if (Build.VERSION.SDK_INT >= 24) {
-            if (requireActivity().isInMultiWindowMode) {
-                navBarIsInApp = false
-            }
-        }
-
-        messageListRefreshLayout = mainView.findViewById(R.id.messagelist_refresh_viewtopicpage)
-        messageListView = mainView.findViewById(R.id.message_list_viewtopicpage)
-
-        messageListRefreshLayout.isEnabled = false
-        messageListRefreshLayout.setColorSchemeResources(R.color.colorAccent)
-        messageListRefreshLayout.setProgressViewOffset(false, statusBarHeight + defaultToolbarMargin, refreshSpinnerTopMargin + realToolbarHeight + statusBarHeight)
-        messageListView.setPaddingRelative(defaultMessageListPadding,
-                                           realToolbarHeight + statusBarHeight,
-                                           defaultMessageListPadding,
-                                           defaultMessageListPadding - messageCardSpacing + if (navBarIsInApp) navBarHeight else 0)
+        initListViewAndRefreshLayout(mainView.findViewById(R.id.message_list_viewtopicpage), mainView.findViewById(R.id.messagelist_refresh_viewtopicpage),
+                                     R.dimen.messageListPadding, R.dimen.messageCardSpacing)
 
         return mainView
+    }
+
+    override fun createActivityDependentObjectsAndViewModels() {
+        messageListAdapter = TopicPageAdapter(requireActivity(), resources.getDimensionPixelSize(R.dimen.avatarSize), resources.getDimensionPixelSize(R.dimen.defaultCardCornerRadius))
+        topicViewModel = ViewModelProviders.of(requireActivity()).get(TopicViewModel::class.java)
+        topicPageViewModel = ViewModelProviders.of(this).get(TopicPageViewModel::class.java)
+        contentPageViewModel = topicPageViewModel
     }
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
 
-        messageListAdapter = TopicPageAdapter(requireActivity(), resources.getDimensionPixelSize(R.dimen.avatarSize), resources.getDimensionPixelSize(R.dimen.defaultCardCornerRadius))
-        topicViewModel = ViewModelProviders.of(requireActivity()).get(TopicViewModel::class.java)
-        topicPageViewModel = ViewModelProviders.of(this).get(TopicPageViewModel::class.java)
-
         val messageListLayoutManager = LinearLayoutManager(requireActivity())
-        messageListView.layoutManager = messageListLayoutManager
-        messageListView.adapter = messageListAdapter
-
-        messageListView.addOnScrollListener(object : RecyclerView.OnScrollListener() {
-            override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
-                val currentActivity: Activity = requireActivity()
-                if (currentActivity is MovableToolbar) {
-                    currentActivity.toolbarMoved(messageListView.isScrolledAtTop())
-                }
-            }
-        })
-
-        topicPageViewModel.init(arguments?.getInt(ARG_PAGE_NUMBER) ?: 1)
-
-        if (savedInstanceState?.getBoolean(SAVE_IS_ACTIVE) == true) {
-            setIsActiveFragment(true)
-        }
+        contentListView.layoutManager = messageListLayoutManager
+        contentListView.adapter = messageListAdapter
 
         topicPageViewModel.getListOfMessagesShowable().observe(this, Observer { listOfMessagesShowable ->
-            messageListRefreshLayout.isRefreshing = (listOfMessagesShowable?.status == LoadableValue.STATUS_LOADING)
+            contentListRefreshLayout.isRefreshing = (listOfMessagesShowable?.status == LoadableValue.STATUS_LOADING)
             if (listOfMessagesShowable != null && (listOfMessagesShowable.value.isNotEmpty() || messageListAdapter.listOfMessagesShowable.isNotEmpty())) {
                 messageListAdapter.listOfMessagesShowable = listOfMessagesShowable.value
                 messageListAdapter.notifyDataSetChanged()
@@ -107,8 +54,8 @@ class ViewTopicPageFragment : ViewNavigablePageFragment() {
                 /* TODO: Vérifier pour être sur que ça fonctionne vraiment correctement.
                  * Il est possible que toutes les vues créée ne soient pas invalidées (certaines sont dans un cache), mais ces dites vues
                  * ne sont normalement pas affichées et donc le onDraw n'a pas encore été appelé. */
-                for (childIndex: Int in 0 until messageListView.childCount) {
-                    messageListAdapter.invalidateTextViewOfThisViewHolder(messageListView.getChildViewHolder(messageListView.getChildAt(childIndex)))
+                for (childIndex: Int in 0 until contentListView.childCount) {
+                    messageListAdapter.invalidateTextViewOfThisViewHolder(contentListView.getChildViewHolder(contentListView.getChildAt(childIndex)))
                 }
             }
         })
@@ -151,13 +98,9 @@ class ViewTopicPageFragment : ViewNavigablePageFragment() {
         }
     }
 
-    override fun onSaveInstanceState(outState: Bundle) {
-        super.onSaveInstanceState(outState)
-        outState.putBoolean(SAVE_IS_ACTIVE, isActive)
-    }
-
     override fun setIsActiveFragment(newIsActive: Boolean) {
-        isActive = newIsActive
+        super.setIsActiveFragment(newIsActive)
+
         if (isActive) {
             topicViewModel.setNewSourceForPageInfos(topicPageViewModel.getInfosForTopicPage())
             messageListAdapter.showAllPageInfos = true
@@ -167,6 +110,7 @@ class ViewTopicPageFragment : ViewNavigablePageFragment() {
             topicPageViewModel.clearInfosForTopicPage()
             topicPageViewModel.cancelGetTopicPageInfos()
         }
+
         messageListAdapter.notifyItemChanged(PageNavigationHeaderAdapter.HEADER_POSITION)
     }
 

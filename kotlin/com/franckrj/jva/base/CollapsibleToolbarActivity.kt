@@ -14,12 +14,12 @@ import com.franckrj.jva.utils.MovableToolbar
 abstract class CollapsibleToolbarActivity : AppCompatActivity(), MovableToolbar {
     private lateinit var toolbarCard: CardView
     private lateinit var titleTextToolbar: TextView
-    private lateinit var subtitleTextToolbar: TextView
+    private var subtitleTextToolbar: TextView? = null
     private var defaultToolbarCardElevation: Float = 0f
     private var aboveToolbarCardElevation: Float = 0f
 
     protected fun initToolbar(navigableViewPager: ViewPager, appbarLayout: AppBarLayout, toolbarLayout: FrameLayout,
-                              newToolbarCard: CardView, newTitleTextToolbar: TextView, newSubtitleTextToolbar: TextView) {
+                              newToolbarCard: CardView, newTitleTextToolbar: TextView, newSubtitleTextToolbar: TextView? = null) {
         val idOfStatusBarHeight: Int = resources.getIdentifier("status_bar_height", "dimen", "android")
         val statusBarHeight: Int = if (idOfStatusBarHeight > 0) resources.getDimensionPixelSize(idOfStatusBarHeight) else 0
         val defaultToolbarMargin: Int = resources.getDimensionPixelSize(R.dimen.defaultToolbarMargin)
@@ -46,12 +46,12 @@ abstract class CollapsibleToolbarActivity : AppCompatActivity(), MovableToolbar 
     }
 
     protected fun setSubTitle(newSubtitle: String) {
-        subtitleTextToolbar.text = newSubtitle
+        subtitleTextToolbar?.text = newSubtitle
 
         if (newSubtitle.isEmpty()) {
-            subtitleTextToolbar.visibility = View.GONE
+            subtitleTextToolbar?.visibility = View.GONE
         } else {
-            subtitleTextToolbar.visibility = View.VISIBLE
+            subtitleTextToolbar?.visibility = View.VISIBLE
         }
     }
 

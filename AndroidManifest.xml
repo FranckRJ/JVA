@@ -19,8 +19,7 @@
 
         <activity
             android:name=".MainActivity"
-            android:theme="@style/SplashTheme"
-            android:launchMode="singleTop">
+            android:theme="@style/SplashTheme">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
                 <category android:name="android.intent.category.LAUNCHER"/>
@@ -28,8 +27,11 @@
         </activity>
 
         <activity
-            android:name=".topic.ViewTopicActivity"
-            android:launchMode="singleTop">
+            android:name=".forum.ViewForumActivity">
+        </activity>
+
+        <activity
+            android:name=".topic.ViewTopicActivity">
         </activity>
 
     </application>
