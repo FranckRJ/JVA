@@ -82,7 +82,7 @@ class TopicPageAdapter(context: Context,
         }
 
         fun bindView(message: MessageInfosShowable, position: Int) {
-            glide.load(message.avatarLink)
+            glide.load(message.avatarUrl)
                  .override(sizeOfAvatars, sizeOfAvatars)
                  .transform(avatarRoundedCorners)
                  .transition(transitionOption)

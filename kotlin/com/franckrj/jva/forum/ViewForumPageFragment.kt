@@ -2,6 +2,7 @@ package com.franckrj.jva.forum
 
 import android.arch.lifecycle.Observer
 import android.arch.lifecycle.ViewModelProviders
+import android.content.Intent
 import android.os.Bundle
 import android.support.v7.widget.LinearLayoutManager
 import android.view.LayoutInflater
@@ -10,6 +11,7 @@ import android.view.ViewGroup
 import com.franckrj.jva.R
 import com.franckrj.jva.pagenav.PageNavigationHeaderAdapter
 import com.franckrj.jva.pagenav.ViewNavigablePageFragment
+import com.franckrj.jva.topic.ViewTopicActivity
 import com.franckrj.jva.utils.LoadableValue
 
 class ViewForumPageFragment : ViewNavigablePageFragment() {
@@ -63,6 +65,20 @@ class ViewForumPageFragment : ViewNavigablePageFragment() {
                 topicListAdapter.notifyItemChanged(PageNavigationHeaderAdapter.HEADER_POSITION)
             }
         })
+
+        topicListAdapter.onItemClickedListener = { position ->
+            if (position != null) {
+                val topicInfos: TopicInfos? = forumPageViewModel.getListOfTopicsInfos()?.getOrNull(position)
+
+                if (topicInfos != null) {
+                    val viewTopicIntent = Intent(requireActivity(), ViewTopicActivity::class.java)
+
+                    viewTopicIntent.putExtra(ViewTopicActivity.EXTRA_TOPIC_URL, topicInfos.topicUrl)
+
+                    startActivity(viewTopicIntent)
+                }
+            }
+        }
 
         topicListAdapter.pageNavigationButtonClickedListener = object : PageNavigationHeaderAdapter.OnPageNavigationButtonClickedListener {
             override fun onPageNavigationButtonClicked(idOfButton: Int) {

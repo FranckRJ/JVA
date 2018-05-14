@@ -14,7 +14,7 @@ class MutableMessageInfos(override var avatarUrl: String = "",
                           override var content: String = "",
                           override var containSpoilTag: Boolean = false): MessageInfos(avatarUrl, author, date, content, containSpoilTag)
 
-data class MessageInfosShowable(val avatarLink: String,
+data class MessageInfosShowable(val avatarUrl: String,
                                 val author: Spannable,
                                 val date: Spannable,
                                 val formatedContent: Spannable)

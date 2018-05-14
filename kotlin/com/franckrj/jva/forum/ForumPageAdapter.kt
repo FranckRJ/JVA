@@ -18,6 +18,11 @@ class ForumPageAdapter(context: Context) : PageNavigationHeaderAdapter(context) 
 
     private val spannableFactory: CopylessSpannableFactory = CopylessSpannableFactory.instance
     var listOfTopicsShowable: List<TopicInfosShowable> = ArrayList()
+    var onItemClickedListener: ((Int?) -> Any)? = null
+
+    private val internalItemClickedListener = View.OnClickListener { view ->
+        onItemClickedListener?.invoke(view.tag as? Int)
+    }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
         return if (viewType == TYPE_ITEM) {
@@ -35,13 +40,13 @@ class ForumPageAdapter(context: Context) : PageNavigationHeaderAdapter(context) 
 
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
         if (holder is MessageViewHolder) {
-            holder.bindView(listOfTopicsShowable[position - NUMBER_OF_HEADERS])
+            holder.bindView(listOfTopicsShowable[position - NUMBER_OF_HEADERS], position - NUMBER_OF_HEADERS)
         } else {
             super.onBindViewHolder(holder, position)
         }
     }
 
-    private inner class MessageViewHolder(mainView: View) : RecyclerView.ViewHolder(mainView) {
+    private inner class MessageViewHolder(private val mainView: View) : RecyclerView.ViewHolder(mainView) {
         private val titleAndNumberOfReplysTextView: TextView = mainView.findViewById(R.id.titleandnumberofreplys_text_text_row)
         private val authorTextView: TextView = mainView.findViewById(R.id.author_text_topic_row)
         private val dateOfLastReplyTextView: TextView = mainView.findViewById(R.id.dateoflastreply_text_topic_row)
@@ -51,13 +56,17 @@ class ForumPageAdapter(context: Context) : PageNavigationHeaderAdapter(context) 
             titleAndNumberOfReplysTextView.setSpannableFactory(spannableFactory)
             authorTextView.setSpannableFactory(spannableFactory)
             dateOfLastReplyTextView.setSpannableFactory(spannableFactory)
+
+            mainView.setOnClickListener(internalItemClickedListener)
         }
 
-        fun bindView(topic: TopicInfosShowable) {
+        fun bindView(topic: TopicInfosShowable, position: Int) {
             titleAndNumberOfReplysTextView.setText(topic.titleAndNumberOfReplys, TextView.BufferType.SPANNABLE)
             authorTextView.setText(topic.author, TextView.BufferType.SPANNABLE)
             dateOfLastReplyTextView.setText(topic.dateOfLastReply, TextView.BufferType.SPANNABLE)
             topicIconImageView.setImageDrawable(topic.topicIcon)
+
+            mainView.tag = position
         }
     }
 }

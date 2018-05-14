@@ -9,6 +9,10 @@ import com.franckrj.jva.base.CollapsibleToolbarActivity
 import com.franckrj.jva.pagenav.PageNavigationHelper
 
 class ViewTopicActivity : CollapsibleToolbarActivity() {
+    companion object {
+        const val EXTRA_TOPIC_URL: String = "EXTRA_TOPIC_URL"
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_viewtopic)
@@ -52,5 +56,10 @@ class ViewTopicActivity : CollapsibleToolbarActivity() {
                 topicNavigation.setCurrentItemIndex(newCurrentPageNumber - 1)
             }
         })
+
+        val possibleNewTopicUrl: String = intent?.getStringExtra(EXTRA_TOPIC_URL) ?: ""
+        if (possibleNewTopicUrl.isNotEmpty()) {
+            topicViewModel.setUrlForTopic(possibleNewTopicUrl)
+        }
     }
 }
