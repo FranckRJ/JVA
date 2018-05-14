@@ -3,33 +3,22 @@ package com.franckrj.jva.topic
 import android.annotation.SuppressLint
 import android.arch.lifecycle.MutableLiveData
 import android.os.AsyncTask
+import com.franckrj.jva.base.AbsRepository
 import com.franckrj.jva.services.WebService
 import com.franckrj.jva.utils.LoadableValue
 
 /* TODO: Stocker les messages dans une BDD pour pouvoir les récup' quand le process est kill (manque de RAM etc). */
-class TopicPageRepository private constructor() {
+class TopicPageRepository private constructor() : AbsRepository() {
     companion object {
         val instance: TopicPageRepository by lazy { TopicPageRepository() }
     }
 
-    private val serviceForWeb: WebService = WebService.instance
+    override val serviceForWeb: WebService = WebService.instance
     private val parserForTopicPage: TopicPageParser = TopicPageParser.instance
-    private val mapOfTopicGetterInstances: HashMap<MutableLiveData<LoadableValue<TopicPageInfos?>?>, TopicGetter> = HashMap()
-
-    fun cancelRequestForThisLiveData(liveDataLinkedToRequest: MutableLiveData<LoadableValue<TopicPageInfos?>?>) {
-        val requestInstance: TopicGetter? = mapOfTopicGetterInstances[liveDataLinkedToRequest]
-
-        if (requestInstance != null) {
-            requestInstance.cancel(false)
-            serviceForWeb.cancelRequest(requestInstance.hashCode())
-            mapOfTopicGetterInstances.remove(liveDataLinkedToRequest)
-        }
-    }
 
     fun updateTopicPageInfos(urlOfTopicPage: String, topicPageInfosLiveData: MutableLiveData<LoadableValue<TopicPageInfos?>?>) {
         val newTopicGetterInstance = TopicGetter(urlOfTopicPage, topicPageInfosLiveData)
-        cancelRequestForThisLiveData(topicPageInfosLiveData)
-        mapOfTopicGetterInstances[topicPageInfosLiveData] = newTopicGetterInstance
+        addThisRequestForThisLiveData(newTopicGetterInstance, topicPageInfosLiveData)
         topicPageInfosLiveData.value = LoadableValue.loading(topicPageInfosLiveData.value?.value)
         newTopicGetterInstance.execute()
     }
@@ -61,7 +50,7 @@ class TopicPageRepository private constructor() {
                 } else {
                     topicPageInfosLiveData.value = LoadableValue.loaded(infosForTopicPage)
                 }
-                mapOfTopicGetterInstances.remove(topicPageInfosLiveData)
+                removeRequestForThisLiveData(topicPageInfosLiveData)
             }
         }
 

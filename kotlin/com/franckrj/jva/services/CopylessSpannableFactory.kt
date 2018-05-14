@@ -8,10 +8,6 @@ class CopylessSpannableFactory private constructor() : Spannable.Factory() {
     }
 
     override fun newSpannable(source: CharSequence?): Spannable {
-        return if (source is Spannable) {
-            source
-        } else {
-            super.newSpannable(source)
-        }
+        return source as? Spannable ?: super.newSpannable(source)
     }
 }

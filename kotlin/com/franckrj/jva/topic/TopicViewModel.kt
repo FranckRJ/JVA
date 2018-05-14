@@ -1,18 +1,16 @@
 package com.franckrj.jva.topic
 
+import android.app.Application
 import android.arch.lifecycle.LiveData
 import android.arch.lifecycle.MediatorLiveData
-import android.arch.lifecycle.MutableLiveData
-import android.arch.lifecycle.ViewModel
+import com.franckrj.jva.pagenav.NavigableViewModel
 import com.franckrj.jva.utils.LoadableValue
 
-class TopicViewModel : ViewModel() {
+class TopicViewModel(app: Application) : NavigableViewModel(app) {
     private val topicPageParser: TopicPageParser = TopicPageParser.instance
 
     private var infosForTopicPage: LiveData<LoadableValue<TopicPageInfos?>?>? = null
     private val forumAndTopicName: MediatorLiveData<ForumAndTopicName> = MediatorLiveData()
-    private val lastPageNumber: MediatorLiveData<Int> = MediatorLiveData()
-    private val currentPageNumber: MutableLiveData<Int> = MutableLiveData()
     var topicUrl: String = ""
         private set
 
@@ -31,14 +29,6 @@ class TopicViewModel : ViewModel() {
          * Le atLeast(1) pour éviter des possibles bugs. */
         lastPageNumber.value = topicPageParser.getPageNumberOfThisTopicUrl(topicUrl).coerceAtLeast(1)
         currentPageNumber.value = lastPageNumber.value
-    }
-
-    fun setCurrentPageNumber(newPossibleCurrentPageNumber: Int) {
-        val newRealCurrentPageNumber = newPossibleCurrentPageNumber.coerceIn(1, (lastPageNumber.value ?: 1))
-
-        if (currentPageNumber.value != newRealCurrentPageNumber) {
-            currentPageNumber.value = newRealCurrentPageNumber
-        }
     }
 
     fun setNewSourceForPageInfos(newInfosForTopicPage: LiveData<LoadableValue<TopicPageInfos?>?>) {
@@ -70,8 +60,4 @@ class TopicViewModel : ViewModel() {
     }
 
     fun getForumAndTopicName(): LiveData<ForumAndTopicName?> = forumAndTopicName
-
-    fun getLastPageNumber(): LiveData<Int?> = lastPageNumber
-
-    fun getCurrentPageNumber(): LiveData<Int?> = currentPageNumber
 }

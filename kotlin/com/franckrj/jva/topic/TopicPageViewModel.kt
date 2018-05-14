@@ -2,20 +2,20 @@ package com.franckrj.jva.topic
 
 import android.annotation.SuppressLint
 import android.app.Application
-import android.arch.lifecycle.AndroidViewModel
 import android.arch.lifecycle.LiveData
 import android.arch.lifecycle.MediatorLiveData
 import android.arch.lifecycle.MutableLiveData
 import android.os.AsyncTask
 import android.text.SpannableString
 import com.franckrj.jva.R
+import com.franckrj.jva.pagenav.NavigablePageViewModel
 import com.franckrj.jva.services.ImageGetterService
 import com.franckrj.jva.services.TagHandlerService
 import com.franckrj.jva.utils.BetterQuoteSpan
 import com.franckrj.jva.utils.LoadableValue
 import com.franckrj.jva.utils.UndeprecatorUtils
 
-class TopicPageViewModel(app: Application) : AndroidViewModel(app) {
+class TopicPageViewModel(app: Application) : NavigablePageViewModel(app) {
     private val topicPageRepo: TopicPageRepository = TopicPageRepository.instance
     private val topicPageParser: TopicPageParser = TopicPageParser.instance
     private val imageGetter: ImageGetterService = ImageGetterService(app.applicationContext, R.drawable.ic_image_download, R.drawable.ic_image_deleted)
@@ -24,7 +24,6 @@ class TopicPageViewModel(app: Application) : AndroidViewModel(app) {
     private var currentTaskForMessagesFormat: FormatMessagesToShowableMessages? = null
 
     private val infosForTopicPage: MutableLiveData<LoadableValue<TopicPageInfos?>?> = MutableLiveData()
-    private val pageNumber: MutableLiveData<Int> = MutableLiveData()
     private val listOfMessagesShowable: MediatorLiveData<LoadableValue<List<MessageInfosShowable>>> = MediatorLiveData()
     private val invalidateTextViewNeeded: MutableLiveData<Boolean> = MutableLiveData()
 
@@ -82,10 +81,6 @@ class TopicPageViewModel(app: Application) : AndroidViewModel(app) {
         imageGetter.clearDrawables()
     }
 
-    fun init(pageNumberUsed: Int) {
-        pageNumber.value = pageNumberUsed
-    }
-
     fun cancelGetTopicPageInfos() {
         topicPageRepo.cancelRequestForThisLiveData(infosForTopicPage)
     }
@@ -99,8 +94,6 @@ class TopicPageViewModel(app: Application) : AndroidViewModel(app) {
     }
 
     fun getInfosForTopicPage() : LiveData<LoadableValue<TopicPageInfos?>?> = infosForTopicPage
-
-    fun getCurrentPageNumber(): LiveData<Int?> = pageNumber
 
     fun getListOfMessagesShowable(): LiveData<LoadableValue<List<MessageInfosShowable>>?> = listOfMessagesShowable
 

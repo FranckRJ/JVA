@@ -1,0 +1,106 @@
+package com.franckrj.jva.pagenav
+
+import android.os.Bundle
+import android.support.v4.app.Fragment
+import android.support.v4.app.FragmentManager
+import android.support.v4.app.FragmentStatePagerAdapter
+import android.support.v4.view.ViewPager
+import android.util.SparseArray
+import android.view.ViewGroup
+
+class PageNavigationHelper(private val navigationViewPager: ViewPager,
+                           fragmentBuilder: () -> ViewNavigablePageFragment,
+                           fragManager: FragmentManager) {
+    private val navigationViewPagerAdapter = NavigationViewPagerAdapter(fragmentBuilder, fragManager)
+
+    private val pageChangeOnPagerListener = object : ViewPager.OnPageChangeListener {
+        override fun onPageScrolled(position: Int, positionOffset: Float, positionOffsetPixels: Int) {
+            //rien
+        }
+
+        override fun onPageSelected(position: Int) {
+            navigationViewPagerAdapter.getFragment(position)?.setIsActiveFragment(true)
+            callFunOnNearbyFrag(position, { setIsActiveFragment(false) })
+        }
+
+        override fun onPageScrollStateChanged(state: Int) {
+            if (state == ViewPager.SCROLL_STATE_IDLE) {
+                callFunOnNearbyFrag(getCurrentItemIndex(), { clearContent() })
+            }
+        }
+    }
+
+    init {
+        navigationViewPager.adapter = navigationViewPagerAdapter
+        navigationViewPager.addOnPageChangeListener(pageChangeOnPagerListener)
+    }
+
+    private fun callFunOnNearbyFrag(position: Int, funToCall: ViewNavigablePageFragment.() -> Any) {
+        if (position > 0) {
+            navigationViewPagerAdapter.getFragment(position - 1)?.funToCall()
+        }
+        if (position < navigationViewPagerAdapter.numberOfPages - 1) {
+            navigationViewPagerAdapter.getFragment(position + 1)?.funToCall()
+        }
+    }
+
+    fun getCurrentItemIndex() : Int = navigationViewPager.currentItem
+
+    fun setCurrentItemIndex(position: Int) {
+        val newPosition = position.coerceIn(0, (navigationViewPagerAdapter.numberOfPages - 1))
+
+        if (newPosition == getCurrentItemIndex()) {
+            navigationViewPagerAdapter.getFragment(newPosition)?.setIsActiveFragment(true)
+        } else {
+            navigationViewPager.currentItem = newPosition
+        }
+    }
+
+    fun setNumberOfPages(newNumberOfPages: Int) {
+        navigationViewPagerAdapter.numberOfPages = newNumberOfPages
+        navigationViewPagerAdapter.notifyDataSetChanged()
+    }
+
+    private class NavigationViewPagerAdapter(private val fragmentBuilder: () -> ViewNavigablePageFragment,
+                                             fragManager: FragmentManager) : FragmentStatePagerAdapter(fragManager) {
+        private var referenceMap = SparseArray<ViewNavigablePageFragment>()
+        var numberOfPages: Int = 1
+            set(newNumberOfPages) {
+                field = if (newNumberOfPages < 1) {
+                    1
+                } else {
+                    newNumberOfPages
+                }
+            }
+
+        fun getFragment(key: Int): ViewNavigablePageFragment? {
+            return referenceMap.get(key)
+        }
+
+        override fun destroyItem(container: ViewGroup, position: Int, item: Any) {
+            (item as ViewNavigablePageFragment).setIsActiveFragment(false)
+            referenceMap.remove(position)
+            super.destroyItem(container, position, item)
+        }
+
+        override fun getItem(position: Int): Fragment {
+            val argForFrag = Bundle()
+            val newViewNavigablePageFrag = fragmentBuilder()
+
+            argForFrag.putInt(ViewNavigablePageFragment.ARG_PAGE_NUMBER, position + 1)
+            newViewNavigablePageFrag.arguments = argForFrag
+
+            return newViewNavigablePageFrag
+        }
+
+        override fun instantiateItem(container: ViewGroup, position: Int): Any {
+            val fragment = super.instantiateItem(container, position) as ViewNavigablePageFragment
+            referenceMap.put(position, fragment)
+            return fragment
+        }
+
+        override fun getCount(): Int {
+            return numberOfPages
+        }
+    }
+}
