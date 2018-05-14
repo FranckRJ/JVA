@@ -18,7 +18,7 @@ class ForumPageAdapter(context: Context) : PageNavigationHeaderAdapter(context) 
 
     private val spannableFactory: CopylessSpannableFactory = CopylessSpannableFactory.instance
     var listOfTopicsShowable: List<TopicInfosShowable> = ArrayList()
-    var onItemClickedListener: ((Int?) -> Any)? = null
+    var onItemClickedListener: ((Int?) -> Unit)? = null
 
     private val internalItemClickedListener = View.OnClickListener { view ->
         onItemClickedListener?.invoke(view.tag as? Int)

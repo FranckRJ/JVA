@@ -74,26 +74,24 @@ class ViewTopicPageFragment : ViewNavigablePageFragment() {
             }
         })
 
-        messageListAdapter.authorClickedListener = object : TopicPageAdapter.OnItemClickedListener {
-            override fun onItemClicked(position: Int) {
+        messageListAdapter.authorClickedListener = { position ->
+            if (position != null) {
                 Toast.makeText(requireActivity(), "Position d'auteur cliqué : " + position.toString(), Toast.LENGTH_SHORT).show()
             }
         }
 
-        messageListAdapter.dateClickedListener = object : TopicPageAdapter.OnItemClickedListener {
-            override fun onItemClicked(position: Int) {
+        messageListAdapter.dateClickedListener = { position ->
+            if (position != null) {
                 Toast.makeText(requireActivity(), "Position de date cliquée : " + position.toString(), Toast.LENGTH_SHORT).show()
             }
         }
 
-        messageListAdapter.pageNavigationButtonClickedListener = object : PageNavigationHeaderAdapter.OnPageNavigationButtonClickedListener {
-            override fun onPageNavigationButtonClicked(idOfButton: Int) {
-                when (idOfButton) {
-                    R.id.firstpage_button_header_row -> topicViewModel.setCurrentPageNumber(1)
-                    R.id.previouspage_button_header_row -> topicViewModel.setCurrentPageNumber((topicViewModel.getCurrentPageNumber().value ?: 2) - 1)
-                    R.id.nextpage_button_header_row -> topicViewModel.setCurrentPageNumber((topicViewModel.getCurrentPageNumber().value ?: 1) + 1)
-                    R.id.lastpage_button_header_row -> topicViewModel.setCurrentPageNumber(topicViewModel.getLastPageNumber().value ?: 1)
-                }
+        messageListAdapter.pageNavigationButtonClickedListener = { idOfButton ->
+            when (idOfButton) {
+                R.id.firstpage_button_header_row -> topicViewModel.setCurrentPageNumber(1)
+                R.id.previouspage_button_header_row -> topicViewModel.setCurrentPageNumber((topicViewModel.getCurrentPageNumber().value ?: 2) - 1)
+                R.id.nextpage_button_header_row -> topicViewModel.setCurrentPageNumber((topicViewModel.getCurrentPageNumber().value ?: 1) + 1)
+                R.id.lastpage_button_header_row -> topicViewModel.setCurrentPageNumber(topicViewModel.getLastPageNumber().value ?: 1)
             }
         }
     }

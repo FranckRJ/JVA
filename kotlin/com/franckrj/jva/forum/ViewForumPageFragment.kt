@@ -80,14 +80,12 @@ class ViewForumPageFragment : ViewNavigablePageFragment() {
             }
         }
 
-        topicListAdapter.pageNavigationButtonClickedListener = object : PageNavigationHeaderAdapter.OnPageNavigationButtonClickedListener {
-            override fun onPageNavigationButtonClicked(idOfButton: Int) {
-                when (idOfButton) {
-                    R.id.firstpage_button_header_row -> forumViewModel.setCurrentPageNumber(1)
-                    R.id.previouspage_button_header_row -> forumViewModel.setCurrentPageNumber((forumViewModel.getCurrentPageNumber().value ?: 2) - 1)
-                    R.id.nextpage_button_header_row -> forumViewModel.setCurrentPageNumber((forumViewModel.getCurrentPageNumber().value ?: 1) + 1)
-                    R.id.lastpage_button_header_row -> forumViewModel.setCurrentPageNumber(forumViewModel.getLastPageNumber().value ?: 1)
-                }
+        topicListAdapter.pageNavigationButtonClickedListener = { idOfButton ->
+            when (idOfButton) {
+                R.id.firstpage_button_header_row -> forumViewModel.setCurrentPageNumber(1)
+                R.id.previouspage_button_header_row -> forumViewModel.setCurrentPageNumber((forumViewModel.getCurrentPageNumber().value ?: 2) - 1)
+                R.id.nextpage_button_header_row -> forumViewModel.setCurrentPageNumber((forumViewModel.getCurrentPageNumber().value ?: 1) + 1)
+                R.id.lastpage_button_header_row -> forumViewModel.setCurrentPageNumber(forumViewModel.getLastPageNumber().value ?: 1)
             }
         }
     }

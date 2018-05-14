@@ -27,15 +27,15 @@ class TopicPageAdapter(context: Context,
     private val transitionOption = DrawableTransitionOptions.withCrossFade()
     private val glide: GlideRequests = GlideApp.with(context)
     var listOfMessagesShowable: List<MessageInfosShowable> = ArrayList()
-    var authorClickedListener: OnItemClickedListener? = null
-    var dateClickedListener: OnItemClickedListener? = null
+    var authorClickedListener: ((Int?) -> Unit)? = null
+    var dateClickedListener: ((Int?) -> Unit)? = null
 
     private val internalAuthorClickedListener = View.OnClickListener { view ->
-        authorClickedListener?.onItemClicked(view.tag as Int)
+        authorClickedListener?.invoke(view.tag as? Int)
     }
 
     private val internalDateClickedListener = View.OnClickListener { view ->
-        dateClickedListener?.onItemClicked(view.tag as Int)
+        dateClickedListener?.invoke(view.tag as? Int)
     }
 
     fun invalidateTextViewOfThisViewHolder(holder: RecyclerView.ViewHolder) {
@@ -99,9 +99,5 @@ class TopicPageAdapter(context: Context,
         fun invalidateTextViewWithImageSpan() {
             contentTextView.invalidate()
         }
-    }
-
-    interface OnItemClickedListener {
-        fun onItemClicked(position: Int)
     }
 }

@@ -21,10 +21,10 @@ abstract class PageNavigationHeaderAdapter(context: Context) : RecyclerView.Adap
     var lastPageNumber: Int = -1
     var showAllPageInfos: Boolean = false
     var showLastPageButton: Boolean = true
-    var pageNavigationButtonClickedListener: OnPageNavigationButtonClickedListener? = null
+    var pageNavigationButtonClickedListener: ((Int) -> Unit)? = null
 
     protected val internalPageNavigationButtonClickedListener = View.OnClickListener { view ->
-        pageNavigationButtonClickedListener?.onPageNavigationButtonClicked(view.id)
+        pageNavigationButtonClickedListener?.invoke(view.id)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
@@ -100,9 +100,5 @@ abstract class PageNavigationHeaderAdapter(context: Context) : RecyclerView.Adap
                 lastPageButton.visibility = View.INVISIBLE
             }
         }
-    }
-
-    interface OnPageNavigationButtonClickedListener {
-        fun onPageNavigationButtonClicked(idOfButton: Int)
     }
 }

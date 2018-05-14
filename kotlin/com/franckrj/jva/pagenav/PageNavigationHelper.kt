@@ -35,7 +35,7 @@ class PageNavigationHelper(private val navigationViewPager: ViewPager,
         navigationViewPager.addOnPageChangeListener(pageChangeOnPagerListener)
     }
 
-    private fun callFunOnNearbyFrag(position: Int, funToCall: ViewNavigablePageFragment.() -> Any) {
+    private fun callFunOnNearbyFrag(position: Int, funToCall: ViewNavigablePageFragment.() -> Unit) {
         if (position > 0) {
             navigationViewPagerAdapter.getFragment(position - 1)?.funToCall()
         }

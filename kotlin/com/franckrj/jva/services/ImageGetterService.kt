@@ -20,7 +20,7 @@ class ImageGetterService(contextToUse: Context, @DrawableRes private val downloa
     private val glide: GlideRequests = GlideApp.with(contextToUse)
     private val listOfTargetForDrawables: ArrayList<WrapperTarget> = ArrayList()
 
-    var listenerForInvalidateTextViewNeeded: OnInvalidateTextViewNeededListener? = null
+    var invalidateTextViewNeededListener: (() -> Unit)? = null
 
     init {
         deletedDrawable.setBounds(0, 0, deletedDrawable.intrinsicWidth, deletedDrawable.intrinsicHeight)
@@ -88,14 +88,10 @@ class ImageGetterService(contextToUse: Context, @DrawableRes private val downloa
     }
 
     override fun invalidateDrawable(who: Drawable?) {
-        listenerForInvalidateTextViewNeeded?.onInvalidateTextViewNeeded()
+        invalidateTextViewNeededListener?.invoke()
     }
 
     override fun scheduleDrawable(who: Drawable?, what: Runnable?, `when`: Long) {
         //rien
-    }
-
-    interface OnInvalidateTextViewNeededListener {
-        fun onInvalidateTextViewNeeded()
     }
 }

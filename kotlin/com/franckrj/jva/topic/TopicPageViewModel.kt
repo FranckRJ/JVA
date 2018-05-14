@@ -53,10 +53,8 @@ class TopicPageViewModel(app: Application) : NavigablePageViewModel(app) {
             }
         })
 
-        imageGetter.listenerForInvalidateTextViewNeeded = object : ImageGetterService.OnInvalidateTextViewNeededListener {
-            override fun onInvalidateTextViewNeeded() {
-                invalidateTextViewNeeded.value = true
-            }
+        imageGetter.invalidateTextViewNeededListener = {
+            invalidateTextViewNeeded.value = true
         }
     }
 
