@@ -74,20 +74,20 @@ class TopicPageViewModel(app: Application) : NavigablePageViewModel(app) {
     }
 
     override fun onCleared() {
-        cancelGetTopicPageInfos()
+        cancelGetContentPageInfos()
         cancelCurrentFormatMessagesTask()
         imageGetter.clearDrawables()
     }
 
-    fun cancelGetTopicPageInfos() {
+    override fun cancelGetContentPageInfos() {
         topicPageRepo.cancelRequestForThisLiveData(infosForTopicPage)
     }
 
-    fun clearListOfMessagesShowable() {
+    override fun clearListOfContentShowable() {
         setListOfMessagesShowableValue(LoadableValue.loaded(ArrayList()))
     }
 
-    fun clearInfosForTopicPage() {
+    override fun clearInfosForContentPage() {
         infosForTopicPage.value = null
     }
 

@@ -9,15 +9,15 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import com.franckrj.jva.R
-import com.franckrj.jva.pagenav.PageNavigationHeaderAdapter
+import com.franckrj.jva.pagenav.NavigationUtils
 import com.franckrj.jva.pagenav.ViewNavigablePageFragment
 import com.franckrj.jva.topic.ViewTopicActivity
 import com.franckrj.jva.utils.LoadableValue
 
 class ViewForumPageFragment : ViewNavigablePageFragment() {
     private lateinit var topicListAdapter: ForumPageAdapter
-    private lateinit var forumViewModel: ForumViewModel
     private lateinit var forumPageViewModel: ForumPageViewModel
+    private lateinit var forumViewModel: ForumViewModel
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         val mainView: View = inflater.inflate(R.layout.fragment_viewforumpage, container, false)
@@ -30,8 +30,10 @@ class ViewForumPageFragment : ViewNavigablePageFragment() {
 
     override fun createActivityDependentObjectsAndViewModels() {
         topicListAdapter = ForumPageAdapter(requireActivity())
-        forumViewModel = ViewModelProviders.of(requireActivity()).get(ForumViewModel::class.java)
         forumPageViewModel = ViewModelProviders.of(this).get(ForumPageViewModel::class.java)
+        forumViewModel = ViewModelProviders.of(requireActivity()).get(ForumViewModel::class.java)
+
+        contentListAdapter = topicListAdapter
         contentPageViewModel = forumPageViewModel
 
         topicListAdapter.showLastPageButton = false
@@ -40,29 +42,16 @@ class ViewForumPageFragment : ViewNavigablePageFragment() {
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
 
-        val messageListLayoutManager = LinearLayoutManager(requireActivity())
-        contentListView.layoutManager = messageListLayoutManager
+        contentListView.layoutManager = LinearLayoutManager(requireActivity())
         contentListView.adapter = topicListAdapter
+
+        NavigationUtils.initPageNavHeaderAdapterNavigation(this, topicListAdapter, forumViewModel, forumPageViewModel)
 
         forumPageViewModel.getListOfTopicsShowable().observe(this, Observer { listOfTopicsShowable ->
             contentListRefreshLayout.isRefreshing = (listOfTopicsShowable?.status == LoadableValue.STATUS_LOADING)
             if (listOfTopicsShowable != null && (listOfTopicsShowable.value.isNotEmpty() || topicListAdapter.listOfTopicsShowable.isNotEmpty())) {
                 topicListAdapter.listOfTopicsShowable = listOfTopicsShowable.value
                 topicListAdapter.notifyDataSetChanged()
-            }
-        })
-
-        forumPageViewModel.getCurrentPageNumber().observe(this, Observer { newCurrentPageNumber ->
-            if (newCurrentPageNumber != null) {
-                topicListAdapter.currentPageNumber = newCurrentPageNumber
-                topicListAdapter.notifyItemChanged(PageNavigationHeaderAdapter.HEADER_POSITION)
-            }
-        })
-
-        forumViewModel.getLastPageNumber().observe(this, Observer { newLastPageNumber ->
-            if (newLastPageNumber != null) {
-                topicListAdapter.lastPageNumber = newLastPageNumber
-                topicListAdapter.notifyItemChanged(PageNavigationHeaderAdapter.HEADER_POSITION)
             }
         })
 
@@ -79,15 +68,6 @@ class ViewForumPageFragment : ViewNavigablePageFragment() {
                 }
             }
         }
-
-        topicListAdapter.pageNavigationButtonClickedListener = { idOfButton ->
-            when (idOfButton) {
-                R.id.firstpage_button_header_row -> forumViewModel.setCurrentPageNumber(1)
-                R.id.previouspage_button_header_row -> forumViewModel.setCurrentPageNumber((forumViewModel.getCurrentPageNumber().value ?: 2) - 1)
-                R.id.nextpage_button_header_row -> forumViewModel.setCurrentPageNumber((forumViewModel.getCurrentPageNumber().value ?: 1) + 1)
-                R.id.lastpage_button_header_row -> forumViewModel.setCurrentPageNumber(forumViewModel.getLastPageNumber().value ?: 1)
-            }
-        }
     }
 
     override fun setIsActiveFragment(newIsActive: Boolean) {
@@ -95,18 +75,7 @@ class ViewForumPageFragment : ViewNavigablePageFragment() {
 
         if (isActive) {
             forumViewModel.setNewSourceForPageInfos(forumPageViewModel.getInfosForForumPage())
-            topicListAdapter.showAllPageInfos = true
             forumPageViewModel.getForumPageInfosIfNeeded(forumViewModel.forumUrl)
-        } else {
-            topicListAdapter.showAllPageInfos = false
-            forumPageViewModel.clearInfosForForumPage()
-            forumPageViewModel.cancelGetForumPageInfos()
         }
-
-        topicListAdapter.notifyItemChanged(PageNavigationHeaderAdapter.HEADER_POSITION)
-    }
-
-    override fun clearContent() {
-        forumPageViewModel.clearListOfTopicsShowable()
     }
 }

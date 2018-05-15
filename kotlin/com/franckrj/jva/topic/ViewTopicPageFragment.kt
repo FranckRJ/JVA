@@ -9,14 +9,14 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import com.franckrj.jva.R
-import com.franckrj.jva.pagenav.PageNavigationHeaderAdapter
+import com.franckrj.jva.pagenav.NavigationUtils
 import com.franckrj.jva.pagenav.ViewNavigablePageFragment
 import com.franckrj.jva.utils.LoadableValue
 
 class ViewTopicPageFragment : ViewNavigablePageFragment() {
     private lateinit var messageListAdapter: TopicPageAdapter
-    private lateinit var topicViewModel: TopicViewModel
     private lateinit var topicPageViewModel: TopicPageViewModel
+    private lateinit var topicViewModel: TopicViewModel
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         val mainView: View = inflater.inflate(R.layout.fragment_viewtopicpage, container, false)
@@ -29,17 +29,20 @@ class ViewTopicPageFragment : ViewNavigablePageFragment() {
 
     override fun createActivityDependentObjectsAndViewModels() {
         messageListAdapter = TopicPageAdapter(requireActivity(), resources.getDimensionPixelSize(R.dimen.avatarSize), resources.getDimensionPixelSize(R.dimen.defaultCardCornerRadius))
-        topicViewModel = ViewModelProviders.of(requireActivity()).get(TopicViewModel::class.java)
         topicPageViewModel = ViewModelProviders.of(this).get(TopicPageViewModel::class.java)
+        topicViewModel = ViewModelProviders.of(requireActivity()).get(TopicViewModel::class.java)
+
+        contentListAdapter = messageListAdapter
         contentPageViewModel = topicPageViewModel
     }
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
 
-        val messageListLayoutManager = LinearLayoutManager(requireActivity())
-        contentListView.layoutManager = messageListLayoutManager
+        contentListView.layoutManager = LinearLayoutManager(requireActivity())
         contentListView.adapter = messageListAdapter
+
+        NavigationUtils.initPageNavHeaderAdapterNavigation(this, messageListAdapter, topicViewModel, topicPageViewModel)
 
         topicPageViewModel.getListOfMessagesShowable().observe(this, Observer { listOfMessagesShowable ->
             contentListRefreshLayout.isRefreshing = (listOfMessagesShowable?.status == LoadableValue.STATUS_LOADING)
@@ -60,20 +63,6 @@ class ViewTopicPageFragment : ViewNavigablePageFragment() {
             }
         })
 
-        topicPageViewModel.getCurrentPageNumber().observe(this, Observer { newCurrentPageNumber ->
-            if (newCurrentPageNumber != null) {
-                messageListAdapter.currentPageNumber = newCurrentPageNumber
-                messageListAdapter.notifyItemChanged(PageNavigationHeaderAdapter.HEADER_POSITION)
-            }
-        })
-
-        topicViewModel.getLastPageNumber().observe(this, Observer { newLastPageNumber ->
-            if (newLastPageNumber != null) {
-                messageListAdapter.lastPageNumber = newLastPageNumber
-                messageListAdapter.notifyItemChanged(PageNavigationHeaderAdapter.HEADER_POSITION)
-            }
-        })
-
         messageListAdapter.authorClickedListener = { position ->
             if (position != null) {
                 Toast.makeText(requireActivity(), "Position d'auteur cliqué : " + position.toString(), Toast.LENGTH_SHORT).show()
@@ -85,15 +74,6 @@ class ViewTopicPageFragment : ViewNavigablePageFragment() {
                 Toast.makeText(requireActivity(), "Position de date cliquée : " + position.toString(), Toast.LENGTH_SHORT).show()
             }
         }
-
-        messageListAdapter.pageNavigationButtonClickedListener = { idOfButton ->
-            when (idOfButton) {
-                R.id.firstpage_button_header_row -> topicViewModel.setCurrentPageNumber(1)
-                R.id.previouspage_button_header_row -> topicViewModel.setCurrentPageNumber((topicViewModel.getCurrentPageNumber().value ?: 2) - 1)
-                R.id.nextpage_button_header_row -> topicViewModel.setCurrentPageNumber((topicViewModel.getCurrentPageNumber().value ?: 1) + 1)
-                R.id.lastpage_button_header_row -> topicViewModel.setCurrentPageNumber(topicViewModel.getLastPageNumber().value ?: 1)
-            }
-        }
     }
 
     override fun setIsActiveFragment(newIsActive: Boolean) {
@@ -101,18 +81,7 @@ class ViewTopicPageFragment : ViewNavigablePageFragment() {
 
         if (isActive) {
             topicViewModel.setNewSourceForPageInfos(topicPageViewModel.getInfosForTopicPage())
-            messageListAdapter.showAllPageInfos = true
             topicPageViewModel.getTopicPageInfosIfNeeded(topicViewModel.topicUrl)
-        } else {
-            messageListAdapter.showAllPageInfos = false
-            topicPageViewModel.clearInfosForTopicPage()
-            topicPageViewModel.cancelGetTopicPageInfos()
         }
-
-        messageListAdapter.notifyItemChanged(PageNavigationHeaderAdapter.HEADER_POSITION)
-    }
-
-    override fun clearContent() {
-        topicPageViewModel.clearListOfMessagesShowable()
     }
 }

@@ -43,19 +43,19 @@ class ForumPageViewModel(app: Application) : NavigablePageViewModel(app) {
     }
 
     override fun onCleared() {
-        cancelGetForumPageInfos()
+        cancelGetContentPageInfos()
         cancelCurrentFormatTopicsTask()
     }
 
-    fun cancelGetForumPageInfos() {
+    override fun cancelGetContentPageInfos() {
         //TODO
     }
 
-    fun clearListOfTopicsShowable() {
+    override fun clearListOfContentShowable() {
         listOfTopicsShowable.value = LoadableValue.loaded(ArrayList())
     }
 
-    fun clearInfosForForumPage() {
+    override fun clearInfosForContentPage() {
         infosForForumPage.value = null
     }
 
@@ -66,7 +66,7 @@ class ForumPageViewModel(app: Application) : NavigablePageViewModel(app) {
     fun getListOfTopicsInfos(): List<TopicInfos>? = infosForForumPage.value?.value?.listOfTopics
 
     /* Ne récupère les informations que si aucun topic n'est actuellement affiché ni en cours de chargement. */
-    fun getForumPageInfosIfNeeded(formatedTopicUrl: String) {
+    fun getForumPageInfosIfNeeded(formatedForumUrl: String) {
         val realListOfTopicsShowable: LoadableValue<List<TopicInfosShowable>>? = listOfTopicsShowable.value
         if (realListOfTopicsShowable == null || (realListOfTopicsShowable.value.isEmpty() && realListOfTopicsShowable.status != LoadableValue.STATUS_LOADING)) {
             infosForForumPage.value = LoadableValue.loaded(ForumPageInfos("test(android)", listOf(
@@ -83,7 +83,7 @@ class ForumPageViewModel(app: Application) : NavigablePageViewModel(app) {
                     TopicInfos("ainsi font font font les petites marionettes heu ainsi font font font etc etc", "salutbonjour", "un jour précédent", 32, TopicType.PINNED_OPENED, "http://www.jeuxvideo.com/forums/42-1000005-47929326-1-0-1-0-ok-google-blabla-android.htm"),
                     TopicInfos("encore du texte", "salutbonjour", "un jour précédent", 32, TopicType.DELETED, "http://www.jeuxvideo.com/forums/42-1000005-54624544-1-0-1-0-pour-la-moderation-c-est-ici.htm"),
                     TopicInfos("toujours du texte", "salutbonjour", "un jour précédent", 32, TopicType.LOCKED, "http://www.jeuxvideo.com/forums/42-1000005-47929326-1-0-1-0-ok-google-blabla-android.htm"),
-                    TopicInfos(formatedTopicUrl, "salutbonjour", "un jour précédent", 32, TopicType.SOLVED, "http://www.jeuxvideo.com/forums/42-1000005-54624544-1-0-1-0-pour-la-moderation-c-est-ici.htm"),
+                    TopicInfos(formatedForumUrl, "salutbonjour", "un jour précédent", 32, TopicType.SOLVED, "http://www.jeuxvideo.com/forums/42-1000005-54624544-1-0-1-0-pour-la-moderation-c-est-ici.htm"),
                     TopicInfos("finallement du texte", "salutbonjour", "un jour précédent", 32, TopicType.SINGLE_PAGE, "http://www.jeuxvideo.com/forums/42-1000005-47929326-1-0-1-0-ok-google-blabla-android.htm"),
                     TopicInfos("à la fin\"><>&=ok", "salutbonjour", "un jour précédent", 32, TopicType.MULTIPLE_PAGE, "http://www.jeuxvideo.com/forums/42-1000005-54624544-1-0-1-0-pour-la-moderation-c-est-ici.htm")
             )))

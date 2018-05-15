@@ -16,4 +16,8 @@ abstract class NavigablePageViewModel(app: Application) : AndroidViewModel(app) 
     }
 
     fun getCurrentPageNumber(): LiveData<Int?> = pageNumber
+
+    abstract fun cancelGetContentPageInfos()
+    abstract fun clearListOfContentShowable()
+    abstract fun clearInfosForContentPage()
 }

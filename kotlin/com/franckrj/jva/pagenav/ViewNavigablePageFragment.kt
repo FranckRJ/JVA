@@ -23,6 +23,7 @@ abstract class ViewNavigablePageFragment : Fragment() {
 
     protected lateinit var contentListView: SmoothScrollbarRecyclerView
     protected lateinit var contentListRefreshLayout: SwipeRefreshLayout
+    protected lateinit var contentListAdapter: PageNavigationHeaderAdapter
     protected lateinit var contentPageViewModel: NavigablePageViewModel
     protected var isActive: Boolean = false
 
@@ -95,8 +96,21 @@ abstract class ViewNavigablePageFragment : Fragment() {
     @CallSuper
     open fun setIsActiveFragment(newIsActive: Boolean) {
         isActive = newIsActive
+
+        if (isActive) {
+            contentListAdapter.showAllPageInfos = true
+        } else {
+            contentListAdapter.showAllPageInfos = false
+            contentPageViewModel.clearInfosForContentPage()
+            contentPageViewModel.cancelGetContentPageInfos()
+        }
+
+        contentListAdapter.notifyItemChanged(PageNavigationHeaderAdapter.HEADER_POSITION)
+    }
+
+    fun clearContent() {
+        contentPageViewModel.clearListOfContentShowable()
     }
 
     protected abstract fun createActivityDependentObjectsAndViewModels()
-    abstract fun clearContent()
 }
