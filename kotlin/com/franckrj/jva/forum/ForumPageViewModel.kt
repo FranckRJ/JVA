@@ -5,6 +5,7 @@ import android.app.Application
 import android.arch.lifecycle.LiveData
 import android.arch.lifecycle.MediatorLiveData
 import android.arch.lifecycle.MutableLiveData
+import android.graphics.drawable.Drawable
 import android.os.AsyncTask
 import android.text.SpannableString
 import com.franckrj.jva.R
@@ -13,6 +14,13 @@ import com.franckrj.jva.utils.LoadableValue
 
 class ForumPageViewModel(app: Application) : NavigablePageViewModel(app) {
     private var currentTaskForTopicsFormat: FormatTopicsToShowableTopics? = null
+    private val listOfTopicIconForType: List<Drawable> = listOf(app.getDrawable(R.drawable.icon_topic_dossier1),
+                                                                app.getDrawable(R.drawable.icon_topic_dossier2),
+                                                                app.getDrawable(R.drawable.icon_topic_lock_light),
+                                                                app.getDrawable(R.drawable.icon_topic_marque_on),
+                                                                app.getDrawable(R.drawable.icon_topic_marque_off),
+                                                                app.getDrawable(R.drawable.icon_topic_ghost),
+                                                                app.getDrawable(R.drawable.icon_topic_resolu))
 
     private val infosForForumPage: MutableLiveData<LoadableValue<ForumPageInfos?>?> = MutableLiveData()
     private val listOfTopicsShowable: MediatorLiveData<LoadableValue<List<TopicInfosShowable>>> = MediatorLiveData()
@@ -98,7 +106,7 @@ class ForumPageViewModel(app: Application) : NavigablePageViewModel(app) {
                 TopicInfosShowable(SpannableString(topicInfos.title + " (" + topicInfos.numberOfReplys.toString() + ")"),
                                    SpannableString(topicInfos.author),
                                    SpannableString(topicInfos.dateOfLastReply),
-                                   getApplication<Application>().getDrawable(R.drawable.smiley_1))
+                                   listOfTopicIconForType[topicInfos.typeOfTopic.index])
             }
         }
 

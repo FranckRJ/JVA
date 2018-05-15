@@ -3,7 +3,15 @@ package com.franckrj.jva.forum
 import android.graphics.drawable.Drawable
 import android.text.Spannable
 
-enum class TopicType { SINGLE_PAGE, MULTIPLE_PAGE, LOCKED, PINNED_OPENED, PINNED_LOCKED, DELETED, SOLVED }
+enum class TopicType(val index: Int) {
+    SINGLE_PAGE(0),
+    MULTIPLE_PAGE(1),
+    LOCKED(2),
+    PINNED_OPENED(3),
+    PINNED_LOCKED(4),
+    DELETED(5),
+    SOLVED(6)
+}
 
 open class TopicInfos(open val title: String,
                       open val author: String,
