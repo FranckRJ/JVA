@@ -38,6 +38,8 @@
                     android:background="@color/toolbarColor">
 
                     <ImageView
+                        style="@style/SelectableItemBackground"
+                        android:id="@+id/arrow_back_button_viewtopic"
                         android:layout_width="@dimen/toolbarHeight"
                         android:layout_height="@dimen/toolbarHeight"
                         android:layout_gravity="center_vertical"

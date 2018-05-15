@@ -38,12 +38,13 @@
                     android:background="@color/toolbarColor">
 
                     <ImageView
+                        style="@style/SelectableItemBackground"
                         android:layout_width="@dimen/toolbarHeight"
                         android:layout_height="@dimen/toolbarHeight"
                         android:layout_gravity="center_vertical"
                         android:scaleType="center"
-                        android:src="@drawable/ic_arrow_back"
-                        android:contentDescription="@string/back"/>
+                        android:src="@drawable/ic_menu"
+                        android:contentDescription="@string/menu"/>
 
                     <TextView
                         android:id="@+id/title_text_toolbar_viewforum"
