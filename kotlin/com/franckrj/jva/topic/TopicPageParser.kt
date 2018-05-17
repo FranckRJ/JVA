@@ -44,7 +44,7 @@ class TopicPageParser private constructor() : AbsParser() {
     private val shortLinkPattern = Regex("""<span class="JvCare [^"]*" rel="nofollow[^"]*" target="_blank">([^<]*)</span>""")
     private val longLinkPattern = Regex("""<span class="JvCare [^"]*"[^i]*itle="([^"]*)">[^<]*<i></i><span>[^<]*</span>[^<]*</span>""")
     private val noelshackImagePattern = Regex("""<span class="JvCare[^>]*><img class="img-shack".*?src="http(s)?://([^"]*)" alt="([^"]*)"[^>]*></span>""")
-    private val spoilLinePattern = Regex("""<div class="bloc-spoil-jv en-ligne">.*?<div class="contenu-spoil">(.*?)</div></div>""", RegexOption.DOT_MATCHES_ALL)
+    private val spoilLinePattern = Regex("""<span class="bloc-spoil-jv en-ligne">.*?<span class="contenu-spoil">(.*?)</span></span>""", RegexOption.DOT_MATCHES_ALL)
     private val spoilBlockPattern = Regex("""<div class="bloc-spoil-jv">.*?<div class="contenu-spoil">(.*?)</div></div>""", RegexOption.DOT_MATCHES_ALL)
     private val surroundedBlockquotePattern = Regex("""(<br /> *)*(<(/)?blockquote>)( *<br />)*""")
     private val jvCarePattern = Regex("""<span class="JvCare [^"]*">([^<]*)</span>""")
@@ -53,7 +53,7 @@ class TopicPageParser private constructor() : AbsParser() {
     /* Regex de pré-parsage du contenu des messages. */
     private val adPattern = Regex("""<ins[^>]*></ins>""")
     private val uolistOpenTagPattern = Regex("""<(ul|ol)[^>]*>""")
-    private val overlySpoilPattern = Regex("""(<div class="bloc-spoil-jv[^"]*">.*?<div class="contenu-spoil">|</div></div>)""", RegexOption.DOT_MATCHES_ALL)
+    private val overlySpoilPattern = Regex("""(<(span|div) class="bloc-spoil-jv[^"]*">.*?<(span|div) class="contenu-spoil">|</span></span>|</div></div>)""", RegexOption.DOT_MATCHES_ALL)
 
     /* Regex pour formater les paragraphes des messages (et supprimer les divs). */
     private val divOpenTagPattern = Regex("""<div[^>]*>""")
@@ -244,7 +244,7 @@ class TopicPageParser private constructor() : AbsParser() {
 
         if (messageContentMatcher != null) {
             infosForMessage.content = messageContentMatcher.groupValues[1]
-            infosForMessage.containSpoilTag = infosForMessage.content.contains("""<div class="contenu-spoil">""")
+            infosForMessage.containSpoilTag = infosForMessage.content.contains(""" class="contenu-spoil">""")
             infosForMessage.content = makeBasicFormatOfMessage(messageContentMatcher.groupValues[1], infosForMessage.containSpoilTag)
         }
 
@@ -285,7 +285,7 @@ class TopicPageParser private constructor() : AbsParser() {
         var currentSpoilTagDeepness = 0
 
         while (overlySpoilMatcher != null) {
-            val itsEndingTag = overlySpoilMatcher.value == "</div></div>"
+            val itsEndingTag = overlySpoilMatcher.value.startsWith("</")
 
             if (!itsEndingTag) {
                 ++currentSpoilTagDeepness
