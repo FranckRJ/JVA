@@ -19,7 +19,7 @@ class TopicPageAdapter(context: Context,
                        private val sizeOfAvatars: Int,
                        sizeOfAvatarRoundedCorners: Int) : PageNavigationHeaderAdapter(context) {
     companion object {
-        @JvmStatic private val TYPE_ITEM: Int = (TYPE_HEADER + 1)
+        private const val TYPE_ITEM: Int = (TYPE_HEADER + 1)
     }
 
     private val spannableFactory: CopylessSpannableFactory = CopylessSpannableFactory.instance

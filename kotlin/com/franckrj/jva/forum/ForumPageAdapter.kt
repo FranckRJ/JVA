@@ -13,7 +13,7 @@ import com.franckrj.jva.services.CopylessSpannableFactory
 
 class ForumPageAdapter(context: Context) : PageNavigationHeaderAdapter(context) {
     companion object {
-        @JvmStatic private val TYPE_ITEM: Int = (TYPE_HEADER + 1)
+        private const val TYPE_ITEM: Int = (TYPE_HEADER + 1)
     }
 
     private val spannableFactory: CopylessSpannableFactory = CopylessSpannableFactory.instance

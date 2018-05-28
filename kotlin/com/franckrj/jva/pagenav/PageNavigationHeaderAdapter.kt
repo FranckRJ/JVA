@@ -10,8 +10,10 @@ import com.franckrj.jva.R
 
 abstract class PageNavigationHeaderAdapter(context: Context) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
     companion object {
-        @JvmStatic protected val TYPE_HEADER: Int = 0
-        @JvmStatic protected val NUMBER_OF_HEADERS: Int = 1
+        /* Devrait être protected mais ça fait tout buger car @JvmStatic c'est de la merde. */
+        const val TYPE_HEADER: Int = 0
+        /* Pareil. */
+        const val NUMBER_OF_HEADERS: Int = 1
 
         const val HEADER_POSITION: Int = 0
     }
