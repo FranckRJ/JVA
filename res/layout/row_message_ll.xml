@@ -55,7 +55,8 @@
             android:paddingBottom="@dimen/messageContentBottomPadding"
             android:paddingStart="@dimen/messageContentXPadding"
             android:paddingEnd="@dimen/messageContentXPadding"
-            android:textSize="@dimen/messageContentFontSize"/>
+            android:textSize="@dimen/messageContentFontSize"
+            android:breakStrategy="simple"/>
 
     </LinearLayout>
 

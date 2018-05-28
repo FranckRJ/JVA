@@ -62,7 +62,8 @@
             app:layout_constraintTop_toBottomOf="@+id/avatar_image_message_row"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            android:textSize="@dimen/messageContentFontSize"/>
+            android:textSize="@dimen/messageContentFontSize"
+            android:breakStrategy="simple"/>
 
     </android.support.constraint.ConstraintLayout>
 
