@@ -13,6 +13,8 @@ import com.franckrj.jva.pagenav.NavigablePageViewModel
 import com.franckrj.jva.utils.LoadableValue
 
 class ForumPageViewModel(app: Application) : NavigablePageViewModel(app) {
+    private val forumPageRepo: ForumPageRepository = ForumPageRepository.instance
+    private val forumPageParser: ForumPageParser = ForumPageParser.instance
     private var currentTaskForTopicsFormat: FormatTopicsToShowableTopics? = null
     private val listOfTopicIconForType: List<Drawable> = listOf(app.getDrawable(R.drawable.icon_topic_dossier1),
                                                                 app.getDrawable(R.drawable.icon_topic_dossier2),
@@ -56,7 +58,7 @@ class ForumPageViewModel(app: Application) : NavigablePageViewModel(app) {
     }
 
     override fun cancelGetContentPageInfos() {
-        //TODO
+        forumPageRepo.cancelRequestForThisLiveData(infosForForumPage)
     }
 
     override fun clearListOfContentShowable() {
@@ -77,24 +79,7 @@ class ForumPageViewModel(app: Application) : NavigablePageViewModel(app) {
     fun getForumPageInfosIfNeeded(formatedForumUrl: String) {
         val realListOfTopicsShowable: LoadableValue<List<TopicInfosShowable>>? = listOfTopicsShowable.value
         if (realListOfTopicsShowable == null || (realListOfTopicsShowable.value.isEmpty() && realListOfTopicsShowable.status != LoadableValue.STATUS_LOADING)) {
-            infosForForumPage.value = LoadableValue.loaded(ForumPageInfos("test(android)", listOf(
-                    TopicInfos("mdr mdr", "salutbonjour", "un jour précédent", 32, TopicType.SINGLE_PAGE, "http://www.jeuxvideo.com/forums/42-1000005-47929326-1-0-1-0-ok-google-blabla-android.htm"),
-                    TopicInfos("qsdfsqdfsqdf", "salutbonjour", "un jour précédent", 32, TopicType.MULTIPLE_PAGE, "http://www.jeuxvideo.com/forums/42-1000005-54624544-1-0-1-0-pour-la-moderation-c-est-ici.htm"),
-                    TopicInfos("salut bonjour", "salutbonjour", "un jour précédent", 32, TopicType.PINNED_LOCKED, "http://www.jeuxvideo.com/forums/42-1000005-47929326-1-0-1-0-ok-google-blabla-android.htm"),
-                    TopicInfos("ok zut déjà pris lol", "salutbonjour", "un jour précédent", 32, TopicType.PINNED_OPENED, "http://www.jeuxvideo.com/forums/42-1000005-54624544-1-0-1-0-pour-la-moderation-c-est-ici.htm"),
-                    TopicInfos("arf arfarf", "salutbonjour", "un jour précédent", 32, TopicType.DELETED, "http://www.jeuxvideo.com/forums/42-1000005-47929326-1-0-1-0-ok-google-blabla-android.htm"),
-                    TopicInfos("okhuui", "salutbonjour", "un jour précédent", 32, TopicType.LOCKED, "http://www.jeuxvideo.com/forums/42-1000005-54624544-1-0-1-0-pour-la-moderation-c-est-ici.htm"),
-                    TopicInfos("rororo", "salutbonjour", "un jour précédent", 32, TopicType.SOLVED, "http://www.jeuxvideo.com/forums/42-1000005-47929326-1-0-1-0-ok-google-blabla-android.htm"),
-                    TopicInfos("poulet parmesanbt", "salutbonjour", "un jour précédent", 32, TopicType.SINGLE_PAGE, "http://www.jeuxvideo.com/forums/42-1000005-54624544-1-0-1-0-pour-la-moderation-c-est-ici.htm"),
-                    TopicInfos("mdr mdr", "salutbonjour", "un jour précédent", 32, TopicType.MULTIPLE_PAGE, "http://www.jeuxvideo.com/forums/42-1000005-47929326-1-0-1-0-ok-google-blabla-android.htm"),
-                    TopicInfos("aoins", "salutbonjour", "un jour précédent", 32, TopicType.PINNED_LOCKED, "http://www.jeuxvideo.com/forums/42-1000005-54624544-1-0-1-0-pour-la-moderation-c-est-ici.htm"),
-                    TopicInfos("ainsi font font font les petites marionettes heu ainsi font font font etc etc", "salutbonjour", "un jour précédent", 32, TopicType.PINNED_OPENED, "http://www.jeuxvideo.com/forums/42-1000005-47929326-1-0-1-0-ok-google-blabla-android.htm"),
-                    TopicInfos("encore du texte", "salutbonjour", "un jour précédent", 32, TopicType.DELETED, "http://www.jeuxvideo.com/forums/42-1000005-54624544-1-0-1-0-pour-la-moderation-c-est-ici.htm"),
-                    TopicInfos("toujours du texte", "salutbonjour", "un jour précédent", 32, TopicType.LOCKED, "http://www.jeuxvideo.com/forums/42-1000005-47929326-1-0-1-0-ok-google-blabla-android.htm"),
-                    TopicInfos(formatedForumUrl, "salutbonjour", "un jour précédent", 32, TopicType.SOLVED, "http://www.jeuxvideo.com/forums/42-1000005-54624544-1-0-1-0-pour-la-moderation-c-est-ici.htm"),
-                    TopicInfos("finallement du texte", "salutbonjour", "un jour précédent", 32, TopicType.SINGLE_PAGE, "http://www.jeuxvideo.com/forums/42-1000005-47929326-1-0-1-0-ok-google-blabla-android.htm"),
-                    TopicInfos("à la fin\"><>&=ok", "salutbonjour", "un jour précédent", 32, TopicType.MULTIPLE_PAGE, "http://www.jeuxvideo.com/forums/42-1000005-54624544-1-0-1-0-pour-la-moderation-c-est-ici.htm")
-            )))
+            forumPageRepo.updateForumPageInfos(forumPageParser.setPageNumberForThisForumUrl(formatedForumUrl, pageNumber.value ?: 0), infosForForumPage)
         }
     }
 

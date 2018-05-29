@@ -3,6 +3,13 @@ package com.franckrj.jva.base
 import android.text.Spannable
 
 abstract class AbsParser {
+    protected object ForumAndTopicCommonRegex {
+        /* Regex pour récupérer les infos d'une page d'un forum / topic. */
+        val allArianeStringPattern = Regex("""<div class="fil-ariane-crumb">.*?</h1>""", RegexOption.DOT_MATCHES_ALL)
+        val forumNameInArianeStringPattern = Regex("""<span><a href="/forums/0-[^"]*">([^<]*)</a></span>""")
+        val highlightInArianeStringPattern = Regex("""<h1 class="highlight">([^<]*)</h1>""")
+    }
+
     protected fun StringBuilder.replaceInside(base: String, replacement: String) {
         var index = this.indexOf(base)
         while (index != -1) {

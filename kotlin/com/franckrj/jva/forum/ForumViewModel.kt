@@ -4,10 +4,11 @@ import android.app.Application
 import android.arch.lifecycle.LiveData
 import android.arch.lifecycle.MediatorLiveData
 import com.franckrj.jva.pagenav.NavigableViewModel
-import com.franckrj.jva.topic.TopicPageParser
 import com.franckrj.jva.utils.LoadableValue
 
 class ForumViewModel(app: Application) : NavigableViewModel(app) {
+    private val forumPageParser: ForumPageParser = ForumPageParser.instance
+
     private var infosForForumPage: LiveData<LoadableValue<ForumPageInfos?>?>? = null
     private val forumName: MediatorLiveData<String> = MediatorLiveData()
     var forumUrl: String = ""
@@ -26,9 +27,8 @@ class ForumViewModel(app: Application) : NavigableViewModel(app) {
     }
 
     fun setUrlForForum(newForumUrl: String) {
-        /* TODO: TopicPageParser = tempo */
-        forumUrl = TopicPageParser.instance.formatThisUrlToClassicJvcUrl(newForumUrl)
-        currentPageNumber.value = TopicPageParser.instance.getPageNumberOfThisTopicUrl(forumUrl).coerceIn(1, lastPageNumber.value)
+        forumUrl = forumPageParser.formatThisUrlToClassicJvcUrl(newForumUrl)
+        currentPageNumber.value = forumPageParser.getPageNumberOfThisForumUrl(forumUrl).coerceIn(1, lastPageNumber.value)
     }
 
     fun setNewSourceForPageInfos(newInfosForForumPage: LiveData<LoadableValue<ForumPageInfos?>?>) {

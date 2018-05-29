@@ -19,10 +19,7 @@ class TopicPageParser private constructor() : AbsParser() {
     private val pageTopicUrlNumberPattern = Regex("""^(http://www\.jeuxvideo\.com/forums/[0-9]*-([0-9]*)-([0-9]*)-)([0-9]*)(-[0-9]*-[0-9]*-[0-9]*-[^.]*\.htm)""")
 
     /* Regex pour récupérer les infos d'une page d'un topic. */
-    private val allArianeStringPattern = Regex("""<div class="fil-ariane-crumb">.*?</h1>""", RegexOption.DOT_MATCHES_ALL)
-    private val forumNameInArianeStringPattern = Regex("""<span><a href="/forums/0-[^"]*">([^<]*)</a></span>""")
     private val topicNameInArianeStringPattern = Regex("""<span><a href="/forums/(42|1)-[^"]*">([^<]*)</a></span>""")
-    private val highlightInArianeStringPattern = Regex("""<h1 class="highlight">([^<]*)</h1>""")
     private val currentPagePattern = Regex("""<span class="page-active">([^<]*)</span>""")
     private val pageLinkPattern = Regex("""<span><a href="([^"]*)" class="lien-jv">([0-9]*)</a></span>""")
 
@@ -102,17 +99,17 @@ class TopicPageParser private constructor() : AbsParser() {
     fun getForumAndTopicNameFromPageSource(pageSource: String): ForumAndTopicName {
         var currentForumName = ""
         var currentTopicName = ""
-        val allArianeStringMatcher: MatchResult? = allArianeStringPattern.find(pageSource)
+        val allArianeStringMatcher: MatchResult? = ForumAndTopicCommonRegex.allArianeStringPattern.find(pageSource)
 
         if (allArianeStringMatcher != null) {
             val allArianeString = allArianeStringMatcher.value
-            var forumNameMatcher: MatchResult? = forumNameInArianeStringPattern.find(allArianeString)
+            var forumNameMatcher: MatchResult? = ForumAndTopicCommonRegex.forumNameInArianeStringPattern.find(allArianeString)
             val topicNameMatcher: MatchResult? = topicNameInArianeStringPattern.find(allArianeString)
-            val highlightMatcher: MatchResult? = highlightInArianeStringPattern.find(allArianeString)
+            val highlightMatcher: MatchResult? = ForumAndTopicCommonRegex.highlightInArianeStringPattern.find(allArianeString)
 
             while (forumNameMatcher != null) {
                 currentForumName = forumNameMatcher.groupValues[1]
-                forumNameMatcher = forumNameInArianeStringPattern.find(allArianeString, forumNameMatcher.range.endInclusive + 1)
+                forumNameMatcher = ForumAndTopicCommonRegex.forumNameInArianeStringPattern.find(allArianeString, forumNameMatcher.range.endInclusive + 1)
             }
             if (topicNameMatcher != null) {
                 currentTopicName = topicNameMatcher.groupValues[2]
