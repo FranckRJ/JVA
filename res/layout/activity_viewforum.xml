@@ -64,4 +64,16 @@
 
     </android.support.design.widget.AppBarLayout>
 
+    <View
+        android:id="@+id/statusbar_background_viewforum"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_gravity="top"/>
+
+    <View
+        android:id="@+id/navbar_background_viewforum"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_gravity="bottom"/>
+
 </android.support.design.widget.CoordinatorLayout>

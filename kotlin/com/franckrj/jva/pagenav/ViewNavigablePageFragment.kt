@@ -1,8 +1,6 @@
 package com.franckrj.jva.pagenav
 
 import android.app.Activity
-import android.content.res.Configuration
-import android.os.Build
 import android.os.Bundle
 import android.support.annotation.CallSuper
 import android.support.annotation.DimenRes
@@ -12,6 +10,7 @@ import android.support.v7.widget.RecyclerView
 import com.franckrj.jva.R
 import com.franckrj.jva.utils.MovableToolbar
 import com.franckrj.jva.utils.SmoothScrollbarRecyclerView
+import com.franckrj.jva.utils.Utils
 
 abstract class ViewNavigablePageFragment : Fragment() {
     companion object {
@@ -29,24 +28,15 @@ abstract class ViewNavigablePageFragment : Fragment() {
 
     fun initListViewAndRefreshLayout(newContentListView: SmoothScrollbarRecyclerView, newContentListRefreshLayout: SwipeRefreshLayout,
                                      @DimenRes listViewPaddingResId: Int, @DimenRes listItemSpacingResId: Int) {
-        val idOfNavBarHeight: Int = resources.getIdentifier("navigation_bar_height", "dimen", "android")
-        val navBarHeight: Int = if (idOfNavBarHeight > 0) resources.getDimensionPixelSize(idOfNavBarHeight) else 0
-        val idOfStatusBarHeight: Int = resources.getIdentifier("status_bar_height", "dimen", "android")
-        val statusBarHeight: Int = if (idOfStatusBarHeight > 0) resources.getDimensionPixelSize(idOfStatusBarHeight) else 0
+        val statusBarHeight: Int = Utils.getStatusbarHeight(requireActivity())
+        val navBarHeight: Int = Utils.getNavbarHeight(requireActivity())
         val toolbarHeight: Int = resources.getDimensionPixelSize(R.dimen.toolbarHeight)
         val defaultToolbarMargin: Int = resources.getDimensionPixelSize(R.dimen.defaultToolbarMargin)
         val defaultListViewPadding: Int = resources.getDimensionPixelSize(listViewPaddingResId)
         val listItemSpacing: Int = resources.getDimensionPixelSize(listItemSpacingResId)
         val refreshSpinnerTopMargin: Int = resources.getDimensionPixelSize(R.dimen.refreshSpinnerTopMargin)
         val realToolbarHeight: Int = toolbarHeight + (defaultToolbarMargin * 2)
-
-        var navBarIsInApp = resources.configuration.orientation == Configuration.ORIENTATION_PORTRAIT
-
-        if (Build.VERSION.SDK_INT >= 24) {
-            if (requireActivity().isInMultiWindowMode) {
-                navBarIsInApp = false
-            }
-        }
+        val navBarIsInApp: Boolean = Utils.getNavbarIsInApp(requireActivity())
 
         contentListView = newContentListView
         contentListRefreshLayout = newContentListRefreshLayout

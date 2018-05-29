@@ -6,11 +6,11 @@ import android.os.Bundle
 import android.support.v4.view.ViewPager
 import android.widget.ImageView
 import com.franckrj.jva.R
-import com.franckrj.jva.base.CollapsibleToolbarActivity
+import com.franckrj.jva.base.BaseActivity
 import com.franckrj.jva.pagenav.NavigationUtils
 import com.franckrj.jva.pagenav.PageNavigationHelper
 
-class ViewTopicActivity : CollapsibleToolbarActivity() {
+class ViewTopicActivity : BaseActivity() {
     companion object {
         const val EXTRA_TOPIC_URL: String = "EXTRA_TOPIC_URL"
     }
@@ -24,7 +24,9 @@ class ViewTopicActivity : CollapsibleToolbarActivity() {
         val topicNavigation = PageNavigationHelper(topicViewPager, { ViewTopicPageFragment() }, supportFragmentManager)
         val topicViewModel: TopicViewModel = ViewModelProviders.of(this).get(TopicViewModel::class.java)
 
-        initToolbar(topicViewPager, findViewById(R.id.appbar_layout_viewtopic), findViewById(R.id.toolbar_layout_viewtopic),
+        initSysbars(findViewById(R.id.statusbar_background_viewtopic), findViewById(R.id.navbar_background_viewtopic))
+
+        initCollapsibleToolbar(topicViewPager, findViewById(R.id.appbar_layout_viewtopic), findViewById(R.id.toolbar_layout_viewtopic),
                     findViewById(R.id.toolbar_card_viewtopic), findViewById(R.id.title_text_toolbar_viewtopic), findViewById(R.id.subtitle_text_toolbar_viewtopic))
 
         arrowBackButton.setOnClickListener {
@@ -35,8 +37,8 @@ class ViewTopicActivity : CollapsibleToolbarActivity() {
 
         topicViewModel.getForumAndTopicName().observe(this, Observer { forumAndTopicName ->
             if (forumAndTopicName != null) {
-                setTitle(forumAndTopicName.topicName)
-                setSubTitle(getString(R.string.onForum, forumAndTopicName.forumName))
+                setToolbarTitle(forumAndTopicName.topicName)
+                setToolbarSubTitle(getString(R.string.onForum, forumAndTopicName.forumName))
             }
         })
 

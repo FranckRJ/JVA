@@ -5,11 +5,11 @@ import android.arch.lifecycle.ViewModelProviders
 import android.os.Bundle
 import android.support.v4.view.ViewPager
 import com.franckrj.jva.R
-import com.franckrj.jva.base.CollapsibleToolbarActivity
+import com.franckrj.jva.base.BaseActivity
 import com.franckrj.jva.pagenav.NavigationUtils
 import com.franckrj.jva.pagenav.PageNavigationHelper
 
-class ViewForumActivity : CollapsibleToolbarActivity() {
+class ViewForumActivity : BaseActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_viewforum)
@@ -18,14 +18,16 @@ class ViewForumActivity : CollapsibleToolbarActivity() {
         val forumNavigation = PageNavigationHelper(forumViewPager, { ViewForumPageFragment() }, supportFragmentManager)
         val forumViewModel: ForumViewModel = ViewModelProviders.of(this).get(ForumViewModel::class.java)
 
-        initToolbar(forumViewPager, findViewById(R.id.appbar_layout_viewforum), findViewById(R.id.toolbar_layout_viewforum),
+        initSysbars(findViewById(R.id.statusbar_background_viewforum), findViewById(R.id.navbar_background_viewforum))
+
+        initCollapsibleToolbar(forumViewPager, findViewById(R.id.appbar_layout_viewforum), findViewById(R.id.toolbar_layout_viewforum),
                     findViewById(R.id.toolbar_card_viewforum), findViewById(R.id.title_text_toolbar_viewforum))
 
         NavigationUtils.initContentViewPagerNavigation(this, forumViewPager, forumNavigation, forumViewModel)
 
         forumViewModel.getForumName().observe(this, Observer { forumName ->
             if (forumName != null) {
-                setTitle(forumName)
+                setToolbarTitle(forumName)
             }
         })
 
