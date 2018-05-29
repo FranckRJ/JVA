@@ -30,7 +30,8 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentTop="true"
-            android:layout_toEndOf="@+id/icon_image_topic_row"/>
+            android:layout_toEndOf="@+id/icon_image_topic_row"
+            android:breakStrategy="simple"/>
 
         <TextView
             android:id="@+id/author_text_topic_row"
