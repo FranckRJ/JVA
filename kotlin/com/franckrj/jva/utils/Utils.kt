@@ -4,8 +4,13 @@ import android.app.Activity
 import android.content.res.Configuration
 import android.os.Build
 import android.support.text.emoji.EmojiCompat
+import android.support.annotation.ColorInt
 
 object Utils {
+    fun colorToString(@ColorInt colorValue: Int): String {
+        return String.format("#%06X", 0xFFFFFF and colorValue)
+    }
+
     fun applyEmojiCompatIfPossible(baseMessage: CharSequence): CharSequence {
         return if (EmojiCompat.get().loadState == EmojiCompat.LOAD_STATE_SUCCEEDED) {
             EmojiCompat.get().process(baseMessage)

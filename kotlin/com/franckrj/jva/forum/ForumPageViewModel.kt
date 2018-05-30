@@ -7,14 +7,16 @@ import android.arch.lifecycle.MediatorLiveData
 import android.arch.lifecycle.MutableLiveData
 import android.graphics.drawable.Drawable
 import android.os.AsyncTask
-import android.text.SpannableString
 import com.franckrj.jva.R
 import com.franckrj.jva.pagenav.NavigablePageViewModel
 import com.franckrj.jva.utils.LoadableValue
+import com.franckrj.jva.utils.UndeprecatorUtils
+import com.franckrj.jva.utils.Utils
 
 class ForumPageViewModel(app: Application) : NavigablePageViewModel(app) {
     private val forumPageRepo: ForumPageRepository = ForumPageRepository.instance
     private val forumPageParser: ForumPageParser = ForumPageParser.instance
+    private val settingsForTopics = ForumPageParser.TopicSettings(Utils.colorToString(UndeprecatorUtils.getColor(app, R.color.colorAccent)))
     private var currentTaskForTopicsFormat: FormatTopicsToShowableTopics? = null
     private val listOfTopicIconForType: List<Drawable> = listOf(app.getDrawable(R.drawable.icon_topic_dossier1),
                                                                 app.getDrawable(R.drawable.icon_topic_dossier2),
@@ -88,9 +90,9 @@ class ForumPageViewModel(app: Application) : NavigablePageViewModel(app) {
     private inner class FormatTopicsToShowableTopics(private var listOfBaseTopics: List<TopicInfos>) : AsyncTask<Void, Void, List<TopicInfosShowable>>() {
         override fun doInBackground(vararg voids: Void): List<TopicInfosShowable> {
             return listOfBaseTopics.map { topicInfos ->
-                TopicInfosShowable(SpannableString(topicInfos.title + " (" + topicInfos.numberOfReplys.toString() + ")"),
-                                   SpannableString(topicInfos.author),
-                                   SpannableString(topicInfos.dateOfLastReply),
+                TopicInfosShowable(forumPageParser.createTopicTitleShowable(topicInfos, settingsForTopics),
+                                   forumPageParser.createTopicAuthorShowable(topicInfos),
+                                   forumPageParser.createTopicDateOfLastReplyShowable(topicInfos),
                                    listOfTopicIconForType[topicInfos.typeOfTopic.index])
             }
         }

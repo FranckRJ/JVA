@@ -1,6 +1,10 @@
 package com.franckrj.jva.forum
 
+import android.text.Spannable
+import android.text.SpannableString
 import com.franckrj.jva.base.AbsParser
+import com.franckrj.jva.utils.UndeprecatorUtils
+import com.franckrj.jva.utils.Utils
 
 class ForumPageParser private constructor() : AbsParser() {
     companion object {
@@ -77,6 +81,19 @@ class ForumPageParser private constructor() : AbsParser() {
         return listOfTopics
     }
 
+    fun createTopicTitleShowable(infosForTopic: TopicInfos, settingsForTopics: TopicSettings): Spannable {
+        return SpannableString(Utils.applyEmojiCompatIfPossible(
+                UndeprecatorUtils.fromHtml("""<b><font color="${settingsForTopics.topicTitleColorString}">${infosForTopic.title}</font> (${infosForTopic.numberOfReplys})</b>""")))
+    }
+
+    fun createTopicAuthorShowable(infosForTopic: TopicInfos): Spannable {
+        return SpannableString(UndeprecatorUtils.fromHtml("""<small>${infosForTopic.author}</small>"""))
+    }
+
+    fun createTopicDateOfLastReplyShowable(infosForTopic: TopicInfos): Spannable {
+        return SpannableString(UndeprecatorUtils.fromHtml("""<small>${infosForTopic.dateOfLastReply}</small>"""))
+    }
+
     private fun createTopicInfosFromWholeTopic(wholeTopic: String): TopicInfos {
         val infosForTopic = MutableTopicInfos()
 
@@ -123,4 +140,6 @@ class ForumPageParser private constructor() : AbsParser() {
 
         return infosForTopic
     }
+
+    class TopicSettings(val topicTitleColorString: String)
 }

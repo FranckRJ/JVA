@@ -162,8 +162,8 @@ class TopicPageParser private constructor() : AbsParser() {
         return listOfMessages
     }
 
-    fun createMessageContentShowable(infosForMessages: MessageInfos, settingsForMessages: MessageSettings): Spannable {
-        val messageContent: String = formatMessageToPrettyMessage(infosForMessages.content, infosForMessages.containSpoilTag, settingsForMessages.maxNumberOfOverlyQuotes)
+    fun createMessageContentShowable(infosForMessage: MessageInfos, settingsForMessages: MessageSettings): Spannable {
+        val messageContent: String = formatMessageToPrettyMessage(infosForMessage.content, infosForMessage.containSpoilTag, settingsForMessages.maxNumberOfOverlyQuotes)
         /* Dans un <span></span> pour corriger un bug de BackgroundSpan qui se ferme jamais si ouvert tout au début. */
         return replaceNeededSpansAndEmojis(UndeprecatorUtils.fromHtml("<span>$messageContent</span>", settingsForMessages.imageGetterToUse, settingsForMessages.tagHandlerToUse), settingsForMessages.settingsForBetterQuotes)
     }
