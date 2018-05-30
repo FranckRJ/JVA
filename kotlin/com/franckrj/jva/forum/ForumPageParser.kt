@@ -57,8 +57,8 @@ class ForumPageParser private constructor() : AbsParser() {
                 forumNameMatcher = ForumAndTopicCommonRegex.forumNameInArianeStringPattern.find(allArianeString, forumNameMatcher.range.endInclusive + 1)
             }
             if (highlightMatcher != null) {
-                /* TODO: Vérifier l'utilité de ce qu'il y a à droite du ||. */
-                if (currentForumName.isEmpty() || currentForumName != highlightMatcher.groupValues[1].substring(minOf(currentForumName.length, highlightMatcher.groupValues[1].length))) {
+                /* La comparaison des deux strings a pour but ne pas récupérer "Forum Android - Page 2" au lieu de "Forum Android" par exemple. */
+                if (currentForumName.isEmpty() || currentForumName != highlightMatcher.groupValues[1].substring(0, minOf(currentForumName.length, highlightMatcher.groupValues[1].length))) {
                     currentForumName = highlightMatcher.groupValues[1]
                 }
             }
