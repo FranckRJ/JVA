@@ -48,7 +48,7 @@
                         android:contentDescription="@string/back"/>
 
                     <LinearLayout
-                        android:layout_width="wrap_content"
+                        android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_gravity="center_vertical"
                         android:orientation="vertical">
@@ -58,6 +58,8 @@
                             android:layout_height="match_parent"
                             android:paddingStart="4dp"
                             android:paddingEnd="4dp"
+                            android:maxLines="1"
+                            android:ellipsize="end"
                             android:textStyle="bold"
                             android:textColor="@color/colorAccent"
                             android:textSize="@dimen/toolbarTitleTextSize"
@@ -69,6 +71,8 @@
                             android:layout_height="match_parent"
                             android:paddingStart="4dp"
                             android:paddingEnd="4dp"
+                            android:maxLines="1"
+                            android:ellipsize="end"
                             android:textColor="@color/colorAccent"
                             android:textSize="@dimen/toolbarSubtitleTextSize"
                             android:visibility="gone"/>
