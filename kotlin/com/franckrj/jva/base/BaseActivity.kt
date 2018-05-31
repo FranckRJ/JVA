@@ -16,7 +16,6 @@ import com.franckrj.jva.utils.Utils
 
 abstract class BaseActivity : AppCompatActivity(), MovableToolbar {
     private val statusbarHeight: Int by lazy { Utils.getStatusbarHeight(this) }
-    private val navbarHeight: Int by lazy { Utils.getNavbarHeight(this) }
 
     private var toolbarCard: CardView? = null
     private var titleTextToolbar: TextView? = null
@@ -24,7 +23,7 @@ abstract class BaseActivity : AppCompatActivity(), MovableToolbar {
     private var defaultToolbarCardElevation: Float = 0f
     private var aboveToolbarCardElevation: Float = 0f
 
-    protected fun initSysbars(statusbarBackground: View, navbarBackground: View) {
+    protected fun initSysbars(statusbarBackground: View) {
         val navbarIsInApp: Boolean = Utils.getNavbarIsInApp(this)
 
         if (navbarIsInApp) {
@@ -39,7 +38,6 @@ abstract class BaseActivity : AppCompatActivity(), MovableToolbar {
         if (Build.VERSION.SDK_INT >= 26) {
             window.decorView.systemUiVisibility = ((if (!isInMultiWindowMode) View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR else 0) or
                                                    (if (navbarIsInApp) View.SYSTEM_UI_FLAG_LIGHT_NAVIGATION_BAR else 0))
-            navbarBackground.visibility = View.GONE
 
             if (!isInMultiWindowMode) {
                 statusbarBackground.layoutParams.height = statusbarHeight
@@ -48,14 +46,12 @@ abstract class BaseActivity : AppCompatActivity(), MovableToolbar {
                 statusbarBackground.visibility = View.GONE
             }
         } else {
-            statusbarBackground.layoutParams.height = statusbarHeight
-            statusbarBackground.setBackgroundColor(UndeprecatorUtils.getColor(this, R.color.sysBarDarkColor))
+            window.addFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS)
 
             if (navbarIsInApp) {
-                navbarBackground.layoutParams.height = navbarHeight
-                navbarBackground.setBackgroundColor(UndeprecatorUtils.getColor(this, R.color.sysBarDarkColor))
+                window.addFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_NAVIGATION)
             } else {
-                navbarBackground.visibility = View.GONE
+                window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_NAVIGATION)
             }
         }
     }

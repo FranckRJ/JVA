@@ -18,7 +18,7 @@ class ViewForumActivity : BaseActivity() {
         val forumNavigation = PageNavigationHelper(forumViewPager, { ViewForumPageFragment() }, supportFragmentManager)
         val forumViewModel: ForumViewModel = ViewModelProviders.of(this).get(ForumViewModel::class.java)
 
-        initSysbars(findViewById(R.id.statusbar_background_viewforum), findViewById(R.id.navbar_background_viewforum))
+        initSysbars(findViewById(R.id.statusbar_background_viewforum))
 
         initCollapsibleToolbar(forumViewPager, findViewById(R.id.appbar_layout_viewforum), findViewById(R.id.toolbar_layout_viewforum),
                     findViewById(R.id.toolbar_card_viewforum), findViewById(R.id.title_text_toolbar_viewforum))

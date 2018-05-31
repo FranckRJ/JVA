@@ -8,8 +8,8 @@
     <style name="AppTheme.Real" parent="AppTheme.Base"/>
 
     <style name="SplashTheme" parent="Theme.AppCompat.NoActionBar">
-        <item name="android:statusBarColor">@color/sysBarDarkColor</item>
-        <item name="android:navigationBarColor">@color/sysBarDarkColor</item>
+        <item name="android:windowTranslucentStatus">true</item>
+        <item name="android:windowTranslucentNavigation">true</item>
         <item name="android:windowBackground">@drawable/splashscreen</item>
     </style>
 

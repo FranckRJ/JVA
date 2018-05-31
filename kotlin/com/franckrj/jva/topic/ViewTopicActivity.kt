@@ -24,7 +24,7 @@ class ViewTopicActivity : BaseActivity() {
         val topicNavigation = PageNavigationHelper(topicViewPager, { ViewTopicPageFragment() }, supportFragmentManager)
         val topicViewModel: TopicViewModel = ViewModelProviders.of(this).get(TopicViewModel::class.java)
 
-        initSysbars(findViewById(R.id.statusbar_background_viewtopic), findViewById(R.id.navbar_background_viewtopic))
+        initSysbars(findViewById(R.id.statusbar_background_viewtopic))
 
         initCollapsibleToolbar(topicViewPager, findViewById(R.id.appbar_layout_viewtopic), findViewById(R.id.toolbar_layout_viewtopic),
                     findViewById(R.id.toolbar_card_viewtopic), findViewById(R.id.title_text_toolbar_viewtopic), findViewById(R.id.subtitle_text_toolbar_viewtopic))
