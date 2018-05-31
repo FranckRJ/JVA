@@ -193,7 +193,7 @@ class TopicPageParser private constructor() : AbsParser() {
         parseMessageWithRegex(messageInBuilder, smileyPattern, 2, """<img src="smiley_""", """"/>""")
 
         parseMessageWithRegexAndModif(messageInBuilder, embedVideoPattern, 1, "", "", makeLinkDependingOnSettingsAndForceMake)
-        parseMessageWithRegexAndModif(messageInBuilder, jvcVideoPattern, 1, "", "", { it: String -> """http://www.jeuxvideo.com/videos/iframe/""" + it }, makeLinkDependingOnSettingsAndForceMake)
+        parseMessageWithRegexAndModif(messageInBuilder, jvcVideoPattern, 1, "", "", { it: String -> "http://www.jeuxvideo.com/videos/iframe/$it" }, makeLinkDependingOnSettingsAndForceMake)
         parseMessageWithRegexAndModif(messageInBuilder, jvcLinkPattern, 1, "", "", makeLinkDependingOnSettingsAndForceMake)
         parseMessageWithRegexAndModif(messageInBuilder, shortLinkPattern, 1, "", "", makeLinkDependingOnSettingsAndForceMake)
         parseMessageWithRegexAndModif(messageInBuilder, longLinkPattern, 1, "", "", makeLinkDependingOnSettingsAndForceMake)
