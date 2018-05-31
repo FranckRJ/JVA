@@ -36,7 +36,7 @@ class TopicPageParser private constructor() : AbsParser() {
     private val stickerPattern = Regex("""<img class="img-stickers" src="([^"]*)".*?/>""")
     private val smileyPattern = Regex("""<img src="http(s)?://image\.jeuxvideo\.com/smileys_img/([^"]*)" alt="[^"]*" data-code="([^"]*)" title="[^"]*" [^>]*>""")
     private val embedVideoPattern = Regex("""<div class="player-contenu"><div class="[^"]*"><iframe.*?src="([^"]*)"[^>]*></iframe></div></div>""")
-    private val jvcVideoPattern = Regex("""<div class="player-contenu">.*?</div>[^<]*</div>[^<]*</div>[^<]*</div>""", RegexOption.DOT_MATCHES_ALL)
+    private val jvcVideoPattern = Regex("""<div class="player-contenu">.*?<div class="player-jv" id="player-jv-([^-]*)-.*?</div>[^<]*</div>[^<]*</div>[^<]*</div>""", RegexOption.DOT_MATCHES_ALL)
     private val jvcLinkPattern = Regex("""<a href="([^"]*)"( )?( title="[^"]*")?>.*?</a>""")
     private val shortLinkPattern = Regex("""<span class="JvCare [^"]*"[^>]*?target="_blank">([^<]*)</span>""")
     private val longLinkPattern = Regex("""<span class="JvCare [^"]*"[^i]*itle="([^"]*)">[^<]*<i></i><span>[^<]*</span>[^<]*</span>""")
@@ -193,7 +193,7 @@ class TopicPageParser private constructor() : AbsParser() {
         parseMessageWithRegex(messageInBuilder, smileyPattern, 2, """<img src="smiley_""", """"/>""")
 
         parseMessageWithRegexAndModif(messageInBuilder, embedVideoPattern, 1, "", "", makeLinkDependingOnSettingsAndForceMake)
-        parseMessageWithRegex(messageInBuilder, jvcVideoPattern, -1, """[[Vidéo non supportée par l'application]]""")
+        parseMessageWithRegexAndModif(messageInBuilder, jvcVideoPattern, 1, "", "", { it: String -> """http://www.jeuxvideo.com/videos/iframe/""" + it }, makeLinkDependingOnSettingsAndForceMake)
         parseMessageWithRegexAndModif(messageInBuilder, jvcLinkPattern, 1, "", "", makeLinkDependingOnSettingsAndForceMake)
         parseMessageWithRegexAndModif(messageInBuilder, shortLinkPattern, 1, "", "", makeLinkDependingOnSettingsAndForceMake)
         parseMessageWithRegexAndModif(messageInBuilder, longLinkPattern, 1, "", "", makeLinkDependingOnSettingsAndForceMake)
