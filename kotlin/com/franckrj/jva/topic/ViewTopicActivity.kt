@@ -42,9 +42,11 @@ class ViewTopicActivity : BaseActivity() {
             }
         })
 
-        val possibleNewTopicUrl: String = intent?.getStringExtra(EXTRA_TOPIC_URL) ?: ""
-        if (possibleNewTopicUrl.isNotEmpty()) {
-            topicViewModel.setUrlForTopic(possibleNewTopicUrl)
+        if (savedInstanceState == null) {
+            val possibleNewTopicUrl: String = intent?.getStringExtra(EXTRA_TOPIC_URL) ?: ""
+            if (possibleNewTopicUrl.isNotEmpty()) {
+                topicViewModel.setUrlForTopic(possibleNewTopicUrl)
+            }
         }
     }
 }
