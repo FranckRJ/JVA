@@ -1,9 +1,9 @@
 package com.franckrj.jva.forum
 
-import android.arch.lifecycle.Observer
-import android.arch.lifecycle.ViewModelProviders
 import android.os.Bundle
-import android.support.v4.view.ViewPager
+import androidx.lifecycle.Observer
+import androidx.lifecycle.ViewModelProviders
+import androidx.viewpager.widget.ViewPager
 import com.franckrj.jva.R
 import com.franckrj.jva.base.BaseActivity
 import com.franckrj.jva.pagenav.NavigationUtils

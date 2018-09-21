@@ -3,8 +3,8 @@ package com.franckrj.jva.services
 import android.content.Context
 import android.content.res.Resources
 import android.graphics.drawable.Drawable
-import android.support.annotation.DrawableRes
 import android.text.Html
+import androidx.annotation.DrawableRes
 import com.franckrj.jva.R
 import com.franckrj.jva.utils.GlideApp
 import com.franckrj.jva.utils.GlideRequests
@@ -12,7 +12,7 @@ import com.franckrj.jva.utils.WrapperTarget
 
 class ImageGetterService(contextToUse: Context, @DrawableRes private val downloadDrawableId: Int, @DrawableRes private val deletedDrawableId: Int) : Html.ImageGetter, Drawable.Callback {
     private val resources: Resources = contextToUse.resources
-    private val deletedDrawable: Drawable = contextToUse.getDrawable(deletedDrawableId)
+    private val deletedDrawable: Drawable = resources.getDrawable(deletedDrawableId, null)
     private val packageName: String = contextToUse.packageName
     private val stickerSize: Int = resources.getDimensionPixelSize(R.dimen.stickerSize)
     private val miniNoelshackWidth: Int = resources.getDimensionPixelSize(R.dimen.miniNoelshackWidth)

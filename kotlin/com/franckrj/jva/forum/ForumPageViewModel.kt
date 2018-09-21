@@ -2,11 +2,11 @@ package com.franckrj.jva.forum
 
 import android.annotation.SuppressLint
 import android.app.Application
-import android.arch.lifecycle.LiveData
-import android.arch.lifecycle.MediatorLiveData
-import android.arch.lifecycle.MutableLiveData
 import android.graphics.drawable.Drawable
 import android.os.AsyncTask
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MediatorLiveData
+import androidx.lifecycle.MutableLiveData
 import com.franckrj.jva.R
 import com.franckrj.jva.pagenav.NavigablePageViewModel
 import com.franckrj.jva.utils.LoadableValue

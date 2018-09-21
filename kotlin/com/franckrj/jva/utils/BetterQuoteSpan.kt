@@ -2,10 +2,10 @@ package com.franckrj.jva.utils
 
 import android.graphics.Canvas
 import android.graphics.Paint
-import android.support.annotation.ColorInt
 import android.text.Layout
 import android.text.style.LineBackgroundSpan
 import android.text.style.LeadingMarginSpan
+import androidx.annotation.ColorInt
 
 class BetterQuoteSpan(private val settingsForQuote: BetterQuoteSettings) : LeadingMarginSpan, LineBackgroundSpan {
 

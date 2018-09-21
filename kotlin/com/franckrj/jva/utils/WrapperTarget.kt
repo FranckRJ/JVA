@@ -5,7 +5,7 @@ import android.graphics.drawable.ColorDrawable
 import com.bumptech.glide.request.target.SimpleTarget
 import android.annotation.SuppressLint
 import android.graphics.Color
-import android.support.v7.graphics.drawable.DrawableWrapper
+import androidx.appcompat.graphics.drawable.DrawableWrapper
 import com.bumptech.glide.request.transition.Transition
 
 @SuppressLint("RestrictedApi")

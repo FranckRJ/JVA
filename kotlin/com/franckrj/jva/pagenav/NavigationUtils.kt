@@ -1,9 +1,9 @@
 package com.franckrj.jva.pagenav
 
-import android.arch.lifecycle.Observer
-import android.support.v4.app.Fragment
-import android.support.v4.view.ViewPager
-import android.support.v7.app.AppCompatActivity
+import androidx.appcompat.app.AppCompatActivity
+import androidx.fragment.app.Fragment
+import androidx.lifecycle.Observer
+import androidx.viewpager.widget.ViewPager
 import com.franckrj.jva.R
 
 object NavigationUtils {

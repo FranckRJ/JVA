@@ -3,8 +3,8 @@ package com.franckrj.jva.utils
 import android.app.Activity
 import android.content.res.Configuration
 import android.os.Build
-import android.support.text.emoji.EmojiCompat
-import android.support.annotation.ColorInt
+import androidx.annotation.ColorInt
+import androidx.emoji.text.EmojiCompat
 
 object Utils {
     fun colorToString(@ColorInt colorValue: Int): String {

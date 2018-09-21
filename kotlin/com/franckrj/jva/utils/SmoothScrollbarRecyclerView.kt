@@ -1,10 +1,10 @@
 package com.franckrj.jva.utils
 
 import android.content.Context
-import android.support.v7.widget.LinearLayoutManager
-import android.support.v7.widget.RecyclerView
 import android.util.AttributeSet
 import android.view.View
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 
 class SmoothScrollbarRecyclerView : RecyclerView {
     /* Fonctionne car les fonctions sont toujours appelées dans l'ordre range > offset > extent. */
@@ -38,9 +38,11 @@ class SmoothScrollbarRecyclerView : RecyclerView {
         val linearLm: LinearLayoutManager? = layoutManager as? LinearLayoutManager
 
         return if (linearLm != null) {
-            if (scrollbarNeedToBeShown(linearLm)) {
+            val curAdapter: Adapter<RecyclerView.ViewHolder>? = adapter
+
+            if (curAdapter != null && scrollbarNeedToBeShown(linearLm)) {
                 lastAverageSizeOfOneItemComputed = computeAverageSizeOfOneItem(linearLm)
-                (lastAverageSizeOfOneItemComputed * adapter.itemCount).toInt().also { lastRangeComputed = it }
+                (lastAverageSizeOfOneItemComputed * curAdapter.itemCount).toInt().also { lastRangeComputed = it }
             } else {
                 0
             }
@@ -55,7 +57,7 @@ class SmoothScrollbarRecyclerView : RecyclerView {
         return if (linearLm != null) {
             if (scrollbarNeedToBeShown(linearLm)) {
                 val firstItemPosition: Int = linearLm.findFirstVisibleItemPosition()
-                val firstItem: View = linearLm.findViewByPosition(firstItemPosition)
+                val firstItem: View? = linearLm.findViewByPosition(firstItemPosition)
 
                 ((firstItemPosition + getFractionOfItemTopNotVisible(firstItem)) * lastAverageSizeOfOneItemComputed).toInt().also { lastOffsetComputed = it }
             } else {
@@ -70,11 +72,13 @@ class SmoothScrollbarRecyclerView : RecyclerView {
         val linearLm: LinearLayoutManager? = layoutManager as? LinearLayoutManager
 
         return if (linearLm != null) {
-            if (scrollbarNeedToBeShown(linearLm)) {
-                val lastItemPosition: Int = linearLm.findLastVisibleItemPosition()
-                val lastItem: View = linearLm.findViewByPosition(lastItemPosition)
+            val curAdapter: Adapter<RecyclerView.ViewHolder>? = adapter
 
-                lastRangeComputed - lastOffsetComputed - (((adapter.itemCount - 1 - lastItemPosition) + getFractionOfItemBottomNotVisible(lastItem)) * lastAverageSizeOfOneItemComputed).toInt()
+            if (curAdapter != null && scrollbarNeedToBeShown(linearLm)) {
+                val lastItemPosition: Int = linearLm.findLastVisibleItemPosition()
+                val lastItem: View? = linearLm.findViewByPosition(lastItemPosition)
+
+                lastRangeComputed - lastOffsetComputed - (((curAdapter.itemCount - 1 - lastItemPosition) + getFractionOfItemBottomNotVisible(lastItem)) * lastAverageSizeOfOneItemComputed).toInt()
             } else {
                 0
             }
@@ -84,20 +88,25 @@ class SmoothScrollbarRecyclerView : RecyclerView {
     }
 
     private fun scrollbarNeedToBeShown(linearLm: LinearLayoutManager): Boolean {
+        val curAdapter: Adapter<RecyclerView.ViewHolder>? = adapter
         val firstItemPosition: Int = linearLm.findFirstVisibleItemPosition()
 
-        return (firstItemPosition != NO_POSITION && (linearLm.findFirstCompletelyVisibleItemPosition() > 0 || linearLm.findLastCompletelyVisibleItemPosition() < (adapter.itemCount - 1)))
+        return if (curAdapter == null) {
+            false
+        } else {
+            (firstItemPosition != NO_POSITION && (linearLm.findFirstCompletelyVisibleItemPosition() > 0 || linearLm.findLastCompletelyVisibleItemPosition() < (curAdapter.itemCount - 1)))
+        }
     }
 
     private fun computeAverageSizeOfOneItem(linearLm: LinearLayoutManager): Double {
         var proportionnalSizeOfVisiblesItems = 0
         var numberOfItemsComputed: Double
         val firstItemPosition: Int = linearLm.findFirstVisibleItemPosition()
-        val firstItem: View = linearLm.findViewByPosition(firstItemPosition)
+        val firstItem: View? = linearLm.findViewByPosition(firstItemPosition)
         val lastItemPosition: Int = linearLm.findLastVisibleItemPosition()
 
         if (firstItemPosition != lastItemPosition) {
-            val lastItem: View = linearLm.findViewByPosition(lastItemPosition)
+            val lastItem: View? = linearLm.findViewByPosition(lastItemPosition)
             val fractionOfScreenOccupedByFirstItem: Double = getFractionOfScreenOccupedByItem(firstItem)
             val fractionOfScreenOccupedByLastItem: Double = getFractionOfScreenOccupedByItem(lastItem)
 
@@ -118,24 +127,40 @@ class SmoothScrollbarRecyclerView : RecyclerView {
         return (proportionnalSizeOfVisiblesItems / numberOfItemsComputed)
     }
 
-    private fun getFractionOfScreenOccupedByItem(item: View): Double {
-        val tmpFractionOfScreenOccupedByItem: Double = (minOf(getRecyclerViewInsideBottom(), getViewOutsideBottom(item)) - maxOf(getRecyclerViewInsideTop(), getViewOutsideTop(item))) / getRecyclerViewInsideBottom().toDouble()
-        return tmpFractionOfScreenOccupedByItem.coerceIn(0.0, 1.0)
+    private fun getFractionOfScreenOccupedByItem(item: View?): Double {
+        return if (item == null) {
+            0.0
+        } else {
+            val tmpFractionOfScreenOccupedByItem: Double = (minOf(getRecyclerViewInsideBottom(), getViewOutsideBottom(item)) - maxOf(getRecyclerViewInsideTop(), getViewOutsideTop(item))) / getRecyclerViewInsideBottom().toDouble()
+            tmpFractionOfScreenOccupedByItem.coerceIn(0.0, 1.0)
+        }
     }
 
-    private fun getFractionOfItemTopNotVisible(item: View): Double {
-        val tmpFractionOfItemTopNotVisible: Double = maxOf(getRecyclerViewInsideTop() - getViewOutsideTop(item), 0) / getViewOutsideHeight(item).toDouble()
-        return tmpFractionOfItemTopNotVisible.coerceIn(0.0, 1.0)
+    private fun getFractionOfItemTopNotVisible(item: View?): Double {
+        return if (item == null) {
+            0.0
+        } else {
+            val tmpFractionOfItemTopNotVisible: Double = maxOf(getRecyclerViewInsideTop() - getViewOutsideTop(item), 0) / getViewOutsideHeight(item).toDouble()
+            tmpFractionOfItemTopNotVisible.coerceIn(0.0, 1.0)
+        }
     }
 
-    private fun getFractionOfItemBottomNotVisible(item: View): Double {
-        val tmpFractionOfItemBottomNotVisible: Double = maxOf(getViewOutsideBottom(item) - getRecyclerViewInsideBottom(), 0) / getViewOutsideHeight(item).toDouble()
-        return tmpFractionOfItemBottomNotVisible.coerceIn(0.0, 1.0)
+    private fun getFractionOfItemBottomNotVisible(item: View?): Double {
+        return if (item == null) {
+            0.0
+        } else {
+            val tmpFractionOfItemBottomNotVisible: Double = maxOf(getViewOutsideBottom(item) - getRecyclerViewInsideBottom(), 0) / getViewOutsideHeight(item).toDouble()
+            tmpFractionOfItemBottomNotVisible.coerceIn(0.0, 1.0)
+        }
     }
 
-    private fun getViewOutsideTop(view: View): Int {
-        val layoutParam = view.layoutParams as RecyclerView.LayoutParams
-        return view.top - layoutParam.topMargin
+    private fun getViewOutsideTop(view: View?): Int {
+        return if (view == null) {
+            0
+        } else {
+            val layoutParam = view.layoutParams as RecyclerView.LayoutParams
+            (view.top - layoutParam.topMargin)
+        }
     }
 
     private fun getViewOutsideBottom(view: View): Int {
@@ -143,8 +168,12 @@ class SmoothScrollbarRecyclerView : RecyclerView {
         return view.bottom + layoutParam.bottomMargin
     }
 
-    private fun getViewOutsideHeight(view: View): Int {
-        return getViewOutsideBottom(view) - getViewOutsideTop(view)
+    private fun getViewOutsideHeight(view: View?): Int {
+        return if (view == null) {
+            0
+        } else {
+            (getViewOutsideBottom(view) - getViewOutsideTop(view))
+        }
     }
 
     private fun getRecyclerViewInsideTop(): Int {

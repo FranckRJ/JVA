@@ -1,18 +1,18 @@
 package com.franckrj.jva.base
 
 import android.os.Build
-import android.support.design.widget.AppBarLayout
-import android.support.v7.app.AppCompatActivity
-import android.support.v7.widget.CardView
 import android.view.View
 import android.view.ViewTreeObserver
 import android.view.WindowManager
 import android.widget.FrameLayout
 import android.widget.TextView
+import androidx.appcompat.app.AppCompatActivity
+import androidx.cardview.widget.CardView
 import com.franckrj.jva.R
 import com.franckrj.jva.utils.MovableToolbar
 import com.franckrj.jva.utils.UndeprecatorUtils
 import com.franckrj.jva.utils.Utils
+import com.google.android.material.appbar.AppBarLayout
 
 abstract class BaseActivity : AppCompatActivity(), MovableToolbar {
     private val statusbarHeight: Int by lazy { Utils.getStatusbarHeight(this) }

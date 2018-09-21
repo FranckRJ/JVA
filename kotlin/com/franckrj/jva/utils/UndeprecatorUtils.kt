@@ -2,10 +2,10 @@ package com.franckrj.jva.utils
 
 import android.content.Context
 import android.os.Build
-import android.support.annotation.ColorInt
-import android.support.annotation.ColorRes
 import android.text.Html
 import android.text.Spanned
+import androidx.annotation.ColorInt
+import androidx.annotation.ColorRes
 
 object UndeprecatorUtils {
     fun fromHtml(source: String, imageGetter: Html.ImageGetter? = null, tagHandler: Html.TagHandler? = null): Spanned {

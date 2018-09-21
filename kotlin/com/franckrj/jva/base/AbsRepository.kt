@@ -1,7 +1,7 @@
 package com.franckrj.jva.base
 
-import android.arch.lifecycle.LiveData
 import android.os.AsyncTask
+import androidx.lifecycle.LiveData
 import com.franckrj.jva.services.WebService
 
 abstract class AbsRepository {

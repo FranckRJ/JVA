@@ -1,10 +1,10 @@
 package com.franckrj.jva.pagenav
 
 import android.app.Application
-import android.arch.lifecycle.AndroidViewModel
-import android.arch.lifecycle.LiveData
-import android.arch.lifecycle.MediatorLiveData
-import android.arch.lifecycle.MutableLiveData
+import androidx.lifecycle.AndroidViewModel
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MediatorLiveData
+import androidx.lifecycle.MutableLiveData
 
 abstract class NavigableViewModel(app: Application) : AndroidViewModel(app) {
     protected val lastPageNumber: MediatorLiveData<Int> = MediatorLiveData()

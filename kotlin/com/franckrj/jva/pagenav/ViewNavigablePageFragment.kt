@@ -2,11 +2,11 @@ package com.franckrj.jva.pagenav
 
 import android.app.Activity
 import android.os.Bundle
-import android.support.annotation.CallSuper
-import android.support.annotation.DimenRes
-import android.support.v4.app.Fragment
-import android.support.v4.widget.SwipeRefreshLayout
-import android.support.v7.widget.RecyclerView
+import androidx.annotation.CallSuper
+import androidx.annotation.DimenRes
+import androidx.fragment.app.Fragment
+import androidx.recyclerview.widget.RecyclerView
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.franckrj.jva.R
 import com.franckrj.jva.utils.MovableToolbar
 import com.franckrj.jva.utils.SmoothScrollbarRecyclerView

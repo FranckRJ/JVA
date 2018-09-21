@@ -1,8 +1,8 @@
 package com.franckrj.jva.topic
 
 import android.annotation.SuppressLint
-import android.arch.lifecycle.MutableLiveData
 import android.os.AsyncTask
+import androidx.lifecycle.MutableLiveData
 import com.franckrj.jva.base.AbsRepository
 import com.franckrj.jva.services.WebService
 import com.franckrj.jva.utils.LoadableValue

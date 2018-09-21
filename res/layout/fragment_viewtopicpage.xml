@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.v4.widget.SwipeRefreshLayout
+<androidx.swiperefreshlayout.widget.SwipeRefreshLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/messagelist_refresh_viewtopicpage"
     android:layout_width="match_parent"
@@ -11,4 +11,4 @@
         android:clipToPadding="false"
         android:scrollbars="vertical"
         android:scrollbarStyle="outsideOverlay"/>
-</android.support.v4.widget.SwipeRefreshLayout>
+</androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
