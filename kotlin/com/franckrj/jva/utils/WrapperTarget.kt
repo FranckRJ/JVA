@@ -2,20 +2,23 @@ package com.franckrj.jva.utils
 
 import android.graphics.drawable.Drawable
 import android.graphics.drawable.ColorDrawable
-import com.bumptech.glide.request.target.SimpleTarget
 import android.annotation.SuppressLint
 import android.graphics.Color
 import androidx.appcompat.graphics.drawable.DrawableWrapper
+import com.bumptech.glide.request.Request
+import com.bumptech.glide.request.target.SizeReadyCallback
+import com.bumptech.glide.request.target.Target
 import com.bumptech.glide.request.transition.Transition
 
 @SuppressLint("RestrictedApi")
 internal class WrapperTarget(val sourceForDrawable: String,
                              private val width: Int,
-                             private val height: Int) : SimpleTarget<Drawable>(width, height) {
+                             private val height: Int) : Target<Drawable> {
     companion object {
         private val nullObject = ColorDrawable(Color.TRANSPARENT)
     }
 
+    private var curRequest: Request? = null
     val wrapperDrawable = DrawableWrapper(null)
     var loadHasStarted: Boolean = false
 
@@ -48,5 +51,33 @@ internal class WrapperTarget(val sourceForDrawable: String,
 
     override fun onLoadCleared(placeholder: Drawable?) {
         setDrawable(placeholder)
+    }
+
+    override fun getSize(cb: SizeReadyCallback) {
+        cb.onSizeReady(width, height)
+    }
+
+    override fun removeCallback(cb: SizeReadyCallback) {
+        /* Rien à faire, le callback n'est pas retenu. */
+    }
+
+    override fun getRequest(): Request? {
+        return curRequest
+    }
+
+    override fun setRequest(request: Request?) {
+        curRequest = request
+    }
+
+    override fun onStart() {
+        /* Rien à faire. */
+    }
+
+    override fun onStop() {
+        /* Rien à faire. */
+    }
+
+    override fun onDestroy() {
+        /* Rien à faire. */
     }
 }
