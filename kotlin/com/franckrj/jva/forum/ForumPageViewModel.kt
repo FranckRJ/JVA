@@ -1,9 +1,7 @@
 package com.franckrj.jva.forum
 
-import android.annotation.SuppressLint
 import android.app.Application
 import android.graphics.drawable.Drawable
-import android.os.AsyncTask
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MediatorLiveData
 import androidx.lifecycle.MutableLiveData
@@ -12,12 +10,18 @@ import com.franckrj.jva.pagenav.NavigablePageViewModel
 import com.franckrj.jva.utils.LoadableValue
 import com.franckrj.jva.utils.UndeprecatorUtils
 import com.franckrj.jva.utils.Utils
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.isActive
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 class ForumPageViewModel(app: Application) : NavigablePageViewModel(app) {
     private val forumPageRepo: ForumPageRepository = ForumPageRepository.instance
     private val forumPageParser: ForumPageParser = ForumPageParser.instance
     private val settingsForTopics = ForumPageParser.TopicSettings(Utils.colorToString(UndeprecatorUtils.getColor(app, R.color.colorAccent)))
-    private var currentTaskForTopicsFormat: FormatTopicsToShowableTopics? = null
+    private var currentTaskForTopicsFormat: Job? = null
     private val listOfTopicIconForType: List<Drawable> = listOf(app.getDrawable(R.drawable.icon_topic_dossier1),
                                                                 app.getDrawable(R.drawable.icon_topic_dossier2),
                                                                 app.getDrawable(R.drawable.icon_topic_lock_light),
@@ -39,8 +43,7 @@ class ForumPageViewModel(app: Application) : NavigablePageViewModel(app) {
                         if (currentTaskForTopicsFormat != null) {
                             cancelCurrentFormatTopicsTask()
                         }
-                        currentTaskForTopicsFormat = FormatTopicsToShowableTopics(newInfosForForumPage.value.listOfTopics)
-                        currentTaskForTopicsFormat?.execute()
+                        currentTaskForTopicsFormat = formatTopicsToShowableTopics(newInfosForForumPage.value.listOfTopics)
                     }
                     newInfosForForumPage.status == LoadableValue.STATUS_LOADING -> listOfTopicsShowable.value = LoadableValue.loading(ArrayList())
                     else -> listOfTopicsShowable.value = LoadableValue.error(ArrayList())
@@ -49,8 +52,22 @@ class ForumPageViewModel(app: Application) : NavigablePageViewModel(app) {
         }
     }
 
+    private fun formatTopicsToShowableTopics(listOfBaseTopics: List<TopicInfos>): Job = GlobalScope.launch {
+        val newListOfShowableTopics: List<TopicInfosShowable> = listOfBaseTopics.map { topicInfos ->
+            TopicInfosShowable(forumPageParser.createTopicTitleShowable(topicInfos, settingsForTopics),
+                               forumPageParser.createTopicAuthorShowable(topicInfos),
+                               forumPageParser.createTopicDateOfLastReplyShowable(topicInfos),
+                               listOfTopicIconForType[topicInfos.typeOfTopic.index])
+        }
+        withContext(Dispatchers.Main) {
+            if (isActive) {
+                listOfTopicsShowable.value = LoadableValue.loaded(newListOfShowableTopics)
+            }
+        }
+    }
+
     private fun cancelCurrentFormatTopicsTask() {
-        currentTaskForTopicsFormat?.cancel(true)
+        currentTaskForTopicsFormat?.cancel()
         currentTaskForTopicsFormat = null
     }
 
@@ -82,25 +99,6 @@ class ForumPageViewModel(app: Application) : NavigablePageViewModel(app) {
         val realListOfTopicsShowable: LoadableValue<List<TopicInfosShowable>>? = listOfTopicsShowable.value
         if (realListOfTopicsShowable == null || (realListOfTopicsShowable.value.isEmpty() && realListOfTopicsShowable.status != LoadableValue.STATUS_LOADING)) {
             forumPageRepo.updateForumPageInfos(forumPageParser.setPageNumberForThisForumUrl(formatedForumUrl, pageNumber.value ?: 0), infosForForumPage)
-        }
-    }
-
-    /* Ne devrait pas leak, normalement. */
-    @SuppressLint("StaticFieldLeak")
-    private inner class FormatTopicsToShowableTopics(private var listOfBaseTopics: List<TopicInfos>) : AsyncTask<Void, Void, List<TopicInfosShowable>>() {
-        override fun doInBackground(vararg voids: Void): List<TopicInfosShowable> {
-            return listOfBaseTopics.map { topicInfos ->
-                TopicInfosShowable(forumPageParser.createTopicTitleShowable(topicInfos, settingsForTopics),
-                                   forumPageParser.createTopicAuthorShowable(topicInfos),
-                                   forumPageParser.createTopicDateOfLastReplyShowable(topicInfos),
-                                   listOfTopicIconForType[topicInfos.typeOfTopic.index])
-            }
-        }
-
-        override fun onPostExecute(newListOfShowableTopics: List<TopicInfosShowable>) {
-            if (!isCancelled) {
-                listOfTopicsShowable.value = LoadableValue.loaded(newListOfShowableTopics)
-            }
         }
     }
 }

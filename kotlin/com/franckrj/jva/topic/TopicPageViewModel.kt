@@ -1,8 +1,6 @@
 package com.franckrj.jva.topic
 
-import android.annotation.SuppressLint
 import android.app.Application
-import android.os.AsyncTask
 import android.text.SpannableString
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MediatorLiveData
@@ -14,6 +12,12 @@ import com.franckrj.jva.services.TagHandlerService
 import com.franckrj.jva.utils.BetterQuoteSpan
 import com.franckrj.jva.utils.LoadableValue
 import com.franckrj.jva.utils.UndeprecatorUtils
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.isActive
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 class TopicPageViewModel(app: Application) : NavigablePageViewModel(app) {
     private val topicPageRepo: TopicPageRepository = TopicPageRepository.instance
@@ -21,7 +25,7 @@ class TopicPageViewModel(app: Application) : NavigablePageViewModel(app) {
     private val imageGetter: ImageGetterService = ImageGetterService(app.applicationContext, R.drawable.ic_image_download, R.drawable.ic_image_deleted)
     private val tagHandler: TagHandlerService = TagHandlerService.instance
     private val settingsForMessages: TopicPageParser.MessageSettings
-    private var currentTaskForMessagesFormat: FormatMessagesToShowableMessages? = null
+    private var currentTaskForMessagesFormat: Job? = null
 
     private val infosForTopicPage: MutableLiveData<LoadableValue<TopicPageInfos?>?> = MutableLiveData()
     private val listOfMessagesShowable: MediatorLiveData<LoadableValue<List<MessageInfosShowable>>> = MediatorLiveData()
@@ -35,7 +39,7 @@ class TopicPageViewModel(app: Application) : NavigablePageViewModel(app) {
 
         settingsForMessages = TopicPageParser.MessageSettings(settingsForBetterQuotes, imageGetter, tagHandler, 2)
 
-        listOfMessagesShowable.addSource(infosForTopicPage, { newInfosForTopicPage ->
+        listOfMessagesShowable.addSource(infosForTopicPage) { newInfosForTopicPage ->
             /* Effacement de la liste des messages lors d'une erreur ou d'un début de chargement.
              * Comportement voulu ? */
             if (newInfosForTopicPage != null) {
@@ -44,17 +48,30 @@ class TopicPageViewModel(app: Application) : NavigablePageViewModel(app) {
                         if (currentTaskForMessagesFormat != null) {
                             cancelCurrentFormatMessagesTask()
                         }
-                        currentTaskForMessagesFormat = FormatMessagesToShowableMessages(newInfosForTopicPage.value.listOfMessages)
-                        currentTaskForMessagesFormat?.execute()
+                        currentTaskForMessagesFormat = formatMessagesToShowableMessages(newInfosForTopicPage.value.listOfMessages)
                     }
                     newInfosForTopicPage.status == LoadableValue.STATUS_LOADING -> setListOfMessagesShowableValue(LoadableValue.loading(ArrayList()))
                     else -> setListOfMessagesShowableValue(LoadableValue.error(ArrayList()))
                 }
             }
-        })
+        }
 
         imageGetter.invalidateTextViewNeededListener = {
             invalidateTextViewNeeded.value = true
+        }
+    }
+
+    private fun formatMessagesToShowableMessages(listOfBaseMessages: List<MessageInfos>): Job = GlobalScope.launch {
+        val newListOfShowableMessages: List<MessageInfosShowable> = listOfBaseMessages.map { messageInfos ->
+            MessageInfosShowable(messageInfos.avatarUrl,
+                    SpannableString(messageInfos.author),
+                    SpannableString(messageInfos.date),
+                    topicPageParser.createMessageContentShowable(messageInfos, settingsForMessages))
+        }
+        withContext(Dispatchers.Main) {
+            if (isActive) {
+                setListOfMessagesShowableValue(LoadableValue.loaded(newListOfShowableMessages))
+            }
         }
     }
 
@@ -69,7 +86,7 @@ class TopicPageViewModel(app: Application) : NavigablePageViewModel(app) {
     }
 
     private fun cancelCurrentFormatMessagesTask() {
-        currentTaskForMessagesFormat?.cancel(true)
+        currentTaskForMessagesFormat?.cancel()
         currentTaskForMessagesFormat = null
     }
 
@@ -102,25 +119,6 @@ class TopicPageViewModel(app: Application) : NavigablePageViewModel(app) {
         val realListOfMessagesShowable: LoadableValue<List<MessageInfosShowable>>? = listOfMessagesShowable.value
         if (realListOfMessagesShowable == null || (realListOfMessagesShowable.value.isEmpty() && realListOfMessagesShowable.status != LoadableValue.STATUS_LOADING)) {
             topicPageRepo.updateTopicPageInfos(topicPageParser.setPageNumberForThisTopicUrl(formatedTopicUrl, pageNumber.value ?: 0), infosForTopicPage)
-        }
-    }
-
-    /* Ne devrait pas leak, normalement. */
-    @SuppressLint("StaticFieldLeak")
-    private inner class FormatMessagesToShowableMessages(private var listOfBaseMessages: List<MessageInfos>) : AsyncTask<Void, Void, List<MessageInfosShowable>>() {
-        override fun doInBackground(vararg voids: Void): List<MessageInfosShowable> {
-            return listOfBaseMessages.map { messageInfos ->
-                MessageInfosShowable(messageInfos.avatarUrl,
-                                     SpannableString(messageInfos.author),
-                                     SpannableString(messageInfos.date),
-                                     topicPageParser.createMessageContentShowable(messageInfos, settingsForMessages))
-            }
-        }
-
-        override fun onPostExecute(newListOfShowableMessages: List<MessageInfosShowable>) {
-            if (!isCancelled) {
-                setListOfMessagesShowableValue(LoadableValue.loaded(newListOfShowableMessages))
-            }
         }
     }
 }
