@@ -30,7 +30,7 @@ class ForumPageViewModel(app: Application) : NavigablePageViewModel(app) {
     private val listOfTopicsShowable: MediatorLiveData<LoadableValue<List<TopicInfosShowable>>> = MediatorLiveData()
 
     init {
-        listOfTopicsShowable.addSource(infosForForumPage, { newInfosForForumPage ->
+        listOfTopicsShowable.addSource(infosForForumPage) { newInfosForForumPage ->
             /* Effacement de la liste des topics lors d'une erreur ou d'un début de chargement.
              * Comportement voulu ? */
             if (newInfosForForumPage != null) {
@@ -46,7 +46,7 @@ class ForumPageViewModel(app: Application) : NavigablePageViewModel(app) {
                     else -> listOfTopicsShowable.value = LoadableValue.error(ArrayList())
                 }
             }
-        })
+        }
     }
 
     private fun cancelCurrentFormatTopicsTask() {
@@ -71,7 +71,7 @@ class ForumPageViewModel(app: Application) : NavigablePageViewModel(app) {
         infosForForumPage.value = null
     }
 
-    fun getInfosForForumPage() : LiveData<LoadableValue<ForumPageInfos?>?> = infosForForumPage
+    fun getInfosForForumPage(): LiveData<LoadableValue<ForumPageInfos?>?> = infosForForumPage
 
     fun getListOfTopicsShowable(): LiveData<LoadableValue<List<TopicInfosShowable>>?> = listOfTopicsShowable
 

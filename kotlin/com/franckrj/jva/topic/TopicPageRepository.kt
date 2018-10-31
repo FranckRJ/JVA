@@ -1,8 +1,7 @@
 package com.franckrj.jva.topic
 
-import android.annotation.SuppressLint
-import android.os.AsyncTask
 import androidx.lifecycle.MutableLiveData
+import com.franckrj.jva.base.AbsAsyncValueSetter
 import com.franckrj.jva.base.AbsRepository
 import com.franckrj.jva.services.WebService
 import com.franckrj.jva.utils.LoadableValue
@@ -23,11 +22,9 @@ class TopicPageRepository private constructor() : AbsRepository() {
         newTopicGetterInstance.execute()
     }
 
-    /* Ça ne devrait pas poser de problème normalement car
-     * cette AsyncTask n'a aucune référence vers un contexte. */
-    @SuppressLint("StaticFieldLeak")
-    private inner class TopicGetter(private val urlOfTopicPage: String, private val topicPageInfosLiveData: MutableLiveData<LoadableValue<TopicPageInfos?>?>) : AsyncTask<Void, Void, TopicPageInfos?>() {
-        override fun doInBackground(vararg voids: Void): TopicPageInfos? {
+    private inner class TopicGetter(private val urlOfTopicPage: String, private val topicPageInfosLiveData: MutableLiveData<LoadableValue<TopicPageInfos?>?>) :
+            AbsAsyncValueSetter<TopicPageInfos>(topicPageInfosLiveData) {
+        override fun doInBackground(): TopicPageInfos? {
             val sourceOfWebPage:String? = serviceForWeb.getPage(urlOfTopicPage, hashCode())
 
             return if (sourceOfWebPage == null) {
@@ -43,18 +40,18 @@ class TopicPageRepository private constructor() : AbsRepository() {
             }
         }
 
-        override fun onPostExecute(infosForTopicPage: TopicPageInfos?) {
-            if (!isCancelled) {
-                if (infosForTopicPage == null) {
+        override fun onPostExecute(result: TopicPageInfos?, isStillActive: Boolean) {
+            if (isStillActive) {
+                if (result == null) {
                     topicPageInfosLiveData.value = LoadableValue.error(null)
                 } else {
-                    topicPageInfosLiveData.value = LoadableValue.loaded(infosForTopicPage)
+                    topicPageInfosLiveData.value = LoadableValue.loaded(result)
                 }
                 removeRequestForThisLiveData(topicPageInfosLiveData)
             }
         }
 
-        override fun onCancelled(result: TopicPageInfos?) {
+        override fun onCancelled() {
             topicPageInfosLiveData.value = LoadableValue.error(null)
         }
     }

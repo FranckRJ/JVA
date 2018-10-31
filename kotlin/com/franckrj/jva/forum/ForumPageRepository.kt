@@ -1,8 +1,7 @@
 package com.franckrj.jva.forum
 
-import android.annotation.SuppressLint
-import android.os.AsyncTask
 import androidx.lifecycle.MutableLiveData
+import com.franckrj.jva.base.AbsAsyncValueSetter
 import com.franckrj.jva.base.AbsRepository
 import com.franckrj.jva.services.WebService
 import com.franckrj.jva.utils.LoadableValue
@@ -23,11 +22,9 @@ class ForumPageRepository private constructor() : AbsRepository() {
         newForumGetterInstance.execute()
     }
 
-    /* Ça ne devrait pas poser de problème normalement car
-     * cette AsyncTask n'a aucune référence vers un contexte. */
-    @SuppressLint("StaticFieldLeak")
-    private inner class ForumGetter(private val urlOfForumPage: String, private val forumPageInfosLiveData: MutableLiveData<LoadableValue<ForumPageInfos?>?>) : AsyncTask<Void, Void, ForumPageInfos?>() {
-        override fun doInBackground(vararg voids: Void): ForumPageInfos? {
+    private inner class ForumGetter(private val urlOfForumPage: String, private val forumPageInfosLiveData: MutableLiveData<LoadableValue<ForumPageInfos?>?>) :
+            AbsAsyncValueSetter<ForumPageInfos>(forumPageInfosLiveData) {
+        override fun doInBackground(): ForumPageInfos? {
             val sourceOfWebPage:String? = serviceForWeb.getPage(urlOfForumPage, hashCode())
 
             return if (sourceOfWebPage == null) {
@@ -42,18 +39,18 @@ class ForumPageRepository private constructor() : AbsRepository() {
             }
         }
 
-        override fun onPostExecute(infosForForumPage: ForumPageInfos?) {
-            if (!isCancelled) {
-                if (infosForForumPage == null) {
+        override fun onPostExecute(result: ForumPageInfos?, isStillActive: Boolean) {
+            if (isStillActive) {
+                if (result == null) {
                     forumPageInfosLiveData.value = LoadableValue.error(null)
                 } else {
-                    forumPageInfosLiveData.value = LoadableValue.loaded(infosForForumPage)
+                    forumPageInfosLiveData.value = LoadableValue.loaded(result)
                 }
                 removeRequestForThisLiveData(forumPageInfosLiveData)
             }
         }
 
-        override fun onCancelled(result: ForumPageInfos?) {
+        override fun onCancelled() {
             forumPageInfosLiveData.value = LoadableValue.error(null)
         }
     }

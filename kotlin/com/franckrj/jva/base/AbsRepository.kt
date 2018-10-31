@@ -1,14 +1,13 @@
 package com.franckrj.jva.base
 
-import android.os.AsyncTask
 import androidx.lifecycle.LiveData
 import com.franckrj.jva.services.WebService
 
 abstract class AbsRepository {
     protected abstract val serviceForWeb: WebService
-    private val mapOfGetterInstances: HashMap<LiveData<out Any?>, AsyncTask<out Any?, out Any?, out Any?>> = HashMap()
+    private val mapOfGetterInstances: HashMap<LiveData<out Any?>, AbsAsyncValueSetter<out Any?>> = HashMap()
 
-    fun addThisRequestForThisLiveData(newRequest: AsyncTask<out Any?, out Any?, out Any?>, liveDataLinkedToRequest: LiveData<out Any?>) {
+    fun addThisRequestForThisLiveData(newRequest: AbsAsyncValueSetter<out Any?>, liveDataLinkedToRequest: LiveData<out Any?>) {
         cancelRequestForThisLiveData(liveDataLinkedToRequest)
         mapOfGetterInstances[liveDataLinkedToRequest] = newRequest
     }
@@ -18,10 +17,10 @@ abstract class AbsRepository {
     }
 
     fun cancelRequestForThisLiveData(liveDataLinkedToRequest: LiveData<out Any?>) {
-        val requestInstance: AsyncTask<out Any?, out Any?, out Any?>? = mapOfGetterInstances[liveDataLinkedToRequest]
+        val requestInstance: AbsAsyncValueSetter<out Any?>? = mapOfGetterInstances[liveDataLinkedToRequest]
 
         if (requestInstance != null) {
-            requestInstance.cancel(false)
+            requestInstance.cancel()
             serviceForWeb.cancelRequest(requestInstance.hashCode())
             mapOfGetterInstances.remove(liveDataLinkedToRequest)
         }
