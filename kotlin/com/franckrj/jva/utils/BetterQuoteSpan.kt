@@ -7,8 +7,10 @@ import android.text.style.LineBackgroundSpan
 import android.text.style.LeadingMarginSpan
 import androidx.annotation.ColorInt
 
+/**
+ * Version améliorée de QuoteSpan, prenant en paramètre un [BetterQuoteSettings] pour la personnalisation de la Quote.
+ */
 class BetterQuoteSpan(private val settingsForQuote: BetterQuoteSettings) : LeadingMarginSpan, LineBackgroundSpan {
-
     override fun getLeadingMargin(first: Boolean): Int {
         return (settingsForQuote.stripeWidth + settingsForQuote.gap)
     }
@@ -38,6 +40,9 @@ class BetterQuoteSpan(private val settingsForQuote: BetterQuoteSettings) : Leadi
         thisPaint.color = oldPaintColor
     }
 
+    /**
+     * Paramètres servant à la personnalisation d'une [BetterQuoteSpan].
+     */
     class BetterQuoteSettings(@ColorInt val backgroundColor: Int,
                               @ColorInt val stripeColor: Int,
                               val stripeWidth: Int,

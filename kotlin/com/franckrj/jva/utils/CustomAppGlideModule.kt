@@ -11,6 +11,9 @@ import com.bumptech.glide.integration.okhttp3.OkHttpLibraryGlideModule
 import com.franckrj.jva.services.WebService
 import java.io.InputStream
 
+/**
+ * Une AppGlideModule customisée pour que Glide et le reste du programme utilise le même OkHttpUrlLoaderFactory.
+ */
 @Excludes(OkHttpLibraryGlideModule::class)
 @GlideModule
 class CustomAppGlideModule : AppGlideModule() {

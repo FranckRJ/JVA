@@ -10,8 +10,11 @@ import com.bumptech.glide.request.target.SizeReadyCallback
 import com.bumptech.glide.request.target.Target
 import com.bumptech.glide.request.transition.Transition
 
+/**
+ * Target pour Glide servant de Wrapper entre différents Drawable.
+ */
 @SuppressLint("RestrictedApi")
-internal class WrapperTarget(val sourceForDrawable: String,
+class WrapperTarget(val sourceForDrawable: String,
                              private val width: Int,
                              private val height: Int) : Target<Drawable> {
     companion object {
@@ -27,6 +30,11 @@ internal class WrapperTarget(val sourceForDrawable: String,
         wrapperDrawable.setBounds(0, 0, width, height)
     }
 
+    /**
+     * Change le Drawable du Wrapper.
+     *
+     * @param   newDrawable     Nouveau Drawable utilisé par le Wrapper, si null le Drawable sera transparent.
+     */
     private fun setDrawable(newDrawable: Drawable?) {
         var drawable = newDrawable
         if (drawable == null) {

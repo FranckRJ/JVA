@@ -5,6 +5,9 @@ import androidx.core.provider.FontRequest
 import androidx.emoji.text.EmojiCompat
 import androidx.emoji.text.FontRequestEmojiCompatConfig
 
+/**
+ * Application principale ayant pour but d'initialiser des trucs (dans ce cas ci EmojiCompat).
+ */
 class MainApplication : Application() {
     private fun initializeEmojiCompat() {
         val fontRequest = FontRequest(
