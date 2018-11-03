@@ -99,7 +99,7 @@ class SmoothScrollbarRecyclerView : RecyclerView {
     }
 
     private fun computeAverageSizeOfOneItem(linearLm: LinearLayoutManager): Double {
-        var proportionnalSizeOfVisiblesItems = 0
+        var sizeOfAllVisiblesItems = 0
         var numberOfItemsComputed: Double
         val firstItemPosition: Int = linearLm.findFirstVisibleItemPosition()
         val firstItem: View? = linearLm.findViewByPosition(firstItemPosition)
@@ -107,32 +107,29 @@ class SmoothScrollbarRecyclerView : RecyclerView {
 
         if (firstItemPosition != lastItemPosition) {
             val lastItem: View? = linearLm.findViewByPosition(lastItemPosition)
-            val fractionOfScreenOccupedByFirstItem: Double = getFractionOfScreenOccupedByItem(firstItem)
-            val fractionOfScreenOccupedByLastItem: Double = getFractionOfScreenOccupedByItem(lastItem)
 
-            proportionnalSizeOfVisiblesItems += (getViewOutsideHeight(firstItem) * fractionOfScreenOccupedByFirstItem).toInt()
-            proportionnalSizeOfVisiblesItems += (getViewOutsideHeight(lastItem) * fractionOfScreenOccupedByLastItem).toInt()
-            numberOfItemsComputed = fractionOfScreenOccupedByFirstItem + fractionOfScreenOccupedByLastItem
+            sizeOfAllVisiblesItems += getViewOutsideHeight(firstItem) + getViewOutsideHeight(lastItem)
+            numberOfItemsComputed = getFractionOfItemVisible(firstItem) + getFractionOfItemVisible(lastItem)
 
             for (posIndex: Int in (firstItemPosition + 1)..(lastItemPosition - 1)) {
-                proportionnalSizeOfVisiblesItems += getViewOutsideHeight(linearLm.findViewByPosition(posIndex))
+                sizeOfAllVisiblesItems += getViewOutsideHeight(linearLm.findViewByPosition(posIndex))
                 numberOfItemsComputed += 1.0
             }
         } else {
             /* Un seul objet est visible, donc on suppose que tous les objets ont sa taille. */
-            proportionnalSizeOfVisiblesItems = getViewOutsideHeight(firstItem)
+            sizeOfAllVisiblesItems = getViewOutsideHeight(firstItem)
             numberOfItemsComputed = 1.0
         }
 
-        return (proportionnalSizeOfVisiblesItems / numberOfItemsComputed)
+        return (sizeOfAllVisiblesItems / numberOfItemsComputed)
     }
 
-    private fun getFractionOfScreenOccupedByItem(item: View?): Double {
+    private fun getFractionOfItemVisible(item: View?): Double {
         return if (item == null) {
             0.0
         } else {
-            val tmpFractionOfScreenOccupedByItem: Double = (minOf(getRecyclerViewInsideBottom(), getViewOutsideBottom(item)) - maxOf(getRecyclerViewInsideTop(), getViewOutsideTop(item))) / getRecyclerViewInsideBottom().toDouble()
-            tmpFractionOfScreenOccupedByItem.coerceIn(0.0, 1.0)
+            val tmpFractionOfItemVisible: Double = (minOf(getRecyclerViewInsideBottom(), getViewOutsideBottom(item)) - maxOf(getRecyclerViewInsideTop(), getViewOutsideTop(item))) / getViewOutsideHeight(item).toDouble()
+            tmpFractionOfItemVisible.coerceIn(0.0, 1.0)
         }
     }
 
