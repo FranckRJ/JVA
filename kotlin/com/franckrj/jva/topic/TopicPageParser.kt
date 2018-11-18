@@ -189,7 +189,7 @@ class TopicPageParser private constructor() : AbsParser() {
 
         /* Remplace le code des stickers par celui par défaut quand le sticker a plusieurs noms différents. */
         parseMessageWithRegexAndModif(messageInBuilder, stickerPattern, 1, "", "", ::createCorrectStickerCodeForThisStickerUrl)
-        parseMessageWithRegexAndModif(messageInBuilder, stickerPattern, 1, """<img src="sticker_""", """.png"/>""", ::urlToStickerId, { it: String -> it.replace("-", "_") })
+        parseMessageWithRegexAndModif(messageInBuilder, stickerPattern, 1, """<img src="sticker_""", """.png"/>""", ::urlToStickerId) { it: String -> it.replace("-", "_") }
         parseMessageWithRegex(messageInBuilder, smileyPattern, 2, """<img src="smiley_""", """"/>""")
 
         parseMessageWithRegexAndModif(messageInBuilder, embedVideoPattern, 1, "", "", makeLinkDependingOnSettingsAndForceMake)

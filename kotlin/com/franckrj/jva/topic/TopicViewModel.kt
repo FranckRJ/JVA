@@ -39,14 +39,14 @@ class TopicViewModel(app: Application) : NavigableViewModel(app) {
         removeCurrentSourceForPageInfos()
         infosForTopicPage = newInfosForTopicPage
 
-        forumAndTopicName.addSource(newInfosForTopicPage, { lastInfosForTopicPage ->
+        forumAndTopicName.addSource(newInfosForTopicPage) { lastInfosForTopicPage ->
             if (lastInfosForTopicPage?.value != null && lastInfosForTopicPage.status == LoadableValue.STATUS_LOADED &&
                     forumAndTopicName.value != lastInfosForTopicPage.value.namesForForumAndTopic) {
                 forumAndTopicName.value = lastInfosForTopicPage.value.namesForForumAndTopic
             }
-        })
+        }
 
-        lastPageNumber.addSource(newInfosForTopicPage, { lastInfosForTopicPage ->
+        lastPageNumber.addSource(newInfosForTopicPage) { lastInfosForTopicPage ->
             if (lastInfosForTopicPage?.value != null && lastInfosForTopicPage.status == LoadableValue.STATUS_LOADED &&
                     lastPageNumber.value != lastInfosForTopicPage.value.lastPageNumber) {
                 /* La fonction pour récupérer le numéro de la dernière page retourne -1 quand c'est la page courante. */
@@ -56,7 +56,7 @@ class TopicViewModel(app: Application) : NavigableViewModel(app) {
                     lastInfosForTopicPage.value.lastPageNumber
                 }
             }
-        })
+        }
     }
 
     override fun onCleared() {

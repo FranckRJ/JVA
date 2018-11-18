@@ -20,12 +20,12 @@ class PageNavigationHelper(private val navigationViewPager: ViewPager,
 
         override fun onPageSelected(position: Int) {
             navigationViewPagerAdapter.getFragment(position)?.setIsActiveFragment(true)
-            callFunOnNearbyFrag(position, { setIsActiveFragment(false) })
+            callFunOnNearbyFrag(position) { setIsActiveFragment(false) }
         }
 
         override fun onPageScrollStateChanged(state: Int) {
             if (state == ViewPager.SCROLL_STATE_IDLE) {
-                callFunOnNearbyFrag(getCurrentItemIndex(), { clearContent() })
+                callFunOnNearbyFrag(getCurrentItemIndex()) { clearContent() }
             }
         }
     }

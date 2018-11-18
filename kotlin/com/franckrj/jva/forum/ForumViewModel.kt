@@ -35,12 +35,12 @@ class ForumViewModel(app: Application) : NavigableViewModel(app) {
         removeCurrentSourceForPageInfos()
         infosForForumPage = newInfosForForumPage
 
-        forumName.addSource(newInfosForForumPage, { lastInfosForForumPage ->
+        forumName.addSource(newInfosForForumPage) { lastInfosForForumPage ->
             if (lastInfosForForumPage?.value != null && lastInfosForForumPage.status == LoadableValue.STATUS_LOADED &&
                     forumName.value != lastInfosForForumPage.value.forumName) {
                 forumName.value = lastInfosForForumPage.value.forumName
             }
-        })
+        }
     }
 
     override fun onCleared() {
