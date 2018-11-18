@@ -5,6 +5,11 @@ import okhttp3.OkHttpClient
 import okhttp3.Request
 import java.util.concurrent.TimeUnit
 
+/**
+ * Service ayant pour but de simplifier les requêtes web.
+ *
+ * @property    userAgentToUse      User-Agent à utiliser pour les requêtes.
+ */
 class WebService private constructor(private val userAgentToUse: String) {
     companion object {
         val instance: WebService by lazy { WebService("JVA") }
@@ -18,10 +23,20 @@ class WebService private constructor(private val userAgentToUse: String) {
             .followSslRedirects(false)
             .build()
 
+    /**
+     * Permet de récupérer l'OkHttpUrlLoader.Factory utilisé par le service.
+     *
+     * @return  L'OkHttpUrlLoader.Factory utilisé par le service.
+     */
     fun getOkHttpUrlLoaderFactory() : OkHttpUrlLoader.Factory {
         return OkHttpUrlLoader.Factory(client)
     }
 
+    /**
+     * Annule une requête avec un tag donné.
+     *
+     * @param   withThisTag     Le tag de la requête à annuler.
+     */
     fun cancelRequest(withThisTag: Any) {
         for (call in client.dispatcher().queuedCalls()) {
             if (call.request().tag() == withThisTag) {
@@ -35,6 +50,13 @@ class WebService private constructor(private val userAgentToUse: String) {
         }
     }
 
+    /**
+     * Permet de récupérer le contenu d'une page web.
+     *
+     * @param   urlForPage  Url de la page à récupérer.
+     * @param   tagToUse    Le tag à associer à la requête (pour une éventuelle annulation par exemple).
+     * @return              Le contenu de la page web, ou null s'il y a eu une erreur.
+     */
     fun getPage(urlForPage: String, tagToUse: Any): String? {
         return try {
             val request = Request.Builder()

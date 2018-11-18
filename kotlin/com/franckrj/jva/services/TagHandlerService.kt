@@ -8,6 +8,9 @@ import android.text.style.StrikethroughSpan
 import android.text.Html
 import org.xml.sax.XMLReader
 
+/**
+ * Html.TagHandler remplaçant les tags customs par des Spannable.
+ */
 class TagHandlerService private constructor() : Html.TagHandler {
     companion object {
         val instance: TagHandlerService by lazy { TagHandlerService() }
@@ -21,6 +24,13 @@ class TagHandlerService private constructor() : Html.TagHandler {
         }
     }
 
+    /**
+     * Fonction ajoutant le Span correspondant dans l'Editable à la place d'un tag.
+     *
+     * @param   opening     Si vrai indique que le tag actuel à remplacer est un tag ouvrant, sinon c'est un tag fermant.
+     * @param   output      L'Editable dans lequel le tag est remplacé.
+     * @param   thisSpan    Le Span à utiliser pour remplacer le tag.
+     */
     private fun processAddOfSpan(opening: Boolean, output: Editable, thisSpan: Any) {
         val len: Int = output.length
 
@@ -41,6 +51,12 @@ class TagHandlerService private constructor() : Html.TagHandler {
         }
     }
 
+    /**
+     * Retourne le dernier Spannable du type spanType dans l'Editable text.
+     *
+     * @param   text        L'Editable dans lequel chercher le dernier Spannable.
+     * @param   spanType    Le type de Spannable à chercher.
+     */
     private fun getLast(text: Editable, spanType: Class<*>): Any? {
         val objectArray: Array<out Any> = text.getSpans(0, text.length, spanType)
 

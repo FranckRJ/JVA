@@ -10,6 +10,14 @@ import com.franckrj.jva.utils.GlideApp
 import com.franckrj.jva.utils.GlideRequests
 import com.franckrj.jva.utils.WrapperTarget
 
+/**
+ * Html.ImageGetter pour récupérer des Drawable depuis n'importe quelle source (resources / internet / etc).
+ * Créé une Target (Glide) pour chaque image qui doit être récupérée depuis Internet.
+ *
+ * @param       contextToUse            Le Context depuis lequel charger les resources.
+ * @property    downloadDrawableId      L'id du Drawable représentant un téléchargement en cours.
+ * @property    deletedDrawableId       L'id du Drawable représentant un téléchargement échoué.
+ */
 class ImageGetterService(contextToUse: Context, @DrawableRes private val downloadDrawableId: Int, @DrawableRes private val deletedDrawableId: Int) : Html.ImageGetter, Drawable.Callback {
     private val resources: Resources = contextToUse.resources
     private val deletedDrawable: Drawable = resources.getDrawable(deletedDrawableId, null)
@@ -54,6 +62,9 @@ class ImageGetterService(contextToUse: Context, @DrawableRes private val downloa
         return deletedDrawable
     }
 
+    /**
+     * Lance le téléchargement des Target dont le téléchargement n'a pas encore commencé.
+     */
     fun downloadDrawables() {
         for (thisTarget in listOfTargetForDrawables) {
             if (!thisTarget.loadHasStarted) {
@@ -67,6 +78,9 @@ class ImageGetterService(contextToUse: Context, @DrawableRes private val downloa
         }
     }
 
+    /**
+     * Supprime toutes les Target gardées en mémoire.
+     */
     fun clearDrawables() {
         for (thisTarget in listOfTargetForDrawables) {
             glide.clear(thisTarget)
@@ -74,6 +88,9 @@ class ImageGetterService(contextToUse: Context, @DrawableRes private val downloa
         listOfTargetForDrawables.clear()
     }
 
+    /**
+     * Supprime uniquement les Target dont le téléchargement a commencé (incluant celles dont le téléchargement est terminé).
+     */
     fun clearOnlyDownloadedDrawables() {
         for (thisTarget in listOfTargetForDrawables) {
             if (thisTarget.loadHasStarted) {
