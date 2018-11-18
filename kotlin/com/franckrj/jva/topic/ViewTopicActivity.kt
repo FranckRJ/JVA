@@ -13,6 +13,7 @@ import com.franckrj.jva.pagenav.PageNavigationHelper
 class ViewTopicActivity : BaseActivity() {
     companion object {
         const val EXTRA_TOPIC_URL: String = "EXTRA_TOPIC_URL"
+        const val PAGE_TO_GO: String = "PAGE_TO_GO"
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -44,8 +45,14 @@ class ViewTopicActivity : BaseActivity() {
 
         if (savedInstanceState == null) {
             val possibleNewTopicUrl: String = intent?.getStringExtra(EXTRA_TOPIC_URL) ?: ""
+            val possibleNewPageToGo: Int = intent?.getIntExtra(PAGE_TO_GO, -1) ?: -1
             if (possibleNewTopicUrl.isNotEmpty()) {
-                topicViewModel.setUrlForTopic(possibleNewTopicUrl)
+                if (possibleNewPageToGo > 0) {
+                    topicViewModel.setUrlForTopicWithPage(possibleNewTopicUrl, possibleNewPageToGo)
+                }
+                else {
+                    topicViewModel.setUrlForTopic(possibleNewTopicUrl)
+                }
             }
         }
     }

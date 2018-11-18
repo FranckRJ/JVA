@@ -55,7 +55,7 @@ class ViewForumPageFragment : ViewNavigablePageFragment() {
             }
         })
 
-        topicListAdapter.onItemClickedListener = { position ->
+        topicListAdapter.onItemClickedListener = { position, isLongClick ->
             if (position != null) {
                 val topicInfos: TopicInfos? = forumPageViewModel.getListOfTopicsInfos()?.getOrNull(position)
 
@@ -63,6 +63,9 @@ class ViewForumPageFragment : ViewNavigablePageFragment() {
                     val viewTopicIntent = Intent(requireActivity(), ViewTopicActivity::class.java)
 
                     viewTopicIntent.putExtra(ViewTopicActivity.EXTRA_TOPIC_URL, topicInfos.topicUrl)
+                    if (isLongClick) {
+                        viewTopicIntent.putExtra(ViewTopicActivity.PAGE_TO_GO, 1 + (topicInfos.numberOfReplys / 20))
+                    }
 
                     startActivity(viewTopicIntent)
                 }

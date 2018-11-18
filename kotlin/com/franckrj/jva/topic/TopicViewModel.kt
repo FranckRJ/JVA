@@ -31,6 +31,10 @@ class TopicViewModel(app: Application) : NavigableViewModel(app) {
         currentPageNumber.value = lastPageNumber.value
     }
 
+    fun setUrlForTopicWithPage(newTopicUrl: String, newPageToGo: Int) {
+        setUrlForTopic(topicPageParser.setPageNumberForThisTopicUrl(topicPageParser.formatThisUrlToClassicJvcUrl(newTopicUrl), newPageToGo))
+    }
+
     fun setNewSourceForPageInfos(newInfosForTopicPage: LiveData<LoadableValue<TopicPageInfos?>?>) {
         removeCurrentSourceForPageInfos()
         infosForTopicPage = newInfosForTopicPage

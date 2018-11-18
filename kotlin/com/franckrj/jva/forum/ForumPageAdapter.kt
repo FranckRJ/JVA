@@ -18,10 +18,15 @@ class ForumPageAdapter(context: Context) : PageNavigationHeaderAdapter(context) 
 
     private val spannableFactory: CopylessSpannableFactory = CopylessSpannableFactory.instance
     var listOfTopicsShowable: List<TopicInfosShowable> = ArrayList()
-    var onItemClickedListener: ((Int?) -> Unit)? = null
+    var onItemClickedListener: ((Int?, Boolean) -> Unit)? = null
 
     private val internalItemClickedListener = View.OnClickListener { view ->
-        onItemClickedListener?.invoke(view.tag as? Int)
+        onItemClickedListener?.invoke(view.tag as? Int, false)
+    }
+
+    private val internalLongItemClickedListener = View.OnLongClickListener { view ->
+        onItemClickedListener?.invoke(view.tag as? Int, true)
+        true
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
@@ -58,6 +63,7 @@ class ForumPageAdapter(context: Context) : PageNavigationHeaderAdapter(context) 
             dateOfLastReplyTextView.setSpannableFactory(spannableFactory)
 
             mainView.setOnClickListener(internalItemClickedListener)
+            mainView.setOnLongClickListener(internalLongItemClickedListener)
         }
 
         fun bindView(topic: TopicInfosShowable, position: Int) {
