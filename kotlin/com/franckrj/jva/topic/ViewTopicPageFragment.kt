@@ -76,8 +76,8 @@ class ViewTopicPageFragment : ViewNavigablePageFragment() {
         }
     }
 
-    override fun setIsActiveFragment(newIsActive: Boolean) {
-        super.setIsActiveFragment(newIsActive)
+    override fun setIsActiveFragment(newIsActive: Boolean, fromProcessRecreation: Boolean) {
+        super.setIsActiveFragment(newIsActive, fromProcessRecreation)
 
         if (isActive) {
             topicViewModel.setNewSourceForPageInfos(topicPageViewModel.getInfosForTopicPage())

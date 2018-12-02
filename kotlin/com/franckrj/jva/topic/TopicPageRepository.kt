@@ -19,12 +19,12 @@ class TopicPageRepository private constructor() : AbsRepository() {
         val newTopicGetterInstance = TopicGetter(urlOfTopicPage, topicPageInfosLiveData)
         addThisRequestForThisLiveData(newTopicGetterInstance, topicPageInfosLiveData)
         topicPageInfosLiveData.value = LoadableValue.loading(topicPageInfosLiveData.value?.value)
-        newTopicGetterInstance.execute()
+        newTopicGetterInstance.execute(false)
     }
 
     private inner class TopicGetter(private val urlOfTopicPage: String, private val topicPageInfosLiveData: MutableLiveData<LoadableValue<TopicPageInfos?>?>) :
             AbsAsyncValueSetter<TopicPageInfos>(topicPageInfosLiveData) {
-        override fun doInBackground(): TopicPageInfos? {
+        override fun getValueToSetInBackground(tryToGetCachedValue: Boolean): TopicPageInfos? {
             val sourceOfWebPage:String? = serviceForWeb.getPage(urlOfTopicPage, hashCode())
 
             return if (sourceOfWebPage == null) {
@@ -40,7 +40,7 @@ class TopicPageRepository private constructor() : AbsRepository() {
             }
         }
 
-        override fun onPostExecute(result: TopicPageInfos?, isStillActive: Boolean) {
+        override fun setTheValueGetted(result: TopicPageInfos?, isStillActive: Boolean) {
             if (isStillActive) {
                 if (result == null) {
                     topicPageInfosLiveData.value = LoadableValue.error(null)

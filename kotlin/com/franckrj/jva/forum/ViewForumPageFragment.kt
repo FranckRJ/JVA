@@ -73,12 +73,12 @@ class ViewForumPageFragment : ViewNavigablePageFragment() {
         }
     }
 
-    override fun setIsActiveFragment(newIsActive: Boolean) {
-        super.setIsActiveFragment(newIsActive)
+    override fun setIsActiveFragment(newIsActive: Boolean, fromProcessRecreation: Boolean) {
+        super.setIsActiveFragment(newIsActive, fromProcessRecreation)
 
         if (isActive) {
             forumViewModel.setNewSourceForPageInfos(forumPageViewModel.getInfosForForumPage())
-            forumPageViewModel.getForumPageInfosIfNeeded(forumViewModel.forumUrl)
+            forumPageViewModel.getForumPageInfosIfNeeded(forumViewModel.forumUrl, fromProcessRecreation)
         }
     }
 }

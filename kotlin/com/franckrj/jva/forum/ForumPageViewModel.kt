@@ -95,10 +95,10 @@ class ForumPageViewModel(app: Application) : NavigablePageViewModel(app) {
     fun getListOfTopicsInfos(): List<TopicInfos>? = infosForForumPage.value?.value?.listOfTopics
 
     /* Ne récupère les informations que si aucun topic n'est actuellement affiché ni en cours de chargement. */
-    fun getForumPageInfosIfNeeded(formatedForumUrl: String) {
+    fun getForumPageInfosIfNeeded(formatedForumUrl: String, allowFetchFromCache: Boolean) {
         val realListOfTopicsShowable: LoadableValue<List<TopicInfosShowable>>? = listOfTopicsShowable.value
         if (realListOfTopicsShowable == null || (realListOfTopicsShowable.value.isEmpty() && realListOfTopicsShowable.status != LoadableValue.STATUS_LOADING)) {
-            forumPageRepo.updateForumPageInfos(forumPageParser.setPageNumberForThisForumUrl(formatedForumUrl, pageNumber.value ?: 0), infosForForumPage)
+            forumPageRepo.updateForumPageInfos(forumPageParser.setPageNumberForThisForumUrl(formatedForumUrl, pageNumber.value ?: 0), infosForForumPage, allowFetchFromCache)
         }
     }
 }

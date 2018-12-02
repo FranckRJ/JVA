@@ -2,6 +2,11 @@ package com.franckrj.jva.forum
 
 import android.graphics.drawable.Drawable
 import android.text.Spannable
+import androidx.room.TypeConverter
+import com.google.gson.Gson
+import com.google.gson.reflect.TypeToken
+import java.lang.reflect.Type
+import java.util.Collections
 
 enum class TopicType(val index: Int) {
     SINGLE_PAGE(0),
@@ -13,21 +18,45 @@ enum class TopicType(val index: Int) {
     SOLVED(6)
 }
 
-open class TopicInfos(open val title: String,
-                      open val author: String,
-                      open val dateOfLastReply: String,
-                      open val numberOfReplys: Int,
-                      open val typeOfTopic: TopicType,
-                      open val topicUrl: String)
+data class MutableTopicInfos(var title: String = "",
+                             var author: String = "",
+                             var dateOfLastReply: String = "",
+                             var numberOfReplys: Int = -1,
+                             var typeOfTopic: TopicType = TopicType.SINGLE_PAGE,
+                             var topicUrl: String = "")
 
-class MutableTopicInfos(override var title: String = "",
-                        override var author: String = "",
-                        override var dateOfLastReply: String = "",
-                        override var numberOfReplys: Int = -1,
-                        override var typeOfTopic: TopicType = TopicType.SINGLE_PAGE,
-                        override var topicUrl: String = ""): TopicInfos(title, author, dateOfLastReply, numberOfReplys, typeOfTopic, topicUrl)
+data class TopicInfos(val title: String,
+                      val author: String,
+                      val dateOfLastReply: String,
+                      val numberOfReplys: Int,
+                      val typeOfTopic: TopicType,
+                      val topicUrl: String) {
+    constructor(copy : MutableTopicInfos) : this(copy.title, copy.author, copy.dateOfLastReply, copy.numberOfReplys, copy.typeOfTopic, copy.topicUrl)
+}
 
 data class TopicInfosShowable(val titleAndNumberOfReplys: Spannable,
                               val author: Spannable,
                               val dateOfLastReply: Spannable,
                               val topicIcon: Drawable)
+
+object TopicInfosConverter {
+    private var gson = Gson()
+
+    @TypeConverter
+    @JvmStatic
+    fun stringToTopicInfosList(jsonTopicInfosList: String?): List<TopicInfos> {
+        return if (jsonTopicInfosList == null) {
+            Collections.emptyList()
+        } else {
+            val listType: Type = object : TypeToken<List<TopicInfos>>() {}.type
+
+            gson.fromJson(jsonTopicInfosList, listType)
+        }
+    }
+
+    @TypeConverter
+    @JvmStatic
+    fun topicInfosListToString(topicInfosList: List<TopicInfos>): String {
+        return gson.toJson(topicInfosList)
+    }
+}

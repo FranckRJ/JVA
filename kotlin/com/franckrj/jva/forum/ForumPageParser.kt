@@ -138,7 +138,7 @@ class ForumPageParser private constructor() : AbsParser() {
             }
         }
 
-        return infosForTopic
+        return TopicInfos(infosForTopic)
     }
 
     class TopicSettings(val topicTitleColorString: String)

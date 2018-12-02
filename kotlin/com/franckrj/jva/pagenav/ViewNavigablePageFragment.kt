@@ -69,7 +69,7 @@ abstract class ViewNavigablePageFragment : Fragment() {
 
         if (savedInstanceState != null) {
             if (savedInstanceState.getBoolean(SAVE_IS_ACTIVE)) {
-                setIsActiveFragment(true)
+                setIsActiveFragment(true, true)
             }
         } else {
             if (arguments?.getBoolean(ARG_IS_ACTIVE) == true) {
@@ -84,7 +84,7 @@ abstract class ViewNavigablePageFragment : Fragment() {
     }
 
     @CallSuper
-    open fun setIsActiveFragment(newIsActive: Boolean) {
+    open fun setIsActiveFragment(newIsActive: Boolean, fromProcessRecreation: Boolean = false) {
         isActive = newIsActive
 
         if (isActive) {

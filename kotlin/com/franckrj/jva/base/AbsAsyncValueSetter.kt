@@ -12,13 +12,14 @@ import kotlinx.coroutines.withContext
 abstract class AbsAsyncValueSetter<T>(protected val liveDataToSet: MutableLiveData<LoadableValue<T?>?>) {
     private var currentJob: Job? = null
 
-    fun execute() {
+    fun execute(tryToGetCachedValue: Boolean) {
         if (currentJob == null) {
             currentJob = GlobalScope.launch {
-                val result = doInBackground()
+                val result = getValueToSetInBackground(tryToGetCachedValue)
                 withContext(Dispatchers.Main) {
-                    onPostExecute(result, isActive)
+                    setTheValueGetted(result, isActive)
                 }
+                afterValueGettedInBackground(result, isActive)
             }
         }
     }
@@ -30,7 +31,8 @@ abstract class AbsAsyncValueSetter<T>(protected val liveDataToSet: MutableLiveDa
         }
     }
 
-    protected abstract fun doInBackground(): T?
-    protected abstract fun onPostExecute(result: T?, isStillActive: Boolean)
+    protected abstract fun getValueToSetInBackground(tryToGetCachedValue: Boolean): T?
+    protected abstract fun setTheValueGetted(result: T?, isStillActive: Boolean)
+    protected open fun afterValueGettedInBackground(result: T?, isStillActive: Boolean) {}
     protected abstract fun onCancelled()
 }
