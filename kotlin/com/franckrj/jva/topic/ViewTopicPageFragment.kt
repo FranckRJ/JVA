@@ -44,7 +44,7 @@ class ViewTopicPageFragment : ViewNavigablePageFragment() {
 
         NavigationUtils.initPageNavHeaderAdapterNavigation(this, messageListAdapter, topicViewModel, topicPageViewModel)
 
-        topicPageViewModel.getListOfMessagesShowable().observe(this, Observer { listOfMessagesShowable ->
+        topicPageViewModel.getListOfMessagesShowable().observe(viewLifecycleOwner, Observer { listOfMessagesShowable ->
             contentListRefreshLayout.isRefreshing = (listOfMessagesShowable?.status == LoadableValue.STATUS_LOADING)
             if (listOfMessagesShowable != null && (listOfMessagesShowable.value.isNotEmpty() || messageListAdapter.listOfMessagesShowable.isNotEmpty())) {
                 messageListAdapter.listOfMessagesShowable = listOfMessagesShowable.value
@@ -52,7 +52,7 @@ class ViewTopicPageFragment : ViewNavigablePageFragment() {
             }
         })
 
-        topicPageViewModel.getInvalidateTextViewNeeded().observe(this, Observer { newInvalidateTextViewNeeded ->
+        topicPageViewModel.getInvalidateTextViewNeeded().observe(viewLifecycleOwner, Observer { newInvalidateTextViewNeeded ->
             if (newInvalidateTextViewNeeded == true) {
                 /* TODO: Vérifier pour être sur que ça fonctionne vraiment correctement.
                  * Il est possible que toutes les vues créée ne soient pas invalidées (certaines sont dans un cache), mais ces dites vues

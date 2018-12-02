@@ -47,7 +47,7 @@ class ViewForumPageFragment : ViewNavigablePageFragment() {
 
         NavigationUtils.initPageNavHeaderAdapterNavigation(this, topicListAdapter, forumViewModel, forumPageViewModel)
 
-        forumPageViewModel.getListOfTopicsShowable().observe(this, Observer { listOfTopicsShowable ->
+        forumPageViewModel.getListOfTopicsShowable().observe(viewLifecycleOwner, Observer { listOfTopicsShowable ->
             contentListRefreshLayout.isRefreshing = (listOfTopicsShowable?.status == LoadableValue.STATUS_LOADING)
             if (listOfTopicsShowable != null && (listOfTopicsShowable.value.isNotEmpty() || topicListAdapter.listOfTopicsShowable.isNotEmpty())) {
                 topicListAdapter.listOfTopicsShowable = listOfTopicsShowable.value
