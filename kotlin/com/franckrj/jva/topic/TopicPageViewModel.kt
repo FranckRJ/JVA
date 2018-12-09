@@ -115,10 +115,10 @@ class TopicPageViewModel(app: Application) : NavigablePageViewModel(app) {
     fun getInvalidateTextViewNeeded(): LiveData<Boolean?> = invalidateTextViewNeeded
 
     /* Ne récupère les informations que si aucun message n'est actuellement affiché ni en cours de chargement. */
-    fun getTopicPageInfosIfNeeded(formatedTopicUrl: String) {
+    fun getTopicPageInfosIfNeeded(formatedTopicUrl: String, allowFetchFromCache: Boolean) {
         val realListOfMessagesShowable: LoadableValue<List<MessageInfosShowable>>? = listOfMessagesShowable.value
         if (realListOfMessagesShowable == null || (realListOfMessagesShowable.value.isEmpty() && realListOfMessagesShowable.status != LoadableValue.STATUS_LOADING)) {
-            topicPageRepo.updateTopicPageInfos(topicPageParser.setPageNumberForThisTopicUrl(formatedTopicUrl, pageNumber.value ?: 0), infosForTopicPage)
+            topicPageRepo.updateTopicPageInfos(topicPageParser.setPageNumberForThisTopicUrl(formatedTopicUrl, pageNumber.value ?: 0), infosForTopicPage, allowFetchFromCache)
         }
     }
 }

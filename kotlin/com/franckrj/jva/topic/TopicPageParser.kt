@@ -245,7 +245,7 @@ class TopicPageParser private constructor() : AbsParser() {
             infosForMessage.content = makeBasicFormatOfMessage(messageContentMatcher.groupValues[1], infosForMessage.containSpoilTag)
         }
 
-        return infosForMessage
+        return MessageInfos(infosForMessage)
     }
 
     private fun makeBasicFormatOfMessage(message: String, containSpoilTag: Boolean): String {

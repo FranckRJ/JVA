@@ -19,6 +19,7 @@ class MainActivity : AppCompatActivity() {
         /* TODO: Supprimer les pages lorsqu'elles ne sont plus utilisées plutôt qu'au lancement de l'app. */
         GlobalScope.launch {
             AppDatabase.instance.forumPageDao().deleteAllForumPages()
+            AppDatabase.instance.topicPageDao().deleteAllTopicPages()
         }
         startActivity(Intent(this, ViewForumActivity::class.java))
         finish()

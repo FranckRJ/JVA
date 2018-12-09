@@ -81,7 +81,7 @@ class ViewTopicPageFragment : ViewNavigablePageFragment() {
 
         if (isActive) {
             topicViewModel.setNewSourceForPageInfos(topicPageViewModel.getInfosForTopicPage())
-            topicPageViewModel.getTopicPageInfosIfNeeded(topicViewModel.topicUrl)
+            topicPageViewModel.getTopicPageInfosIfNeeded(topicViewModel.topicUrl, fromProcessRecreation)
         }
     }
 }
