@@ -14,7 +14,12 @@ class ViewTopicActivity : BaseActivity() {
     companion object {
         const val EXTRA_TOPIC_URL: String = "EXTRA_TOPIC_URL"
         const val PAGE_TO_GO: String = "PAGE_TO_GO"
+
+        private const val SAVE_TOPIC_URL: String = "SAVE_TOPIC_URL"
+        private const val SAVE_LAST_PAGE_NUMBER: String = "SAVE_LAST_PAGE_NUMBER"
     }
+
+    private lateinit var topicViewModel: TopicViewModel
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -23,7 +28,7 @@ class ViewTopicActivity : BaseActivity() {
         val arrowBackButton: ImageView = findViewById(R.id.arrow_back_button_viewtopic)
         val topicViewPager: ViewPager = findViewById(R.id.topic_pager_viewtopic)
         val topicNavigation = PageNavigationHelper(topicViewPager, { ViewTopicPageFragment() }, supportFragmentManager)
-        val topicViewModel: TopicViewModel = ViewModelProviders.of(this).get(TopicViewModel::class.java)
+        topicViewModel = ViewModelProviders.of(this).get(TopicViewModel::class.java)
 
         initSysbars(findViewById(R.id.statusbar_background_viewtopic))
 
@@ -55,5 +60,14 @@ class ViewTopicActivity : BaseActivity() {
                 }
             }
         }
+        else {
+            topicViewModel.restoreOldState(savedInstanceState.getString(SAVE_TOPIC_URL, ""), savedInstanceState.getInt(SAVE_LAST_PAGE_NUMBER, -1))
+        }
+    }
+
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+        outState.putString(SAVE_TOPIC_URL, topicViewModel.topicUrl)
+        outState.putInt(SAVE_LAST_PAGE_NUMBER, topicViewModel.getLastPageNumber().value ?: -1)
     }
 }

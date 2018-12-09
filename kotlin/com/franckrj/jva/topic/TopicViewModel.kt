@@ -59,6 +59,15 @@ class TopicViewModel(app: Application) : NavigableViewModel(app) {
         }
     }
 
+    fun restoreOldState(oldTopicUrl: String, oldLastPageNumber: Int) {
+        topicUrl = oldTopicUrl
+        if (oldLastPageNumber < 1) {
+            lastPageNumber.value = topicPageParser.getPageNumberOfThisTopicUrl(topicUrl)
+        } else {
+            lastPageNumber.value = oldLastPageNumber
+        }
+    }
+
     override fun onCleared() {
         removeCurrentSourceForPageInfos()
     }
