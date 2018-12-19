@@ -3,6 +3,7 @@ package com.franckrj.jva.topic
 import android.app.Application
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MediatorLiveData
+import androidx.lifecycle.MutableLiveData
 import com.franckrj.jva.pagenav.NavigableViewModel
 import com.franckrj.jva.utils.LoadableValue
 
@@ -11,6 +12,7 @@ class TopicViewModel(app: Application) : NavigableViewModel(app) {
 
     private var infosForTopicPage: LiveData<LoadableValue<TopicPageInfos?>?>? = null
     private val forumAndTopicName: MediatorLiveData<ForumAndTopicName> = MediatorLiveData()
+    val mdr: MutableLiveData<Int> = MutableLiveData()
     var topicUrl: String = ""
         private set
 

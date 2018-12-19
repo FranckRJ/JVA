@@ -68,14 +68,6 @@ abstract class BaseActivity : AppCompatActivity(), MovableToolbar {
 
         toolbarLayout.setPaddingRelative(defaultToolbarMargin, defaultToolbarMargin + statusbarHeight, defaultToolbarMargin, defaultToolbarMargin)
         toolbarCard?.translationZ = defaultToolbarCardElevation
-        scrollableContent.viewTreeObserver.addOnGlobalLayoutListener(object : ViewTreeObserver.OnGlobalLayoutListener {
-            override fun onGlobalLayout() {
-                scrollableContent.viewTreeObserver.removeOnGlobalLayoutListener(this)
-                scrollableContent.translationY = -(appbarLayout.height.toFloat())
-                scrollableContent.layoutParams.height = scrollableContent.height + appbarLayout.height
-                scrollableContent.requestLayout()
-            }
-        })
     }
 
     protected fun setToolbarTitle(newTitle: String) {

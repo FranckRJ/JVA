@@ -45,6 +45,8 @@ class ViewForumPageFragment : ViewNavigablePageFragment() {
         contentListView.layoutManager = LinearLayoutManager(requireActivity())
         contentListView.adapter = topicListAdapter
 
+        forumViewModel.mdr.observe(viewLifecycleOwner, Observer { offset -> contentListRefreshLayout.translationY = offset.toFloat() })
+
         NavigationUtils.initPageNavHeaderAdapterNavigation(this, topicListAdapter, forumViewModel, forumPageViewModel)
 
         forumPageViewModel.getListOfTopicsShowable().observe(viewLifecycleOwner, Observer { listOfTopicsShowable ->

@@ -42,6 +42,8 @@ class ViewTopicPageFragment : ViewNavigablePageFragment() {
         contentListView.layoutManager = LinearLayoutManager(requireActivity())
         contentListView.adapter = messageListAdapter
 
+        topicViewModel.mdr.observe(viewLifecycleOwner, Observer { offset -> contentListRefreshLayout.translationY = offset.toFloat() })
+
         NavigationUtils.initPageNavHeaderAdapterNavigation(this, messageListAdapter, topicViewModel, topicPageViewModel)
 
         topicPageViewModel.getListOfMessagesShowable().observe(viewLifecycleOwner, Observer { listOfMessagesShowable ->

@@ -9,6 +9,7 @@ import com.franckrj.jva.R
 import com.franckrj.jva.base.BaseActivity
 import com.franckrj.jva.pagenav.NavigationUtils
 import com.franckrj.jva.pagenav.PageNavigationHelper
+import com.google.android.material.appbar.AppBarLayout
 
 class ViewTopicActivity : BaseActivity() {
     companion object {
@@ -32,8 +33,12 @@ class ViewTopicActivity : BaseActivity() {
 
         initSysbars(findViewById(R.id.statusbar_background_viewtopic))
 
-        initCollapsibleToolbar(topicViewPager, findViewById(R.id.appbar_layout_viewtopic), findViewById(R.id.toolbar_layout_viewtopic),
+        val lol: AppBarLayout = findViewById(R.id.appbar_layout_viewtopic)
+        initCollapsibleToolbar(topicViewPager, lol, findViewById(R.id.toolbar_layout_viewtopic),
                     findViewById(R.id.toolbar_card_viewtopic), findViewById(R.id.title_text_toolbar_viewtopic), findViewById(R.id.subtitle_text_toolbar_viewtopic))
+        lol.addOnOffsetChangedListener(AppBarLayout.OnOffsetChangedListener { _, offset ->
+            topicViewModel.mdr.value = offset
+        })
 
         arrowBackButton.setOnClickListener {
             onBackPressed()

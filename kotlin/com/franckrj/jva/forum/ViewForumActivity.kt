@@ -8,6 +8,7 @@ import com.franckrj.jva.R
 import com.franckrj.jva.base.BaseActivity
 import com.franckrj.jva.pagenav.NavigationUtils
 import com.franckrj.jva.pagenav.PageNavigationHelper
+import com.google.android.material.appbar.AppBarLayout
 
 class ViewForumActivity : BaseActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -20,8 +21,12 @@ class ViewForumActivity : BaseActivity() {
 
         initSysbars(findViewById(R.id.statusbar_background_viewforum))
 
-        initCollapsibleToolbar(forumViewPager, findViewById(R.id.appbar_layout_viewforum), findViewById(R.id.toolbar_layout_viewforum),
+        val lol: AppBarLayout = findViewById(R.id.appbar_layout_viewforum)
+        initCollapsibleToolbar(forumViewPager, lol, findViewById(R.id.toolbar_layout_viewforum),
                     findViewById(R.id.toolbar_card_viewforum), findViewById(R.id.title_text_toolbar_viewforum))
+        lol.addOnOffsetChangedListener(AppBarLayout.OnOffsetChangedListener { _, offset ->
+            forumViewModel.mdr.value = offset
+        })
 
         NavigationUtils.initContentViewPagerNavigation(this, forumViewPager, forumNavigation, forumViewModel)
 
