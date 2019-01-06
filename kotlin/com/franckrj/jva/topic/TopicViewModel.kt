@@ -1,16 +1,23 @@
 package com.franckrj.jva.topic
 
 import android.app.Application
+import android.view.ViewTreeObserver
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MediatorLiveData
+import androidx.lifecycle.MutableLiveData
+import androidx.viewpager.widget.ViewPager
 import com.franckrj.jva.pagenav.NavigableViewModel
 import com.franckrj.jva.utils.LoadableValue
+import com.google.android.material.appbar.AppBarLayout
 
 class TopicViewModel(app: Application) : NavigableViewModel(app) {
     private val topicPageParser: TopicPageParser = TopicPageParser.instance
 
     private var infosForTopicPage: LiveData<LoadableValue<TopicPageInfos?>?>? = null
-    private val forumAndTopicName: MediatorLiveData<ForumAndTopicName> = MediatorLiveData()
+    private val forumAndTopicName: MediatorLiveData<ForumAndTopicName?> = MediatorLiveData()
+    private val frameScrollOffset: MutableLiveData<Int?> = MutableLiveData()
+    var frameOutsideScreenHeight: Int = 0
+        private set
     var topicUrl: String = ""
         private set
 
@@ -21,6 +28,20 @@ class TopicViewModel(app: Application) : NavigableViewModel(app) {
             lastPageNumber.removeSource(currentInfosForTopicPage)
             infosForTopicPage = null
         }
+    }
+
+    fun initCollapsibleToolbarInfos(appBarLayout: AppBarLayout, viewPager: ViewPager) {
+        appBarLayout.addOnOffsetChangedListener(AppBarLayout.OnOffsetChangedListener { _, offset ->
+            frameScrollOffset.value = offset
+        })
+        appBarLayout.viewTreeObserver.addOnGlobalLayoutListener ( object : ViewTreeObserver.OnGlobalLayoutListener {
+            override fun onGlobalLayout() {
+                appBarLayout.viewTreeObserver.removeOnGlobalLayoutListener(this)
+                frameOutsideScreenHeight = appBarLayout.height
+                viewPager.layoutParams.height = viewPager.height + frameOutsideScreenHeight
+                viewPager.requestLayout()
+            }
+        })
     }
 
     fun setUrlForTopic(newTopicUrl: String) {
@@ -73,4 +94,6 @@ class TopicViewModel(app: Application) : NavigableViewModel(app) {
     }
 
     fun getForumAndTopicName(): LiveData<ForumAndTopicName?> = forumAndTopicName
+
+    fun getFrameScrollOffset() : LiveData<Int?> = frameScrollOffset
 }

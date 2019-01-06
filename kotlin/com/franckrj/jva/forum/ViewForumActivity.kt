@@ -20,8 +20,9 @@ class ViewForumActivity : BaseActivity() {
 
         initSysbars(findViewById(R.id.statusbar_background_viewforum))
 
-        initCollapsibleToolbar(forumViewPager, findViewById(R.id.appbar_layout_viewforum), findViewById(R.id.toolbar_layout_viewforum),
+        initCollapsibleToolbar(findViewById(R.id.toolbar_layout_viewforum),
                     findViewById(R.id.toolbar_card_viewforum), findViewById(R.id.title_text_toolbar_viewforum))
+        forumViewModel.initCollapsibleToolbarInfos(findViewById(R.id.appbar_layout_viewforum), forumViewPager)
 
         NavigationUtils.initContentViewPagerNavigation(this, forumViewPager, forumNavigation, forumViewModel)
 
