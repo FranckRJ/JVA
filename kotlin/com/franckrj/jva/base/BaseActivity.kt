@@ -2,7 +2,6 @@ package com.franckrj.jva.base
 
 import android.os.Build
 import android.view.View
-import android.view.ViewTreeObserver
 import android.view.WindowManager
 import android.widget.FrameLayout
 import android.widget.TextView
@@ -12,7 +11,6 @@ import com.franckrj.jva.R
 import com.franckrj.jva.utils.MovableToolbar
 import com.franckrj.jva.utils.UndeprecatorUtils
 import com.franckrj.jva.utils.Utils
-import com.google.android.material.appbar.AppBarLayout
 
 abstract class BaseActivity : AppCompatActivity(), MovableToolbar {
     private val statusbarHeight: Int by lazy { Utils.getStatusbarHeight(this) }
@@ -56,8 +54,8 @@ abstract class BaseActivity : AppCompatActivity(), MovableToolbar {
         }
     }
 
-    protected fun initCollapsibleToolbar(scrollableContent: View, appbarLayout: AppBarLayout, toolbarLayout: FrameLayout,
-                                         newToolbarCard: CardView, newTitleTextToolbar: TextView, newSubtitleTextToolbar: TextView? = null) {
+    protected fun initCollapsibleToolbar(toolbarLayout: FrameLayout, newToolbarCard: CardView,
+                                         newTitleTextToolbar: TextView, newSubtitleTextToolbar: TextView? = null) {
         val defaultToolbarMargin: Int = resources.getDimensionPixelSize(R.dimen.defaultToolbarMargin)
         defaultToolbarCardElevation = resources.getDimensionPixelSize(R.dimen.defaultToolbarCardElevation).toFloat()
         aboveToolbarCardElevation = resources.getDimensionPixelSize(R.dimen.aboveToolbarCardElevation).toFloat()

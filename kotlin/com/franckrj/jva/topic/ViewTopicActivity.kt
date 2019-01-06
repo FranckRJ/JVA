@@ -33,12 +33,9 @@ class ViewTopicActivity : BaseActivity() {
 
         initSysbars(findViewById(R.id.statusbar_background_viewtopic))
 
-        val lol: AppBarLayout = findViewById(R.id.appbar_layout_viewtopic)
-        initCollapsibleToolbar(topicViewPager, lol, findViewById(R.id.toolbar_layout_viewtopic),
+        initCollapsibleToolbar(findViewById(R.id.toolbar_layout_viewtopic),
                     findViewById(R.id.toolbar_card_viewtopic), findViewById(R.id.title_text_toolbar_viewtopic), findViewById(R.id.subtitle_text_toolbar_viewtopic))
-        lol.addOnOffsetChangedListener(AppBarLayout.OnOffsetChangedListener { _, offset ->
-            topicViewModel.mdr.value = offset
-        })
+        topicViewModel.initCollapsibleToolbarInfos(findViewById(R.id.appbar_layout_viewtopic), topicViewPager)
 
         arrowBackButton.setOnClickListener {
             onBackPressed()
