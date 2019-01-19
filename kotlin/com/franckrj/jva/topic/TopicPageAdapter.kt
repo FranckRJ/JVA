@@ -6,6 +6,8 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
+import androidx.appcompat.widget.AppCompatTextView
+import androidx.core.text.PrecomputedTextCompat
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners
 import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions
@@ -70,7 +72,7 @@ class TopicPageAdapter(context: Context,
         private val avatarImageView: ImageView = mainView.findViewById(R.id.avatar_image_message_row)
         private val authorTextView: TextView = mainView.findViewById(R.id.author_text_message_row)
         private val dateTextView: TextView = mainView.findViewById(R.id.date_text_message_row)
-        private val contentTextView: TextView = mainView.findViewById(R.id.content_text_message_row)
+        private val contentTextView: AppCompatTextView = mainView.findViewById(R.id.content_text_message_row)
 
         init {
             authorTextView.setOnClickListener(internalAuthorClickedListener)
@@ -90,7 +92,7 @@ class TopicPageAdapter(context: Context,
 
             authorTextView.setText(message.author, TextView.BufferType.SPANNABLE)
             dateTextView.setText(message.date, TextView.BufferType.SPANNABLE)
-            contentTextView.setText(message.formatedContent, TextView.BufferType.SPANNABLE)
+            contentTextView.setTextFuture(PrecomputedTextCompat.getTextFuture(message.formatedContent, contentTextView.textMetricsParamsCompat, null))
 
             authorTextView.tag = position
             dateTextView.tag = position
