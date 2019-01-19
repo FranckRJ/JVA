@@ -4,7 +4,6 @@ import android.app.Application
 import android.view.ViewTreeObserver
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MediatorLiveData
-import androidx.lifecycle.MutableLiveData
 import androidx.viewpager.widget.ViewPager
 import com.franckrj.jva.pagenav.NavigableViewModel
 import com.franckrj.jva.utils.LoadableValue
@@ -15,9 +14,6 @@ class ForumViewModel(app: Application) : NavigableViewModel(app) {
 
     private var infosForForumPage: LiveData<LoadableValue<ForumPageInfos?>?>? = null
     private val forumName: MediatorLiveData<String?> = MediatorLiveData()
-    private val frameScrollOffset: MutableLiveData<Int?> = MutableLiveData()
-    var frameOutsideScreenHeight: Int = 0
-        private set
     var forumUrl: String = ""
         private set
 
@@ -69,6 +65,4 @@ class ForumViewModel(app: Application) : NavigableViewModel(app) {
     }
 
     fun getForumName(): LiveData<String?> = forumName
-
-    fun getFrameScrollOffset() : LiveData<Int?> = frameScrollOffset
 }

@@ -9,6 +9,9 @@ import androidx.lifecycle.MutableLiveData
 abstract class NavigableViewModel(app: Application) : AndroidViewModel(app) {
     protected val lastPageNumber: MediatorLiveData<Int> = MediatorLiveData()
     protected val currentPageNumber: MutableLiveData<Int> = MutableLiveData()
+    protected val frameScrollOffset: MutableLiveData<Int?> = MutableLiveData()
+    var frameOutsideScreenHeight: Int = 0
+        protected set
 
     fun setCurrentPageNumber(newPossibleCurrentPageNumber: Int) {
         val newRealCurrentPageNumber = newPossibleCurrentPageNumber.coerceIn(1, (lastPageNumber.value ?: 1))
@@ -21,4 +24,6 @@ abstract class NavigableViewModel(app: Application) : AndroidViewModel(app) {
     fun getLastPageNumber(): LiveData<Int?> = lastPageNumber
 
     fun getCurrentPageNumber(): LiveData<Int?> = currentPageNumber
+
+    fun getFrameScrollOffset() : LiveData<Int?> = frameScrollOffset
 }
